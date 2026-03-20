@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 – Lab 6 MCQ Quiz: BLE Pico W MicroPython</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8;
+    color:#111827; }
+    header { background: white; border-bottom: 1px solid #e5e7eb; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid #e5e7eb; background:white;
+    padding:8px 12px; border-radius:10px; font-weight:600; }
+    button.primary { background: var(--accent); color: white; border-color:
+    var(--accent); }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px
+    10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid #e5e7eb; border-radius:14px;
+    padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:baseline;
+    gap:6px }
+    .qtitle { font-weight:700; margin:0 0 8px }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px
+    solid #e5e7eb; padding:2px 8px; border-radius:999px }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px;
+    border:1px solid #e5e7eb; border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.correct { border-color:#16a34a; background:#f0fdf4; }
+    .opt.wrong { border-color:#dc2626; background:#fef2f2; }
+    .opt.disabled { pointer-events:none; opacity:.8 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px
+    solid #e5e7eb; display:grid; place-items:center; font-weight:700; }
+    .exp { margin-top:10px; border-top:1px dashed #e5e7eb; padding-top:10px;
+    color:#111827; }
+    .exp strong { color:#065f46 }
+    pre.code-block {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      margin: 12px 0;
+    }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+    details > summary { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 – Lab 6 MCQ Quiz: BLE Pico W MicroPython</h1>
+      <div class="sub">CSC2106 – Internet of Things: Protocols and Networks • Lab 6</div>
+      <div class="stats" id="stats">
+        <span class="pill" id="score">Score: 0</span>
+        <span class="pill" id="progress">Answered: 0 / 0</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" title="Reset the quiz to try again">Reset quiz</button>
+        <button id="revealBtn" title="Reveal correct answers for all questions">Reveal all answers</button>
+        <button id="shuffleBtn" title="Shuffle questions and answer options">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Based on Lab 6 repo material and uploaded solution code. This educational quiz is for practice.
+  </footer>
+  <script>
+    const QUESTIONS = [
+  {
+    "q": "In this lab, which BLE roles are assigned to the two Pico W boards?",
+    "options": [
+      "Pico W 1 is the Server/Peripheral and Pico W 2 is the Client/Central",
+      "Pico W 1 is the Client/Central and Pico W 2 is the Server/Peripheral",
+      "Both boards act only as beacons",
+      "Both boards act only as scanners"
+    ],
+    "correct": 0,
+    "why": "The repo describes Node A as the Server/Peripheral and Node B as the Client/Central."
+  },
+  {
+    "q": "Which communication model is the main focus of the core Lab 6 exercise before the beacon extension?",
+    "options": [
+      "GATT-based BLE communication using services and characteristics",
+      "BLE audio streaming",
+      "Classic Bluetooth SPP",
+      "Wi-Fi HTTP REST APIs"
+    ],
+    "correct": 0,
+    "why": "The lab objectives center on GATT services and characteristics for read, write, and notify."
+  },
+  {
+    "q": "How many Raspberry Pi Pico W boards are listed as required hardware in the repo prerequisites?",
+    "options": [
+      "Two",
+      "One",
+      "Three",
+      "Four"
+    ],
+    "correct": 0,
+    "why": "The prerequisites section specifies two Raspberry Pi Pico W boards."
+  },
+  {
+    "q": "Which IDE is explicitly named in the repo setup section?",
+    "options": [
+      "Thonny IDE",
+      "Arduino IDE",
+      "VS Code only",
+      "Keil uVision"
+    ],
+    "correct": 0,
+    "why": "The prerequisites mention Thonny IDE."
+  },
+  {
+    "q": "What firmware does the repo say should be installed on both Pico Ws?",
+    "options": [
+      "Latest MicroPython UF2 firmware",
+      "CircuitPython nightly firmware",
+      "Arduino bootloader only",
+      "Raspberry Pi OS Lite"
+    ],
+    "correct": 0,
+    "why": "The setup section states the latest MicroPython UF2 firmware should be installed on both boards."
+  },
+  {
+    "q": "Which custom UUID is used for the LED State characteristic?",
+    "options": [
+      "0x1A00",
+      "0x1A01",
+      "0x1A02",
+      "0x180F"
+    ],
+    "correct": 0,
+    "why": "Both the repo and your client code use 0x1A00 for the LED characteristic."
+  },
+  {
+    "q": "Which custom UUID is used for the Status characteristic?",
+    "options": [
+      "0x1A01",
+      "0x1A00",
+      "0x1A02",
+      "0x2A19"
+    ],
+    "correct": 0,
+    "why": "The status characteristic uses UUID 0x1A01."
+  },
+  {
+    "q": "Which custom UUID identifies the service that contains the LED and Status characteristics?",
+    "options": [
+      "0x1A02",
+      "0x1A01",
+      "0x1A00",
+      "0x180A"
+    ],
+    "correct": 0,
+    "why": "The custom service UUID is 0x1A02."
+  },
+  {
+    "q": "According to the repo, what permissions are assigned to the LED State characteristic on the server?",
+    "options": [
+      "READ and WRITE",
+      "READ and NOTIFY only",
+      "WRITE only",
+      "INDICATE only"
+    ],
+    "correct": 0,
+    "why": "The README table says the LED State characteristic supports READ and WRITE."
+  },
+  {
+    "q": "According to the repo, what permissions are assigned to the Status characteristic on the server?",
+    "options": [
+      "READ and NOTIFY",
+      "READ and WRITE",
+      "WRITE and INDICATE",
+      "NOTIFY only"
+    ],
+    "correct": 0,
+    "why": "The README table says the Status characteristic supports READ and NOTIFY."
+  },
+  {
+    "q": "What is the purpose of the LED State characteristic in the lab?",
+    "options": [
+      "To let the client read and change the server onboard LED state",
+      "To stream advertisement packets",
+      "To send Wi-Fi credentials",
+      "To carry beacon major/minor values only"
+    ],
+    "correct": 0,
+    "why": "The repo states the LED characteristic allows the client to read and change the LED state."
+  },
+  {
+    "q": "What kind of information is placed in the Status characteristic on the server?",
+    "options": [
+      "Formatted temperature and voltage status text",
+      "Only the MAC address",
+      "Only the LED state bit",
+      "Raw RSSI samples only"
+    ],
+    "correct": 0,
+    "why": "The server code formats a status string containing temperature and voltage values."
+  },
+  {
+    "q": "Which ADC channel does the repo server code use to read the Pico W internal temperature sensor?",
+    "options": [
+      "ADC(4)",
+      "ADC(0)",
+      "ADC(1)",
+      "ADC(3)"
+    ],
+    "correct": 0,
+    "why": "The server example sets temp_sensor = machine.ADC(4)."
+  },
+  {
+    "q": "In the repo server code, what is the approximate fixed supply voltage string used in the status payload?",
+    "options": [
+      "3.3 V",
+      "5.0 V",
+      "1.8 V",
+      "12 V"
+    ],
+    "correct": 0,
+    "why": "The sample server code sets volt = 3.3 before formatting the status string."
+  },
+  {
+    "q": "What does the server method update_status(notify=True) do beyond writing characteristic values?",
+    "options": [
+      "It sends a NOTIFY on the status characteristic to all connected clients",
+      "It forces all clients to disconnect",
+      "It restarts advertising only",
+      "It changes the service UUID dynamically"
+    ],
+    "correct": 0,
+    "why": "When notify=True, the server loops through its connections and calls gatts_notify on the status handle."
+  },
+  {
+    "q": "What collection type does the repo server use to keep track of connected clients?",
+    "options": [
+      "A set",
+      "A tuple",
+      "A string",
+      "A bytes object"
+    ],
+    "correct": 0,
+    "why": "The server stores connection handles in self._connections = set()."
+  },
+  {
+    "q": "What happens on the server when a central disconnects?",
+    "options": [
+      "The connection handle is removed and advertising starts again",
+      "The service is unregistered permanently",
+      "The Pico reboots immediately",
+      "The LED characteristic is deleted"
+    ],
+    "correct": 0,
+    "why": "On disconnect, the server removes the handle and resumes advertising."
+  },
+  {
+    "q": "What is the advertised server name in the repo README example?",
+    "options": [
+      "PicoW_A_Server",
+      "PicoW_A_Server_yxjk",
+      "CSC2106-BLE#01",
+      "BLE_Server_Node"
+    ],
+    "correct": 0,
+    "why": "The README sample creates the server as BLEServer(\"PicoW_A_Server\")."
+  },
+  {
+    "q": "What target device name does your uploaded client actually look for?",
+    "options": [
+      "PicoW_A_Server_yxjk",
+      "PicoW_A_Server",
+      "PicoW_B_Client",
+      "CSC2106_BLE_Server"
+    ],
+    "correct": 0,
+    "why": "Your uploaded client sets TARGET_NAME = \"PicoW_A_Server_yxjk\"."
+  },
+  {
+    "q": "Compared with the README client example, what is one important customization in your uploaded client?",
+    "options": [
+      "It targets a different advertised server name",
+      "It changes BLE into Wi-Fi scanning",
+      "It removes service discovery completely",
+      "It converts the client into beacon-only mode"
+    ],
+    "correct": 0,
+    "why": "Your client changes the target name from the repo example to PicoW_A_Server_yxjk."
+  },
+  {
+    "q": "Which GPIO pins are used for Button A and Button B in your uploaded client?",
+    "options": [
+      "GP20 and GP21",
+      "GP0 and GP1",
+      "GP14 and GP15",
+      "GP26 and GP27"
+    ],
+    "correct": 0,
+    "why": "Your client maps btn_a to GP20 and btn_b to GP21."
+  },
+  {
+    "q": "What pin mode configuration is used for both client buttons in your uploaded code?",
+    "options": [
+      "Input with pull-up resistor",
+      "Analog input",
+      "Open-drain output",
+      "PWM output"
+    ],
+    "correct": 0,
+    "why": "Both buttons are created as machine.Pin.IN with machine.Pin.PULL_UP."
+  },
+  {
+    "q": "What hardware resource does the client onboard LED represent in your code?",
+    "options": [
+      "A local indicator that mirrors the read server LED state and helps choose the next write state",
+      "The BLE status characteristic itself",
+      "The server temperature sensor",
+      "A Wi-Fi connection indicator only"
+    ],
+    "correct": 0,
+    "why": "The onboard LED is updated after a read result and its current value is used to compute the next write state."
+  },
+  {
+    "q": "What method is used in your client to turn on BLE and register the IRQ callback?",
+    "options": [
+      "self._ble.active(True) and self._ble.irq(self._irq)",
+      "self._ble.enable() and self._ble.callback(self._irq)",
+      "bluetooth.start() and bluetooth.on_irq(self._irq)",
+      "machine.ble_on() and machine.irq(self._irq)"
+    ],
+    "correct": 0,
+    "why": "The client constructor activates BLE and binds the IRQ handler using active(True) and irq(self._irq)."
+  },
+  {
+    "q": "Why does your client implement a custom _decode_name() helper?",
+    "options": [
+      "To extract the advertised device name from BLE advertising payload fields",
+      "To decode JSON from the status characteristic",
+      "To parse Wi-Fi SSIDs",
+      "To calculate the temperature formula"
+    ],
+    "correct": 0,
+    "why": "The helper walks through advertisement data and extracts the name from AD type 0x08 or 0x09."
+  },
+  {
+    "q": "Which BLE advertising data types does your _decode_name() treat as device names?",
+    "options": [
+      "0x08 and 0x09",
+      "0x01 and 0x02",
+      "0x16 and 0xFF",
+      "0x0A and 0x12"
+    ],
+    "correct": 0,
+    "why": "The function checks for AD type 0x08 (shortened local name) and 0x09 (complete local name)."
+  },
+  {
+    "q": "What does your client do immediately after finding a matching advertised device name during scanning?",
+    "options": [
+      "Stops scanning and starts a connection attempt",
+      "Starts beacon mode",
+      "Writes to the LED characteristic immediately",
+      "Reads the status characteristic without connecting"
+    ],
+    "correct": 0,
+    "why": "On a name match, the client stores the address, stops scanning with gap_scan(None), and calls gap_connect."
+  },
+  {
+    "q": "Which IRQ event in your client indicates that the connection to the peripheral has been established?",
+    "options": [
+      "_IRQ_PERIPHERAL_CONNECT",
+      "_IRQ_SCAN_DONE",
+      "_IRQ_GATTC_NOTIFY",
+      "_IRQ_GATTC_WRITE_DONE"
+    ],
+    "correct": 0,
+    "why": "The client begins service discovery when _IRQ_PERIPHERAL_CONNECT is received."
+  },
+  {
+    "q": "What BLE procedure does your client start right after _IRQ_PERIPHERAL_CONNECT?",
+    "options": [
+      "Service discovery using gattc_discover_services()",
+      "Immediate LED write",
+      "Beacon advertising",
+      "A Wi-Fi reconnect sequence"
+    ],
+    "correct": 0,
+    "why": "After connecting, the client prints a message and calls gattc_discover_services(self._conn_handle)."
+  },
+  {
+    "q": "Which pair of values from _IRQ_GATTC_SERVICE_RESULT does your client save for later characteristic discovery?",
+    "options": [
+      "start_handle and end_handle of the target service",
+      "RSSI and adv_type",
+      "GPIO numbers and pull modes",
+      "Major and minor beacon IDs"
+    ],
+    "correct": 0,
+    "why": "When the discovered service UUID matches _SVC_UUID, the client stores the start and end handles."
+  },
+  {
+    "q": "Why does your client use the _char_discovery_started flag?",
+    "options": [
+      "To avoid starting characteristic discovery more than once",
+      "To count button presses",
+      "To compute the next LED state",
+      "To identify beacon packets"
+    ],
+    "correct": 0,
+    "why": "The flag ensures characteristic discovery is started only once after a valid service is found."
+  },
+  {
+    "q": "What condition marks discovery as complete in your uploaded client?",
+    "options": [
+      "Both the LED handle and status handle have been found",
+      "Scanning has stopped",
+      "A write has succeeded",
+      "The client LED is ON"
+    ],
+    "correct": 0,
+    "why": "The code sets _discovery_complete only when both _led_handle and _status_handle are not None."
+  },
+  {
+    "q": "Which IRQ event in your client provides characteristic UUIDs and value handles?",
+    "options": [
+      "_IRQ_GATTC_CHARACTERISTIC_RESULT",
+      "_IRQ_GATTC_READ_DONE",
+      "_IRQ_SCAN_DONE",
+      "_IRQ_PERIPHERAL_DISCONNECT"
+    ],
+    "correct": 0,
+    "why": "Characteristic result events deliver def_handle, value_handle, properties, and uuid."
+  },
+  {
+    "q": "What does your client do when the discovered characteristic UUID equals _LED_UUID?",
+    "options": [
+      "Stores its value_handle as the LED handle",
+      "Disconnects from the server",
+      "Treats it as a beacon packet",
+      "Writes the current button state immediately"
+    ],
+    "correct": 0,
+    "why": "The client saves the LED characteristic value_handle in self._led_handle."
+  },
+  {
+    "q": "What does your client do when the discovered characteristic UUID equals _STATUS_UUID?",
+    "options": [
+      "Stores its value_handle as the status handle",
+      "Marks the write as successful",
+      "Stops all scanning permanently",
+      "Changes the target name"
+    ],
+    "correct": 0,
+    "why": "The client saves the Status characteristic value_handle in self._status_handle."
+  },
+  {
+    "q": "Which event handler in your client processes the actual bytes returned from a read request?",
+    "options": [
+      "_IRQ_GATTC_READ_RESULT",
+      "_IRQ_GATTC_READ_DONE",
+      "_IRQ_SCAN_RESULT",
+      "_IRQ_GATTC_WRITE_DONE"
+    ],
+    "correct": 0,
+    "why": "Your client decodes the LED value inside _IRQ_GATTC_READ_RESULT, while _READ_DONE only checks status."
+  },
+  {
+    "q": "What does your client print when a status notification arrives on the status handle?",
+    "options": [
+      "A Task 2 NOTIFY message containing decoded UTF-8 status text",
+      "Only the raw binary address bytes",
+      "A Wi-Fi IP address",
+      "The full service table"
+    ],
+    "correct": 0,
+    "why": "In _IRQ_GATTC_NOTIFY, the client decodes the bytes as UTF-8 and prints the server status string."
+  },
+  {
+    "q": "What action does your client take when _IRQ_PERIPHERAL_DISCONNECT occurs?",
+    "options": [
+      "Resets internal state and starts scanning again",
+      "Keeps stale handles and waits forever",
+      "Switches to beacon mode",
+      "Writes zero to the LED characteristic"
+    ],
+    "correct": 0,
+    "why": "On disconnect, the client calls _reset() and then scan() to reconnect later."
+  },
+  {
+    "q": "What does is_connected() require in your client?",
+    "options": [
+      "A non-None connection handle and completed characteristic discovery",
+      "Only that scanning has started",
+      "Only that the client LED is on",
+      "Only that the target name matches once"
+    ],
+    "correct": 0,
+    "why": "is_connected() returns True only if there is a connection handle and discovery is complete."
+  },
+  {
+    "q": "In your client, what happens if Button A is pressed before discovery is complete?",
+    "options": [
+      "The code prints that it is not connected or characteristics are not discovered yet",
+      "The client crashes immediately",
+      "It writes to the LED characteristic anyway",
+      "It silently toggles beacon mode"
+    ],
+    "correct": 0,
+    "why": "read_led() guards against premature access and prints that message when not ready."
+  },
+  {
+    "q": "In your client, what happens if Button B is pressed before discovery is complete?",
+    "options": [
+      "The code prints that it is not connected or characteristics are not discovered yet",
+      "It force-connects without scanning",
+      "It toggles the local LED only",
+      "It reformats the advertising payload"
+    ],
+    "correct": 0,
+    "why": "write_led() uses the same readiness guard as read_led()."
+  },
+  {
+    "q": "How does your client compute the next LED state to write when Button B is pressed?",
+    "options": [
+      "It uses 1 - onboard_led.value()",
+      "It always writes 1",
+      "It always writes 0",
+      "It reads the RSSI and maps it to 0 or 1"
+    ],
+    "correct": 0,
+    "why": "The main loop toggles based on the inverse of the current onboard LED value."
+  },
+  {
+    "q": "What data type is sent in write_led(state) before calling gattc_write?",
+    "options": [
+      "UTF-8 encoded bytes created from the string form of the state",
+      "A floating-point voltage value",
+      "A JSON object",
+      "A Python list of integers"
+    ],
+    "correct": 0,
+    "why": "write_led() converts the integer state to a string and then encodes it as UTF-8 bytes."
+  },
+  {
+    "q": "What does a status value of 0 mean in your _IRQ_GATTC_WRITE_DONE handler?",
+    "options": [
+      "The write completed successfully",
+      "The server requested a disconnect",
+      "Scanning timed out",
+      "Characteristic discovery failed"
+    ],
+    "correct": 0,
+    "why": "The handler prints a success message when the write status equals 0."
+  },
+  {
+    "q": "Your scan() method calls gap_scan(0, 30000, 30000). Based on the code, what is the effect of the first argument being 0?",
+    "options": [
+      "The scan continues until explicitly stopped by the code",
+      "The scan lasts exactly 30 seconds",
+      "Scanning is disabled",
+      "The device performs a Wi-Fi scan instead"
+    ],
+    "correct": 0,
+    "why": "In MicroPython BLE, a duration of 0 means continuous scanning until gap_scan(None) is used to stop it."
+  },
+  {
+    "q": "What does your client use to stop scanning once the target server has been found?",
+    "options": [
+      "gap_scan(None)",
+      "gap_advertise(None)",
+      "disconnect()",
+      "machine.reset()"
+    ],
+    "correct": 0,
+    "why": "The code explicitly calls self._ble.gap_scan(None) before connecting."
+  },
+  {
+    "q": "What timing guard is used in the main loop to debounce button-triggered actions?",
+    "options": [
+      "500 ms",
+      "50 ms",
+      "5 s",
+      "10 s"
+    ],
+    "correct": 0,
+    "why": "The code checks current_time - last_action_time > 500 before acting on either button."
+  },
+  {
+    "q": "What extra delay is inserted right after a valid button action in the main loop?",
+    "options": [
+      "200 ms",
+      "20 ms",
+      "1 s",
+      "10 s"
+    ],
+    "correct": 0,
+    "why": "After a valid button action, the code sleeps for 200 ms."
+  },
+  {
+    "q": "What is the idle loop delay at the end of each main loop iteration?",
+    "options": [
+      "50 ms",
+      "500 ms",
+      "200 ms",
+      "5 ms"
+    ],
+    "correct": 0,
+    "why": "The loop ends with time.sleep_ms(50)."
+  },
+  {
+    "q": "According to the repo checklist, what is Task 2 in the lab flow?",
+    "options": [
+      "Server Notify",
+      "Client Write",
+      "Beacon Verification",
+      "Firmware Flashing"
+    ],
+    "correct": 0,
+    "why": "The README checklist labels Task 2 as Server Notify."
+  },
+  {
+    "q": "According to the repo checklist, what is Task 3?",
+    "options": [
+      "Client Read",
+      "Server Notify",
+      "Beacon Scan",
+      "Client Advertise"
+    ],
+    "correct": 0,
+    "why": "The checklist labels Task 3 as Client Read."
+  },
+  {
+    "q": "According to the repo checklist, what is Task 4?",
+    "options": [
+      "Client Write",
+      "Server Read",
+      "Beacon Broadcast",
+      "Wi-Fi Pairing"
+    ],
+    "correct": 0,
+    "why": "The checklist labels Task 4 as Client Write."
+  },
+  {
+    "q": "In the repo checklist, what server-side action triggers the NOTIFY example?",
+    "options": [
+      "Waiting about 10 seconds for the simulated server button event",
+      "Pressing the client Button B",
+      "Reading the LED characteristic from the client",
+      "Flashing the Pico with new firmware"
+    ],
+    "correct": 0,
+    "why": "The README says Task 2 is triggered by the server-side simulated button event, described as waiting 10 seconds."
+  },
+  {
+    "q": "What is the core difference between a GATT Peripheral and a BLE Beacon according to the repo?",
+    "options": [
+      "A beacon only advertises custom data and does not offer connectable services",
+      "A beacon always supports more characteristics than GATT",
+      "A peripheral cannot advertise at all",
+      "A GATT peripheral never uses UUIDs"
+    ],
+    "correct": 0,
+    "why": "The beacon section states that a beacon only advertises custom data and does not offer services to connect to."
+  },
+  {
+    "q": "Why does the repo describe beacon mode as very energy-efficient?",
+    "options": [
+      "Because it broadcasts packets without establishing connections",
+      "Because it uses Wi-Fi instead of BLE",
+      "Because it disables advertising",
+      "Because it stores all data in flash only"
+    ],
+    "correct": 0,
+    "why": "The beacon section says a beacon broadcasts simple packets at intervals without ever attempting a connection."
+  },
+  {
+    "q": "In the beacon example, what advertising interval is used?",
+    "options": [
+      "500000 us",
+      "200000 us",
+      "30000 us",
+      "10000 us"
+    ],
+    "correct": 0,
+    "why": "The beacon example sets _ADV_INTERVAL_US = 500000."
+  },
+  {
+    "q": "Which beacon payload field is described as the group identifier in the repo example?",
+    "options": [
+      "Major ID",
+      "Minor ID",
+      "TX Power",
+      "Company ID"
+    ],
+    "correct": 0,
+    "why": "The beacon example comments describe MAJOR_ID as the group identifier."
+  },
+  {
+    "q": "Which beacon payload field is described as the specific device identifier in the repo example?",
+    "options": [
+      "Minor ID",
+      "Major ID",
+      "Service UUID",
+      "RSSI"
+    ],
+    "correct": 0,
+    "why": "The beacon example comments describe MINOR_ID as the specific device identifier."
+  },
+  {
+    "q": "What mobile apps does the repo suggest for verifying the beacon?",
+    "options": [
+      "nRF Connect or BLE Scanner",
+      "Thonny or PuTTY",
+      "Wireshark only",
+      "MQTTX only"
+    ],
+    "correct": 0,
+    "why": "The verification section recommends using nRF Connect or BLE Scanner."
+  },
+  {
+    "q": "Which statement best describes the relationship between the repo and your uploaded Lab 6 client?",
+    "options": [
+      "The repo defines the lab objectives and baseline BLE flow, while your client customizes the target name, button pins, and full discovery handling",
+      "They are unrelated projects using different protocols",
+      "Your client removes all GATT behavior from the repo design",
+      "The repo is only about Wi-Fi and your file is only about LoRa"
+    ],
+    "correct": 0,
+    "why": "The repo supplies the lab design and checklist, and your client refines the central-side implementation details."
+  }
+];
+    // --- Quiz Logic (DO NOT MODIFY) ---
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const percentEl = document.getElementById('percent');
+    const resetBtn = document.getElementById('resetBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    let state = { score: 0, answered: 0 };
+    let currentQuestions = [];
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map(q => (({
+        q: q.q,
+        options: shuffle(q.options.map((txt, i) => ({ txt, isCorrect: i === q.correct }))),
+        correct: 0,
+        why: q.why,
+        __answered: false
+      }))).map(item => {
+        item.correct = item.options.findIndex(o => o.isCorrect);
+        item.options = item.options.map(o => o.txt);
+        return item;
+      });
+    }
+    function render() {
+      quizEl.innerHTML = '';
+      currentQuestions.forEach((item, qi) => {
+        const card = document.createElement('div');
+        card.className = 'qcard';
+        const head = document.createElement('div');
+        head.className = 'qhead';
+        const titleEl = document.createElement('p');
+        titleEl.className = 'qtitle';
+        titleEl.innerHTML = `${qi + 1}. ${item.q}`;
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = `Q${qi + 1}`;
+        head.appendChild(titleEl);
+        head.appendChild(badge);
+        card.appendChild(head);
+        const opts = document.createElement('div');
+        opts.className = 'opts';
+        item.options.forEach((opt, oi) => {
+          const row = document.createElement('div');
+          row.className = 'opt';
+          row.setAttribute('data-q', qi);
+          row.setAttribute('data-o', oi);
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = String.fromCharCode(65 + oi);
+          const span = document.createElement('span');
+          span.innerHTML = opt;
+          row.appendChild(letter);
+          row.appendChild(span);
+          row.addEventListener('click', onChoose);
+          opts.appendChild(row);
+        });
+        const exp = document.createElement('div');
+        exp.className = 'exp';
+        exp.hidden = true;
+        exp.innerHTML = `<strong>Explanation:</strong> ${item.why}`;
+        card.appendChild(opts);
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+    function onChoose(e) {
+      const btn = e.currentTarget;
+      const qIndex = +btn.getAttribute('data-q');
+      const oIndex = +btn.getAttribute('data-o');
+      const card = btn.closest('.qcard');
+      const exp = card.querySelector('.exp');
+      const data = currentQuestions[qIndex];
+      if (data.__answered) return;
+      const options = card.querySelectorAll('.opt');
+      options.forEach(b => b.classList.add('disabled'));
+      data.__answered = true;
+      state.answered++;
+      if (oIndex === data.correct) {
+        btn.classList.add('correct');
+        state.score++;
+      } else {
+        btn.classList.add('wrong');
+        options[data.correct].classList.add('correct');
+      }
+      exp.hidden = false;
+      updateStats();
+    }
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score/currentQuestions.length)*100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+    function revealAll() {
+      document.querySelectorAll('.qcard').forEach((card, qi) => {
+        const data = currentQuestions[qi];
+        const exp = card.querySelector('.exp');
+        const options = card.querySelectorAll('.opt');
+        options.forEach((b, oi) => {
+          b.classList.remove('wrong');
+          if (oi === data.correct) b.classList.add('correct');
+          b.classList.add('disabled');
+        });
+        data.__answered = true;
+        exp.hidden = false;
+      });
+    }
+    function resetQuiz() {
+      state.score = 0; state.answered = 0;
+      render();
+    }
+    function shuffleQuiz() {
+      state.score = 0; state.answered = 0;
+      currentQuestions = buildQuestions();
+      render();
+    }
+    resetBtn.addEventListener('click', resetQuiz);
+    revealBtn.addEventListener('click', revealAll);
+    shuffleBtn.addEventListener('click', shuffleQuiz);
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>

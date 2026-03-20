@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 – Lab 1 MCQ Quiz: Pico W REST API with MicroPython</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8;
+    color:#111827; }
+    header { background: white; border-bottom: 1px solid #e5e7eb; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid #e5e7eb; background:white;
+    padding:8px 12px; border-radius:10px; font-weight:600; }
+    button.primary { background: var(--accent); color: white; border-color:
+    var(--accent); }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px
+    10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid #e5e7eb; border-radius:14px;
+    padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:baseline;
+    gap:6px }
+    .qtitle { font-weight:700; margin:0 0 8px }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px
+    solid #e5e7eb; padding:2px 8px; border-radius:999px }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px;
+    border:1px solid #e5e7eb; border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.correct { border-color:#16a34a; background:#f0fdf4; }
+    .opt.wrong { border-color:#dc2626; background:#fef2f2; }
+    .opt.disabled { pointer-events:none; opacity:.8 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px
+    solid #e5e7eb; display:grid; place-items:center; font-weight:700; }
+    .exp { margin-top:10px; border-top:1px dashed #e5e7eb; padding-top:10px;
+    color:#111827; }
+    .exp strong { color:#065f46 }
+    pre.code-block {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      margin: 12px 0;
+    }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+    details > summary { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 – Lab 1 MCQ Quiz: Pico W REST API with MicroPython</h1>
+      <div class="sub">CSC2106 – Internet of Things: Protocols and Networks • Lab 1</div>
+      <div class="stats" id="stats">
+        <span class="pill" id="score">Score: 0</span>
+        <span class="pill" id="progress">Answered: 0 / 0</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" title="Reset the quiz to try again">Reset quiz</button>
+        <button id="revealBtn" title="Reveal correct answers for all questions">Reveal all answers</button>
+        <button id="shuffleBtn" title="Shuffle questions and answer options">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Based on the lab repository and uploaded lab solution. This educational quiz is for practice.
+  </footer>
+  <script>
+    const QUESTIONS = [
+  {
+    "q": "What is the main objective of Lab 1 in the repo?",
+    "options": [
+      "Set up a MicroPython web server on a Pico W that exposes a basic RESTful API for temperature reading and LED control",
+      "Train a machine learning model on the Pico W",
+      "Implement Bluetooth mesh routing on the Pico W",
+      "Build a desktop GUI that simulates a sensor board"
+    ],
+    "correct": 0,
+    "why": "The lab manual states that the session objective is to create and consume a basic RESTful API on the Pico W for onboard sensor reading (temperature) and actuator control (LED)."
+  },
+  {
+    "q": "According to the repo README, which two files make up the core lab solution?",
+    "options": [
+      "<code>main.py</code> and <code>web_server.py</code>",
+      "<code>app.py</code> and <code>routes.py</code>",
+      "<code>index.html</code> and <code>server.js</code>",
+      "<code>wifi.py</code> and <code>sensor.py</code>"
+    ],
+    "correct": 0,
+    "why": "The repo describes the RESTful API logic as being broken into <code>main.py</code> and <code>web_server.py</code>."
+  },
+  {
+    "q": "What is the role of <code>main.py</code> in this lab?",
+    "options": [
+      "It handles Wi-Fi connection, creates the listening socket, and runs the main server loop",
+      "It only contains HTML templates for the API root page",
+      "It is used only for LED parsing logic",
+      "It stores quiz questions for the lab test"
+    ],
+    "correct": 0,
+    "why": "The README and uploaded code show that <code>main.py</code> connects to Wi-Fi, creates the server socket, accepts clients, reads temperature, and delegates request handling."
+  },
+  {
+    "q": "What is the main role of <code>web_server.py</code> in this lab?",
+    "options": [
+      "It parses HTTP requests, performs routing, builds responses, and returns any requested LED state change",
+      "It flashes the Pico W firmware over USB",
+      "It manages DHCP lease renewal in the Wi-Fi chipset",
+      "It replaces the socket module completely"
+    ],
+    "correct": 0,
+    "why": "The repo and uploaded file describe <code>web_server.py</code> as containing the HTTP parsing, routing, and response-building logic."
+  },
+  {
+    "q": "Which Wi-Fi interface mode is used in <code>main.py</code>?",
+    "options": [
+      "<code>network.STA_IF</code>",
+      "<code>network.AP_IF</code>",
+      "<code>network.MONITOR_IF</code>",
+      "<code>network.LOOPBACK_IF</code>"
+    ],
+    "correct": 0,
+    "why": "The code creates the WLAN object with <code>network.WLAN(network.STA_IF)</code>, which is station mode."
+  },
+  {
+    "q": "What does the code do immediately after creating the WLAN object?",
+    "options": [
+      "Calls <code>wlan.active(True)</code> to enable the interface",
+      "Calls <code>wlan.disconnect()</code> to clear previous state",
+      "Binds the WLAN to port 80",
+      "Starts the HTTP server before connecting"
+    ],
+    "correct": 0,
+    "why": "In <code>wifi_connect()</code>, the interface is enabled with <code>wlan.active(True)</code> before calling <code>wlan.connect()</code>."
+  },
+  {
+    "q": "What is the purpose of the <code>max_wait</code> loop in <code>wifi_connect()</code>?",
+    "options": [
+      "To wait for connection success or failure for up to 10 iterations",
+      "To retry binding the socket to different ports",
+      "To debounce the onboard LED input",
+      "To average 10 temperature samples"
+    ],
+    "correct": 0,
+    "why": "The loop decrements <code>max_wait</code> from 10 while checking the WLAN status, effectively waiting up to about 10 seconds."
+  },
+  {
+    "q": "When does the Wi-Fi waiting loop stop early?",
+    "options": [
+      "When <code>wlan.status()</code> is less than 0 or greater than or equal to 3",
+      "Only when the IP address equals <code>0.0.0.0</code>",
+      "Only when the LED turns on",
+      "When the socket starts listening"
+    ],
+    "correct": 0,
+    "why": "The loop breaks if <code>wlan.status() &lt; 0</code> or <code>wlan.status() &gt;= 3</code>, which signals failure or a connected state."
+  },
+  {
+    "q": "What happens if Wi-Fi connection does not succeed?",
+    "options": [
+      "A <code>RuntimeError</code> is raised, and the outer <code>try</code>/<code>except</code> flashes the LED before re-raising",
+      "The code silently ignores the problem and serves requests anyway",
+      "The Pico W automatically switches to Ethernet mode",
+      "The server changes from port 80 to port 443"
+    ],
+    "correct": 0,
+    "why": "If <code>wlan.status() != 3</code>, <code>wifi_connect()</code> raises <code>RuntimeError</code>. The outer exception handler prints the error, flashes the LED five times, and raises again."
+  },
+  {
+    "q": "What value is returned by <code>wifi_connect()</code> on success?",
+    "options": [
+      "The device IP address",
+      "The full socket object",
+      "The LED state",
+      "The Wi-Fi password"
+    ],
+    "correct": 0,
+    "why": "The function reads <code>wlan.ifconfig()</code>, prints the IP address, and returns <code>status[0]</code>, which is the IP address."
+  },
+  {
+    "q": "How is the Pico W onboard LED created in <code>main.py</code>?",
+    "options": [
+      "<code>machine.Pin(\"LED\", machine.Pin.OUT)</code>",
+      "<code>machine.ADC(\"LED\")</code>",
+      "<code>network.Pin(\"LED\")</code>",
+      "<code>socket.Pin(25)</code>"
+    ],
+    "correct": 0,
+    "why": "The uploaded code initializes the onboard LED with <code>machine.Pin(\"LED\", machine.Pin.OUT)</code>."
+  },
+  {
+    "q": "Which ADC channel is used for the internal temperature sensor?",
+    "options": [
+      "<code>machine.ADC(4)</code>",
+      "<code>machine.ADC(0)</code>",
+      "<code>machine.ADC(\"TEMP\")</code>",
+      "<code>machine.ADC(26)</code>"
+    ],
+    "correct": 0,
+    "why": "The code sets <code>temp_sensor = machine.ADC(4)</code>."
+  },
+  {
+    "q": "What does <code>conversion_factor = 3.3 / 65535</code> represent?",
+    "options": [
+      "The scaling factor to convert a 16-bit ADC reading into voltage",
+      "The Wi-Fi retry interval in seconds",
+      "The socket timeout in milliseconds",
+      "The LED brightness range"
+    ],
+    "correct": 0,
+    "why": "The ADC reading from <code>read_u16()</code> ranges to 65535, so the code multiplies by <code>3.3/65535</code> to estimate voltage."
+  },
+  {
+    "q": "Which formula is used to compute temperature in the uploaded <code>main.py</code>?",
+    "options": [
+      "<code>27 - (voltage - 0.706) / 0.001721</code>",
+      "<code>(voltage * 100) / 3.3</code>",
+      "<code>25 + (voltage / 0.706)</code>",
+      "<code>(65535 - reading) / 27</code>"
+    ],
+    "correct": 0,
+    "why": "The uploaded code computes temperature with <code>27 - (voltage - 0.706) / 0.001721</code>."
+  },
+  {
+    "q": "Why does the main loop call <code>read_temperature()</code> before <code>serve_client()</code>?",
+    "options": [
+      "So the current temperature can be passed into the request handler for endpoints like <code>/temp</code> and <code>/status</code>",
+      "Because sockets require a temperature reading before accepting",
+      "Because the LED can only change after ADC access",
+      "To generate the Wi-Fi password dynamically"
+    ],
+    "correct": 0,
+    "why": "The current temperature is computed before serving the request and passed into <code>serve_client()</code>."
+  },
+  {
+    "q": "What address is used when binding the socket?",
+    "options": [
+      "<code>0.0.0.0</code> on port <code>80</code>",
+      "<code>127.0.0.1</code> on port <code>8080</code>",
+      "The Pico W IP address on port <code>22</code>",
+      "<code>255.255.255.255</code> on port <code>80</code>"
+    ],
+    "correct": 0,
+    "why": "The code gets the bind address from <code>socket.getaddrinfo('0.0.0.0', 80)</code> and binds the server socket there."
+  },
+  {
+    "q": "What does <code>s.listen(1)</code> do in the lab code?",
+    "options": [
+      "Puts the socket into listening mode with a backlog of 1 pending connection",
+      "Limits the server to exactly one request forever",
+      "Turns the socket into a UDP socket",
+      "Enables HTTPS encryption"
+    ],
+    "correct": 0,
+    "why": "Calling <code>listen(1)</code> starts listening and sets the backlog parameter to 1."
+  },
+  {
+    "q": "What does <code>s.accept()</code> return in the main loop?",
+    "options": [
+      "A client connection socket and the client address",
+      "Only the request body",
+      "Only the destination path",
+      "A Wi-Fi SSID and password pair"
+    ],
+    "correct": 0,
+    "why": "The code assigns <code>client_conn, client_addr = s.accept()</code>."
+  },
+  {
+    "q": "What is imported from <code>web_server.py</code> into <code>main.py</code>?",
+    "options": [
+      "<code>serve_client</code>",
+      "<code>http_response</code>",
+      "<code>_parse_request</code>",
+      "<code>_parse_led_state</code>"
+    ],
+    "correct": 0,
+    "why": "The import line in <code>main.py</code> is <code>from web_server import serve_client</code>."
+  },
+  {
+    "q": "What does a return value of <code>-1</code> from <code>serve_client()</code> mean?",
+    "options": [
+      "No LED state change should be applied",
+      "The LED must blink continuously",
+      "The request was always invalid",
+      "The socket should be rebound"
+    ],
+    "correct": 0,
+    "why": "The code comments define <code>-1</code> as a sentinel meaning no LED change."
+  },
+  {
+    "q": "In the uploaded solution, which endpoint returns temperature and LED state together as JSON?",
+    "options": [
+      "<code>GET /status</code>",
+      "<code>POST /status</code>",
+      "<code>GET /led</code>",
+      "<code>GET /sensor</code>"
+    ],
+    "correct": 0,
+    "why": "The uploaded <code>web_server.py</code> adds a <code>/status</code> route that returns JSON containing temperature and LED state."
+  },
+  {
+    "q": "Which endpoint is described in the repo README as returning the current temperature?",
+    "options": [
+      "<code>GET /temp</code>",
+      "<code>POST /temp</code>",
+      "<code>GET /status</code>",
+      "<code>POST /sensor</code>"
+    ],
+    "correct": 0,
+    "why": "The repo documentation lists <code>GET /temp</code> as the endpoint for current temperature."
+  },
+  {
+    "q": "Which HTTP method is required for <code>/led</code>?",
+    "options": [
+      "<code>POST</code>",
+      "<code>GET</code>",
+      "<code>PUT</code>",
+      "<code>DELETE</code>"
+    ],
+    "correct": 0,
+    "why": "Both the repo and uploaded code check that <code>/led</code> must be called with <code>POST</code>; otherwise a 405 response is returned."
+  },
+  {
+    "q": "What status code is returned when a known path is used with the wrong HTTP method?",
+    "options": [
+      "<code>405 Method Not Allowed</code>",
+      "<code>404 Not Found</code>",
+      "<code>200 OK</code>",
+      "<code>500 Internal Server Error</code>"
+    ],
+    "correct": 0,
+    "why": "The routing code returns 405 for wrong methods on routes such as <code>/</code>, <code>/temp</code>, <code>/led</code>, and <code>/status</code>."
+  },
+  {
+    "q": "What status code is returned for an unknown path?",
+    "options": [
+      "<code>404 Not Found</code>",
+      "<code>400 Bad Request</code>",
+      "<code>304 Not Modified</code>",
+      "<code>201 Created</code>"
+    ],
+    "correct": 0,
+    "why": "The final <code>else</code> branch in the router responds with 404 for unknown paths."
+  },
+  {
+    "q": "What helper function builds the HTTP response string?",
+    "options": [
+      "<code>http_response()</code>",
+      "<code>build_packet()</code>",
+      "<code>send_reply()</code>",
+      "<code>make_socket()</code>"
+    ],
+    "correct": 0,
+    "why": "The helper at the top of <code>web_server.py</code> is named <code>http_response()</code> and constructs the HTTP response text."
+  },
+  {
+    "q": "Which header is explicitly added by <code>http_response()</code> besides the status line?",
+    "options": [
+      "<code>Content-Type</code> and <code>Connection: close</code>",
+      "<code>Authorization</code> and <code>Host</code>",
+      "<code>Upgrade</code> and <code>Keep-Alive</code>",
+      "<code>Set-Cookie</code> and <code>Location</code>"
+    ],
+    "correct": 0,
+    "why": "The response builder includes <code>Content-Type</code> and <code>Connection: close</code> headers."
+  },
+  {
+    "q": "How does <code>_parse_request()</code> separate headers from the body?",
+    "options": [
+      "By splitting the raw request string at the first <code>\r\n\r\n</code>",
+      "By splitting at every colon",
+      "By reading exactly 127 bytes per request",
+      "By using JSON decoding first"
+    ],
+    "correct": 0,
+    "why": "The parser uses <code>raw.split(\"\r\n\r\n\", 1)</code> to divide the header block from the body."
+  },
+  {
+    "q": "What does <code>_parse_request()</code> return?",
+    "options": [
+      "Method, path, headers dictionary, and body",
+      "Only the path and LED state",
+      "Only the IP address and port",
+      "A socket and a file handle"
+    ],
+    "correct": 0,
+    "why": "The function returns <code>method.upper(), path, headers, body</code>."
+  },
+  {
+    "q": "How are header names stored by <code>_parse_request()</code>?",
+    "options": [
+      "Lowercased, after stripping whitespace",
+      "Always in uppercase",
+      "As raw binary bytes",
+      "Only the <code>Host</code> header is stored"
+    ],
+    "correct": 0,
+    "why": "The parser inserts headers into a dictionary using <code>k.strip().lower()</code>."
+  },
+  {
+    "q": "If the request line cannot be split into method, path, and version, what default values are used?",
+    "options": [
+      "<code>GET</code> and <code>/</code>",
+      "<code>POST</code> and <code>/temp</code>",
+      "<code>GET</code> and <code>/status</code>",
+      "<code>HEAD</code> and <code>/</code>"
+    ],
+    "correct": 0,
+    "why": "The exception handler in <code>_parse_request()</code> falls back to <code>method, path = \"GET\", \"/\"</code>."
+  },
+  {
+    "q": "Which payload format is accepted by <code>_parse_led_state()</code> when the content type is <code>application/json</code>?",
+    "options": [
+      "<code>{\"state\": 0}</code> or <code>{\"state\": 1}</code>",
+      "Only an XML document with <code>&lt;state&gt;</code>",
+      "Only a query string in the URL",
+      "Only multipart file upload"
+    ],
+    "correct": 0,
+    "why": "For JSON, the parser loads the body and reads the <code>state</code> field."
+  },
+  {
+    "q": "Which form body is accepted by <code>_parse_led_state()</code> for form-encoded requests?",
+    "options": [
+      "<code>state=0</code> or <code>state=1</code>",
+      "<code>led:on</code>",
+      "<code>mode=true</code>",
+      "<code>pin=LED</code>"
+    ],
+    "correct": 0,
+    "why": "For <code>application/x-www-form-urlencoded</code>, the parser looks for a key named <code>state</code> with value <code>0</code> or <code>1</code>."
+  },
+  {
+    "q": "What plain-text request body is accepted for LED control when the content type is unknown or plain text?",
+    "options": [
+      "Just <code>0</code> or <code>1</code>",
+      "<code>on</code> or <code>off</code>",
+      "<code>true</code> or <code>false</code> only",
+      "Any integer from 0 to 255"
+    ],
+    "correct": 0,
+    "why": "The fallback parser trims the body and accepts only the strings <code>\"0\"</code> or <code>\"1\"</code>."
+  },
+  {
+    "q": "How are JSON boolean values handled by <code>_parse_led_state()</code>?",
+    "options": [
+      "<code>true</code> becomes 1 and <code>false</code> becomes 0",
+      "They always cause a 404 error",
+      "They are ignored completely",
+      "They are converted into strings <code>on</code> and <code>off</code>"
+    ],
+    "correct": 0,
+    "why": "The JSON parsing logic explicitly maps Python booleans to 1 or 0."
+  },
+  {
+    "q": "What happens if LED state parsing fails for <code>POST /led</code>?",
+    "options": [
+      "The server returns <code>400 Bad Request</code> and leaves LED state unchanged",
+      "The server turns the LED on by default",
+      "The server returns <code>404 Not Found</code>",
+      "The board immediately resets"
+    ],
+    "correct": 0,
+    "why": "If parsing returns <code>None</code>, the router responds with 400 and keeps <code>led_state</code> at -1."
+  },
+  {
+    "q": "Which response is specific to the uploaded solution, but not shown in the base repo README flow for <code>/led</code>?",
+    "options": [
+      "<code>304 Not Modified</code> when the requested LED state is already the current state",
+      "<code>201 Created</code> for every LED change",
+      "<code>301 Moved Permanently</code> to <code>/status</code>",
+      "<code>202 Accepted</code> with deferred LED updates"
+    ],
+    "correct": 0,
+    "why": "The uploaded <code>web_server.py</code> adds logic that returns 304 when the requested LED state matches the current one."
+  },
+  {
+    "q": "Why does the uploaded <code>serve_client()</code> function accept <code>led_is_active</code> as an argument?",
+    "options": [
+      "So it can compare requested state against the current LED state and decide whether to return 304 or 200",
+      "So it can calculate Wi-Fi signal strength",
+      "So it can decode the HTTP version",
+      "So it can compute the ADC conversion factor"
+    ],
+    "correct": 0,
+    "why": "The uploaded solution passes the current LED value into <code>serve_client()</code> and uses it for the not-modified checks."
+  },
+  {
+    "q": "What content type does the uploaded solution use for the <code>/status</code> response?",
+    "options": [
+      "<code>application/json</code>",
+      "<code>text/plain</code>",
+      "<code>image/png</code>",
+      "<code>application/xml</code>"
+    ],
+    "correct": 0,
+    "why": "The <code>/status</code> route calls <code>http_response(..., content_type=\"application/json\")</code>."
+  },
+  {
+    "q": "How is the LED state represented in the JSON body for <code>/status</code>?",
+    "options": [
+      "As a boolean generated from <code>bool(led_is_active)</code>",
+      "As the strings <code>ON</code> or <code>OFF</code>",
+      "As a nested array",
+      "As a hexadecimal GPIO number"
+    ],
+    "correct": 0,
+    "why": "The uploaded code formats the JSON with <code>\"led_on\": %s</code> using <code>bool(led_is_active)</code>."
+  },
+  {
+    "q": "What is shown on the API root page (<code>GET /</code>)?",
+    "options": [
+      "A simple HTML page listing available endpoints",
+      "A binary firmware download",
+      "A Wi-Fi scanning dashboard",
+      "Only the current temperature in JSON"
+    ],
+    "correct": 0,
+    "why": "The root route builds HTML showing the API root and a list of available endpoints."
+  },
+  {
+    "q": "Why is the client socket closed inside a <code>finally</code> block?",
+    "options": [
+      "To ensure the socket is closed even if an error occurs while sending the response",
+      "To keep the connection open for HTTP keep-alive",
+      "To automatically reconnect Wi-Fi after every request",
+      "To allow multiple responses on the same socket without cleanup"
+    ],
+    "correct": 0,
+    "why": "The <code>finally</code> block guarantees cleanup by closing the client socket regardless of success or failure."
+  },
+  {
+    "q": "Which line best shows that the server is iterative rather than handling many clients in parallel?",
+    "options": [
+      "The code accepts one client, serves it, then loops back to <code>s.accept()</code>",
+      "The code starts a thread for every request",
+      "The code uses asynchronous <code>await</code> everywhere",
+      "The code opens 100 listening sockets"
+    ],
+    "correct": 0,
+    "why": "The main loop processes one accepted client connection at a time before returning to wait for the next one."
+  },
+  {
+    "q": "What does the outer <code>except OSError as e</code> in the main loop do?",
+    "options": [
+      "It lets the server continue running after connection-related errors instead of crashing immediately",
+      "It permanently disables Wi-Fi after the first error",
+      "It changes every error into a 200 OK response",
+      "It reboots the Pico W on every exception"
+    ],
+    "correct": 0,
+    "why": "The code catches <code>OSError</code>, ignores timeout code 110, prints other connection errors, and continues the loop."
+  },
+  {
+    "q": "What does the comment say about error code <code>110</code> in the main loop?",
+    "options": [
+      "It is treated as <code>ETIMEDOUT</code>",
+      "It means the LED is already on",
+      "It means Wi-Fi connected successfully",
+      "It is the ADC overflow code"
+    ],
+    "correct": 0,
+    "why": "The comment explicitly labels <code>e.args[0] == 110</code> as <code>ETIMEDOUT</code>."
+  },
+  {
+    "q": "In the overall request flow, which sequence is correct?",
+    "options": [
+      "Accept client → read temperature → call <code>serve_client()</code> → apply LED change if needed",
+      "Read temperature → flash error LED → bind socket → parse JSON",
+      "Call <code>serve_client()</code> before accepting any client",
+      "Apply LED change first, then decide which route was requested"
+    ],
+    "correct": 0,
+    "why": "That is the exact order used inside the server loop in <code>main.py</code>."
+  },
+  {
+    "q": "Which statement best explains why this lab is called RESTful in context?",
+    "options": [
+      "It exposes resources/endpoints over HTTP using methods like GET and POST for sensor reading and actuator control",
+      "It uses only raw UART frames with no request paths",
+      "It depends on MQTT topics instead of HTTP routes",
+      "It requires a graphical browser interface to function"
+    ],
+    "correct": 0,
+    "why": "The lab exposes endpoints such as <code>GET /temp</code> and <code>POST /led</code> over HTTP, which is the REST-style interaction described in the lab manual."
+  }
+];
+    // --- Quiz Logic (DO NOT MODIFY) ---
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const percentEl = document.getElementById('percent');
+    const resetBtn = document.getElementById('resetBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    let state = { score: 0, answered: 0 };
+    let currentQuestions = [];
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map(q => (({
+        q: q.q,
+        options: shuffle(q.options.map((txt, i) => ({ txt, isCorrect: i === q.correct }))),
+        correct: 0,
+        why: q.why,
+        __answered: false
+      }))).map(item => {
+        item.correct = item.options.findIndex(o => o.isCorrect);
+        item.options = item.options.map(o => o.txt);
+        return item;
+      });
+    }
+    function render() {
+      quizEl.innerHTML = '';
+      currentQuestions.forEach((item, qi) => {
+        const card = document.createElement('div');
+        card.className = 'qcard';
+        const head = document.createElement('div');
+        head.className = 'qhead';
+        const titleEl = document.createElement('p');
+        titleEl.className = 'qtitle';
+        titleEl.innerHTML = `${qi + 1}. ${item.q}`;
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = `Q${qi + 1}`;
+        head.appendChild(titleEl);
+        head.appendChild(badge);
+        card.appendChild(head);
+        const opts = document.createElement('div');
+        opts.className = 'opts';
+        item.options.forEach((opt, oi) => {
+          const row = document.createElement('div');
+          row.className = 'opt';
+          row.setAttribute('data-q', qi);
+          row.setAttribute('data-o', oi);
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = String.fromCharCode(65 + oi);
+          const span = document.createElement('span');
+          span.innerHTML = opt;
+          row.appendChild(letter);
+          row.appendChild(span);
+          row.addEventListener('click', onChoose);
+          opts.appendChild(row);
+        });
+        const exp = document.createElement('div');
+        exp.className = 'exp';
+        exp.hidden = true;
+        exp.innerHTML = `<strong>Explanation:</strong> ${item.why}`;
+        card.appendChild(opts);
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+    function onChoose(e) {
+      const btn = e.currentTarget;
+      const qIndex = +btn.getAttribute('data-q');
+      const oIndex = +btn.getAttribute('data-o');
+      const card = btn.closest('.qcard');
+      const exp = card.querySelector('.exp');
+      const data = currentQuestions[qIndex];
+      if (data.__answered) return;
+      const options = card.querySelectorAll('.opt');
+      options.forEach(b => b.classList.add('disabled'));
+      data.__answered = true;
+      state.answered++;
+      if (oIndex === data.correct) {
+        btn.classList.add('correct');
+        state.score++;
+      } else {
+        btn.classList.add('wrong');
+        options[data.correct].classList.add('correct');
+      }
+      exp.hidden = false;
+      updateStats();
+    }
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score/currentQuestions.length)*100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+    function revealAll() {
+      document.querySelectorAll('.qcard').forEach((card, qi) => {
+        const data = currentQuestions[qi];
+        const exp = card.querySelector('.exp');
+        const options = card.querySelectorAll('.opt');
+        options.forEach((b, oi) => {
+          b.classList.remove('wrong');
+          if (oi === data.correct) b.classList.add('correct');
+          b.classList.add('disabled');
+        });
+        data.__answered = true;
+        exp.hidden = false;
+      });
+    }
+    function resetQuiz() {
+      state.score = 0; state.answered = 0;
+      render();
+    }
+    function shuffleQuiz() {
+      state.score = 0; state.answered = 0;
+      currentQuestions = buildQuestions();
+      render();
+    }
+    resetBtn.addEventListener('click', resetQuiz);
+    revealBtn.addEventListener('click', revealAll);
+    shuffleBtn.addEventListener('click', shuffleQuiz);
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>

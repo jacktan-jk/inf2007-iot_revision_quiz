@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 – Lab 5 MCQ Quiz: LoRaWAN</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8;
+    color:#111827; }
+    header { background: white; border-bottom: 1px solid #e5e7eb; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid #e5e7eb; background:white;
+    padding:8px 12px; border-radius:10px; font-weight:600; }
+    button.primary { background: var(--accent); color: white; border-color:
+    var(--accent); }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px
+    10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid #e5e7eb; border-radius:14px;
+    padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:baseline;
+    gap:6px }
+    .qtitle { font-weight:700; margin:0 0 8px }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px
+    solid #e5e7eb; padding:2px 8px; border-radius:999px }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px;
+    border:1px solid #e5e7eb; border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.correct { border-color:#16a34a; background:#f0fdf4; }
+    .opt.wrong { border-color:#dc2626; background:#fef2f2; }
+    .opt.disabled { pointer-events:none; opacity:.8 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px
+    solid #e5e7eb; display:grid; place-items:center; font-weight:700; }
+    .exp { margin-top:10px; border-top:1px dashed #e5e7eb; padding-top:10px;
+    color:#111827; }
+    .exp strong { color:#065f46 }
+    pre.code-block {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      margin: 12px 0;
+    }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+    details > summary { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 – Lab 5 MCQ Quiz: LoRaWAN</h1>
+      <div class="sub">CSC2106 – Internet of Things: Protocols and Networks • Lab 5</div>
+      <div class="stats" id="stats">
+        <span class="pill" id="score">Score: 0</span>
+        <span class="pill" id="progress">Answered: 0 / 0</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" title="Reset the quiz to try again">Reset quiz</button>
+        <button id="revealBtn" title="Reveal correct answers for all questions">Reveal all answers</button>
+        <button id="shuffleBtn" title="Shuffle questions and answer options">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Based on the Lab 5 repo README and committed sketch. This educational quiz is for practice.
+  </footer>
+  <script>
+    const QUESTIONS = [
+      {
+            "q": "What is the main goal of Lab 5?",
+            "options": [
+                  "To build a direct peer-to-peer LoRa chat link between two Arduino boards",
+                  "To set up a LoRaWAN-compliant IoT solution using a LoRa end device, a gateway, and TTN",
+                  "To create a BLE mesh network using the Pico W",
+                  "To expose sensor data over a REST API"
+            ],
+            "correct": 1,
+            "why": "The README states that the lab is about understanding the components of a LoRaWAN IoT solution and setting up a fully LoRaWAN-compliant solution using the Cytron UNO + LoRa-RFM Shield as the end device and the RAK WisGate Edge Lite 2 as the gateway.",
+            "level": "lab 5"
+      },
+      {
+            "q": "In the Lab 5 setup, what plays the role of the LoRaWAN end device?",
+            "options": [
+                  "RAK7268/RAK7268C WisGate Edge Lite 2",
+                  "Cytron UNO with Cytron LoRa-RFM Shield",
+                  "A laptop running TTN Console",
+                  "An M5StickC Plus"
+            ],
+            "correct": 1,
+            "why": "The README identifies the Cytron UNO with the Cytron LoRa-RFM Shield as the end device.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which device is used as the gateway in the lab?",
+            "options": [
+                  "Raspberry Pi Pico W",
+                  "ESP32 DevKit",
+                  "RAK7268/RAK7268C WisGate Edge Lite 2",
+                  "Cytron Maker Pi RP2040"
+            ],
+            "correct": 2,
+            "why": "The equipment list and gateway setup section name the RAK7268/RAK7268C WisGate Edge Lite 2 as the LoRaWAN gateway.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which platform is used as the network server in the lab walkthrough?",
+            "options": [
+                  "Firebase",
+                  "The Things Network (TTN)",
+                  "ThingSpeak",
+                  "Mosquitto"
+            ],
+            "correct": 1,
+            "why": "The README repeatedly uses The Things Network (TTN) as the LoRaWAN network server and application platform example.",
+            "level": "lab 5"
+      },
+      {
+            "q": "In LoRaWAN terminology, what is an uplink?",
+            "options": [
+                  "A message from the application server to the end device",
+                  "A message from the end device to the gateway/network",
+                  "A firmware upload over USB",
+                  "A local serial print on the Arduino"
+            ],
+            "correct": 1,
+            "why": "The architecture section says end devices transmit payloads as uplink messages to be picked up by a gateway.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What is true about how a LoRaWAN end device relates to gateways?",
+            "options": [
+                  "It is permanently paired to exactly one gateway",
+                  "It only works with gateways from the same vendor",
+                  "It is not associated with a single gateway; multiple gateways may receive its payloads",
+                  "It must switch gateways manually in code before each transmission"
+            ],
+            "correct": 2,
+            "why": "The README states that a LoRaWAN end device is not associated with a single gateway and that payloads may be received by multiple gateways within range.",
+            "level": "lab 5"
+      },
+      {
+            "q": "How is a downlink ultimately delivered to a LoRaWAN node in this architecture?",
+            "options": [
+                  "The gateway immediately sends it over USB serial",
+                  "The application server sends it directly over Wi-Fi to the node",
+                  "The network server queues it and sends it via a gateway when the node next sends an uplink",
+                  "The node polls the TTN website every second"
+            ],
+            "correct": 2,
+            "why": "The README explains that downlinks are queued by the network server and then sent through a gateway when the device next opens the proper receive opportunity after an uplink.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which of the following is listed as a common use of downlink traffic?",
+            "options": [
+                  "Installing the Arduino IDE",
+                  "Changing the gateway's root password",
+                  "Updating node broadcast settings or triggering an action on the node",
+                  "Flashing the bootloader"
+            ],
+            "correct": 2,
+            "why": "The README gives examples such as updating a device's broadcast settings or triggering some other action via downlink.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What is the warning about the gateway's LoRa antenna?",
+            "options": [
+                  "It should be removed before powering on for better calibration",
+                  "It should only be attached after TTN registration",
+                  "The gateway should not be powered with the LoRa antenna port left open",
+                  "The antenna is optional in AP mode"
+            ],
+            "correct": 2,
+            "why": "The README explicitly warns not to power the gateway if the LoRa antenna port has been left open.",
+            "level": "lab 5"
+      },
+      {
+            "q": "In the gateway's default Wi-Fi AP mode, what SSID pattern is expected?",
+            "options": [
+                  "TTN_Gateway_XXXX",
+                  "RAK7268_XXXX",
+                  "WisGate_AP_915",
+                  "LoRaWAN_Lab_XXXX"
+            ],
+            "correct": 1,
+            "why": "The gateway access section says the gateway works in Wi-Fi AP mode by default and broadcasts an SSID named `RAK7268_XXXX`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What is the default browser address for the gateway in Wi-Fi AP mode?",
+            "options": [
+                  "192.168.1.1",
+                  "10.0.0.1",
+                  "192.168.230.1",
+                  "169.254.15.1"
+            ],
+            "correct": 2,
+            "why": "The README lists `192.168.230.1` as the browser address in AP mode.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which login credentials are given for the gateway Web UI in AP mode?",
+            "options": [
+                  "admin / admin",
+                  "root / admin12345678!",
+                  "root / password",
+                  "ttn / ttn"
+            ],
+            "correct": 1,
+            "why": "The README lists username `root` and password `admin12345678!` for the gateway web interface.",
+            "level": "lab 5"
+      },
+      {
+            "q": "When configuring the gateway for TTN, which work mode should be selected?",
+            "options": [
+                  "Bridge mode",
+                  "Repeater mode",
+                  "Packet forwarder",
+                  "Promiscuous mode"
+            ],
+            "correct": 2,
+            "why": "The README instructs users to select work mode as `Packet forwarder`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What server URL is specified for the gateway's TTN packet forwarder configuration?",
+            "options": [
+                  "sg1.cloud.thethings.network",
+                  "eu1.cloud.thethings.network",
+                  "au1.cloud.thethings.network",
+                  "mqtt.thethings.network"
+            ],
+            "correct": 2,
+            "why": "The gateway setup section explicitly says to enter `au1.cloud.thethings.network`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which TTN cluster is selected in the walkthrough?",
+            "options": [
+                  "eu1",
+                  "nam1",
+                  "au1",
+                  "as1"
+            ],
+            "correct": 2,
+            "why": "The TTN console instructions say to select `au1` for the region.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which frequency plan does the README specify for the gateway/device registration steps?",
+            "options": [
+                  "EU_863_870",
+                  "US_902_928_FSB_1",
+                  "AU_915_928_FSB_2",
+                  "AS_923"
+            ],
+            "correct": 2,
+            "why": "The README explicitly names `AU_915_928_FSB_2` / `Australia 915-928 MHz, FSB 2` during gateway and end-device setup.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which activation mode is used for the end device in the TTN registration steps?",
+            "options": [
+                  "ABP",
+                  "OTAA",
+                  "Class C multicast",
+                  "Passive scan"
+            ],
+            "correct": 1,
+            "why": "The end-device registration section specifies Over The Air Activation (OTAA).",
+            "level": "lab 5"
+      },
+      {
+            "q": "What LoRaWAN class capability is selected in the TTN registration steps?",
+            "options": [
+                  "Class C only",
+                  "Class B only",
+                  "None (Class A only)",
+                  "Class D"
+            ],
+            "correct": 2,
+            "why": "The README says `Additional LoRaWAN class capabilities: None (Class A only)`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which Arduino library does the README tell you to install for the end device sketch?",
+            "options": [
+                  "RadioHead",
+                  "PubSubClient",
+                  "MCCI LoRaWAN LMIC",
+                  "ArduinoJson"
+            ],
+            "correct": 2,
+            "why": "The library installation section tells students to install the MCCI LoRaWAN LMIC library.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which configuration change is required in `lmic_project_config.h` according to the README?",
+            "options": [
+                  "Comment `#define CFG_au915 1` and uncomment `#define CFG_us915 1`",
+                  "Comment `#define CFG_us915 1` and uncomment `#define CFG_au915 1`",
+                  "Enable both `CFG_us915` and `CFG_au915` together",
+                  "No region change is required"
+            ],
+            "correct": 1,
+            "why": "The README instructs users to change the LMIC project config from US915 to AU915 by commenting out `CFG_us915` and enabling `CFG_au915`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "How should DevEUI and AppEUI/JoinEUI bytes be arranged in the Arduino sketch?",
+            "options": [
+                  "Big-endian only",
+                  "ASCII string format",
+                  "Little-endian / reversed byte order",
+                  "Base64"
+            ],
+            "correct": 2,
+            "why": "Both the README and the sketch comments state that the EUI arrays must be in little-endian format, meaning reversed byte order when copied from TTN output.",
+            "level": "lab 5"
+      },
+      {
+            "q": "How should the AppKey be arranged in the sketch?",
+            "options": [
+                  "Little-endian / reversed",
+                  "Big-endian / copied as-is",
+                  "As a plain text string",
+                  "As decimal values separated by commas"
+            ],
+            "correct": 1,
+            "why": "The sketch comments say the AppKey should be in big-endian format and is typically copied as-is.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What payload does the committed sketch send by default?",
+            "options": [
+                  "\"status=ok\"",
+                  "\"Hello, world!\"",
+                  "\"uplink\"",
+                  "\"temperature=25\""
+            ],
+            "correct": 1,
+            "why": "The sketch defines `static uint8_t mydata[] = \"Hello, world!\";`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What transmit interval is configured in the sketch?",
+            "options": [
+                  "10 seconds",
+                  "30 seconds",
+                  "60 seconds",
+                  "120 seconds"
+            ],
+            "correct": 2,
+            "why": "The sketch sets `const unsigned TX_INTERVAL = 60;`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which radio library headers are included by the committed sketch?",
+            "options": [
+                  "`<WiFi.h>`, `<HTTPClient.h>`, `<SPI.h>`",
+                  "`<lmic.h>`, `<hal/hal.h>`, `<SPI.h>`",
+                  "`<RH_RF95.h>`, `<Wire.h>`, `<SPI.h>`",
+                  "`<LoRa.h>`, `<EEPROM.h>`, `<SPI.h>`"
+            ],
+            "correct": 1,
+            "why": "The top of the sketch includes `lmic.h`, `hal/hal.h`, and `SPI.h`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which pin is used for `nss` in the committed LMIC pin map?",
+            "options": [
+                  "2",
+                  "5",
+                  "7",
+                  "10"
+            ],
+            "correct": 3,
+            "why": "The `lmic_pins` structure sets `.nss = 10`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which pin is used for the radio reset line (`rst`) in the committed pin map?",
+            "options": [
+                  "7",
+                  "8",
+                  "9",
+                  "10"
+            ],
+            "correct": 0,
+            "why": "The sketch sets `.rst = 7` in `lmic_pins`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What `dio` pin mapping is used in the sketch?",
+            "options": [
+                  "`{2, 5, 6}`",
+                  "`{3, 4, 5}`",
+                  "`{10, 11, 12}`",
+                  "`{A0, A1, A2}`"
+            ],
+            "correct": 0,
+            "why": "The sketch sets `.dio = {2, 5, 6}`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What is `rxtx` set to in the sketch's LMIC pin map?",
+            "options": [
+                  "`0`",
+                  "`7`",
+                  "`LMIC_UNUSED_PIN`",
+                  "`A0`"
+            ],
+            "correct": 2,
+            "why": "The committed pin map uses `.rxtx = LMIC_UNUSED_PIN`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What does `printHex2()` do?",
+            "options": [
+                  "Prints decimal values with two digits",
+                  "Prints a byte in hex and pads values below 16 with a leading zero",
+                  "Converts ASCII to hexadecimal",
+                  "Encrypts the AppKey"
+            ],
+            "correct": 1,
+            "why": "The helper masks to one byte and prints a leading `0` if the value is below `0x10`, then prints the value in hexadecimal.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What does the sketch do in `setup()` after calling `LMIC_reset()`?",
+            "options": [
+                  "Starts a BLE scan",
+                  "Connects to Wi-Fi",
+                  "Calls `do_send(&sendjob)` to start the first transmission / OTAA flow",
+                  "Waits 60 seconds before doing anything"
+            ],
+            "correct": 2,
+            "why": "After `os_init()` and `LMIC_reset()`, the sketch calls `do_send(&sendjob);`, and the comment notes that sending automatically starts OTAA too.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What is the main job of `loop()` in the committed sketch?",
+            "options": [
+                  "Toggle an LED every second",
+                  "Serve HTTP requests",
+                  "Run one LMIC event-loop iteration with `os_runloop_once()`",
+                  "Read a sensor over I2C"
+            ],
+            "correct": 2,
+            "why": "The entire `loop()` function is just `os_runloop_once();`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What does `do_send()` check before queueing a packet?",
+            "options": [
+                  "Whether Wi-Fi is connected",
+                  "Whether there is already a TX/RX job in progress",
+                  "Whether the gateway password is correct",
+                  "Whether the payload formatter is JavaScript"
+            ],
+            "correct": 1,
+            "why": "The function checks `LMIC.opmode & OP_TXRXPEND` and avoids queueing a new packet while another TX/RX job is active.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which call queues the uplink payload in the sketch?",
+            "options": [
+                  "`LMIC_sendNow(mydata)`",
+                  "`LMIC_transmit(mydata)`",
+                  "`LMIC_setTxData2(1, mydata, sizeof(mydata)-1, 0)`",
+                  "`radio.send(mydata)`"
+            ],
+            "correct": 2,
+            "why": "The sketch uses `LMIC_setTxData2(1, mydata, sizeof(mydata)-1, 0)` to queue the uplink.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What does the final `0` argument in `LMIC_setTxData2(1, mydata, sizeof(mydata)-1, 0)` indicate?",
+            "options": [
+                  "Use confirmed uplink",
+                  "Use port 0",
+                  "Use unconfirmed uplink",
+                  "Use spreading factor 0"
+            ],
+            "correct": 2,
+            "why": "In the standard LMIC example pattern, the last argument `0` means the uplink is unconfirmed.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which FPort is used by the committed sketch for the uplink?",
+            "options": [
+                  "0",
+                  "1",
+                  "2",
+                  "10"
+            ],
+            "correct": 1,
+            "why": "The first argument to `LMIC_setTxData2` is `1`, so the uplink uses port 1.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What happens when the `EV_JOINED` event is received?",
+            "options": [
+                  "The sketch erases the session keys",
+                  "The sketch prints session information and disables link check mode",
+                  "The sketch immediately powers off",
+                  "The sketch switches to BLE advertising"
+            ],
+            "correct": 1,
+            "why": "On `EV_JOINED`, the sketch prints `netid`, `devaddr`, `AppSKey`, and `NwkSKey`, then calls `LMIC_setLinkCheckMode(0)`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Why does the sketch disable link check mode after join?",
+            "options": [
+                  "To reduce serial output only",
+                  "Because the example comment says slow data rates change max TX size and link check is not used here",
+                  "Because AU915 forbids link checks",
+                  "To switch from OTAA to ABP"
+            ],
+            "correct": 1,
+            "why": "The sketch comment says link check is automatically enabled during join, but the example disables it because slow data rates change max TX size and the feature is not used in this example.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What does the sketch do on `EV_TXCOMPLETE`?",
+            "options": [
+                  "It resets the board",
+                  "It schedules the next transmission after `TX_INTERVAL`",
+                  "It immediately joins TTN again",
+                  "It changes the payload to a random string"
+            ],
+            "correct": 1,
+            "why": "On `EV_TXCOMPLETE`, the code schedules the next send with `os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "How does the sketch detect that an acknowledgement was received?",
+            "options": [
+                  "By checking `LMIC.dataLen > 0`",
+                  "By checking `LMIC.txrxFlags & TXRX_ACK`",
+                  "By checking whether `netid != 0`",
+                  "By checking whether `Serial.available()` is true"
+            ],
+            "correct": 1,
+            "why": "The `EV_TXCOMPLETE` handler checks `LMIC.txrxFlags & TXRX_ACK` and prints `Received ack` if true.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What does the sketch print if a downlink payload was received during the RX windows?",
+            "options": [
+                  "The full payload text directly",
+                  "Only the number of payload bytes received",
+                  "Nothing at all",
+                  "The gateway MAC address"
+            ],
+            "correct": 1,
+            "why": "The example prints `Received X bytes of payload` using `LMIC.dataLen`, but it does not decode and print the payload contents.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which event intentionally avoids printing because it would interfere with timing?",
+            "options": [
+                  "EV_JOINING",
+                  "EV_TXSTART",
+                  "EV_RXSTART",
+                  "EV_RESET"
+            ],
+            "correct": 2,
+            "why": "The sketch comment in `EV_RXSTART` says not to print anything because it wrecks timing.",
+            "level": "lab 5"
+      },
+      {
+            "q": "At what serial baud rate does the sketch start?",
+            "options": [
+                  "4800",
+                  "9600",
+                  "115200",
+                  "230400"
+            ],
+            "correct": 1,
+            "why": "The sketch calls `Serial.begin(9600);` in `setup()`.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which statement best describes the credentials already present in the committed sketch?",
+            "options": [
+                  "The sketch contains no OTAA values at all",
+                  "The sketch still uses `FILLMEIN` placeholders for all OTAA fields",
+                  "The sketch already contains fixed OTAA arrays, so students still need to replace them with their own TTN values",
+                  "The sketch uses ABP session keys only"
+            ],
+            "correct": 2,
+            "why": "Although the original LMIC example includes a `FILLMEIN` warning macro, this committed sketch already has concrete APPEUI/DEVEUI/APPKEY arrays. For actual use, those values still need to match the student's own registered TTN end device.",
+            "level": "lab 5"
+      },
+      {
+            "q": "The README says compilation should produce what outcome for `ttn_otaa_helloworld`?",
+            "options": [
+                  "No errors and no warnings at all",
+                  "Errors are expected until BLE is disabled",
+                  "No errors, but warnings may appear",
+                  "Only linker errors are expected"
+            ],
+            "correct": 2,
+            "why": "The README says you should not see errors, but there are warnings.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which payload formatter type does the README suggest for making uplink data readable in TTN?",
+            "options": [
+                  "CBOR",
+                  "Python",
+                  "JavaScript",
+                  "XML"
+            ],
+            "correct": 2,
+            "why": "The TTN display-data section instructs users to choose `Formatter type: Javascript` for uplink payload formatting.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which statement is accurate about the repo sketch versus the README's AU915 setup guidance?",
+            "options": [
+                  "The sketch explicitly calls an AU915 FSB2 sub-band selection API",
+                  "The README requires `CFG_au915` and FSB2 setup, while the sketch itself does not visibly show an explicit AU915 sub-band selection call",
+                  "The sketch forces EU868 regardless of library configuration",
+                  "The README and sketch both hard-code AS923"
+            ],
+            "correct": 1,
+            "why": "The README clearly instructs AU915 and FSB2-related setup. The committed sketch is the generic LMIC OTAA example with fixed OTAA arrays and pin map, and it does not visibly show an explicit AU915 sub-band selection call inside the sketch file itself. That difference is worth noticing when troubleshooting.",
+            "level": "lab 5"
+      },
+      {
+            "q": "If a student asks what likely needs to be customized before the repo sketch will work for their own lab device, which answer is best?",
+            "options": [
+                  "Only the `Hello, world!` payload",
+                  "Only the serial baud rate",
+                  "Their TTN registration values, region/library configuration, and any board-specific radio pin or channel settings",
+                  "Nothing; the committed sketch should work unchanged for every student"
+            ],
+            "correct": 2,
+            "why": "The README and sketch together imply several device-specific items: TTN credentials/registration values, the AU915 LMIC configuration, and any board-specific radio settings or channel/sub-band details.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which statement is most accurate about the sketch's networking model?",
+            "options": [
+                  "It uses direct LoRa peer-to-peer packets only",
+                  "It uses LoRaWAN OTAA through a gateway and TTN rather than direct device-to-device messaging",
+                  "It uses MQTT over Wi-Fi from the UNO",
+                  "It exposes a local HTTP server over Ethernet"
+            ],
+            "correct": 1,
+            "why": "The lab is explicitly about LoRaWAN using an end device, gateway, and TTN network/application server, not direct peer-to-peer LoRa packets.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What is the safest reading of the committed `APPEUI` array being all zeros?",
+            "options": [
+                  "All LoRaWAN applications must permanently use zeros here",
+                  "The repo example shows zeros in the committed sketch, but students should still follow TTN registration values and lab instructions for their own device",
+                  "It means the sketch is using ABP instead of OTAA",
+                  "It disables the gateway login password"
+            ],
+            "correct": 1,
+            "why": "The committed sketch shows an all-zero `APPEUI`, but the README's registration/setup flow makes clear that students must use the right TTN registration values for their own device and configuration.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which serial output indicates that the node has successfully completed OTAA join?",
+            "options": [
+                  "\"EV_RXSTART\"",
+                  "\"EV_TXSTART\"",
+                  "\"EV_JOINED\"",
+                  "\"Packet queued\""
+            ],
+            "correct": 2,
+            "why": "The `EV_JOINED` event indicates successful join acceptance and session establishment.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What data does the sketch print right after a successful join besides the event name?",
+            "options": [
+                  "Wi-Fi SSID and password",
+                  "netid, devaddr, AppSKey, and NwkSKey",
+                  "GPS latitude and longitude",
+                  "The full TTN web console URL"
+            ],
+            "correct": 1,
+            "why": "In the `EV_JOINED` block, the sketch prints the network ID, device address, application session key, and network session key.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Which of the following best describes why this lab is different from Lab 4?",
+            "options": [
+                  "Lab 5 replaces radio with BLE GATT services",
+                  "Lab 5 uses LoRaWAN infrastructure components such as gateway and TTN, not just simple direct LoRa sender/receiver sketches",
+                  "Lab 5 stops using Arduino entirely",
+                  "Lab 5 is a web development lab"
+            ],
+            "correct": 1,
+            "why": "Lab 5 is about LoRaWAN infrastructure and managed network flow through TTN, whereas a direct LoRa lab focuses on peer-to-peer radio exchange without a LoRaWAN network server.",
+            "level": "lab 5"
+      }
+];
+    // --- Quiz Logic (DO NOT MODIFY) ---
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const percentEl = document.getElementById('percent');
+    const resetBtn = document.getElementById('resetBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    let state = { score: 0, answered: 0 };
+    let currentQuestions = [];
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map(q => (({
+        q: q.q,
+        options: shuffle(q.options.map((txt, i) => ({ txt, isCorrect: i === q.correct }))),
+        correct: 0,
+        why: q.why,
+        __answered: false
+      }))).map(item => {
+        item.correct = item.options.findIndex(o => o.isCorrect);
+        item.options = item.options.map(o => o.txt);
+        return item;
+      });
+    }
+    function render() {
+      quizEl.innerHTML = '';
+      currentQuestions.forEach((item, qi) => {
+        const card = document.createElement('div');
+        card.className = 'qcard';
+        const head = document.createElement('div');
+        head.className = 'qhead';
+        const titleEl = document.createElement('p');
+        titleEl.className = 'qtitle';
+        titleEl.innerHTML = `${qi + 1}. ${item.q}`;
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = `Q${qi + 1}`;
+        head.appendChild(titleEl);
+        head.appendChild(badge);
+        card.appendChild(head);
+        const opts = document.createElement('div');
+        opts.className = 'opts';
+        item.options.forEach((opt, oi) => {
+          const row = document.createElement('div');
+          row.className = 'opt';
+          row.setAttribute('data-q', qi);
+          row.setAttribute('data-o', oi);
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = String.fromCharCode(65 + oi);
+          const span = document.createElement('span');
+          span.innerHTML = opt;
+          row.appendChild(letter);
+          row.appendChild(span);
+          row.addEventListener('click', onChoose);
+          opts.appendChild(row);
+        });
+        const exp = document.createElement('div');
+        exp.className = 'exp';
+        exp.hidden = true;
+        exp.innerHTML = `<strong>Explanation:</strong> ${item.why}`;
+        card.appendChild(opts);
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+    function onChoose(e) {
+      const btn = e.currentTarget;
+      const qIndex = +btn.getAttribute('data-q');
+      const oIndex = +btn.getAttribute('data-o');
+      const card = btn.closest('.qcard');
+      const exp = card.querySelector('.exp');
+      const data = currentQuestions[qIndex];
+      if (data.__answered) return;
+      const options = card.querySelectorAll('.opt');
+      options.forEach(b => b.classList.add('disabled'));
+      data.__answered = true;
+      state.answered++;
+      if (oIndex === data.correct) {
+        btn.classList.add('correct');
+        state.score++;
+      } else {
+        btn.classList.add('wrong');
+        options[data.correct].classList.add('correct');
+      }
+      exp.hidden = false;
+      updateStats();
+    }
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score/currentQuestions.length)*100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+    function revealAll() {
+      document.querySelectorAll('.qcard').forEach((card, qi) => {
+        const data = currentQuestions[qi];
+        const exp = card.querySelector('.exp');
+        const options = card.querySelectorAll('.opt');
+        options.forEach((b, oi) => {
+          b.classList.remove('wrong');
+          if (oi === data.correct) b.classList.add('correct');
+          b.classList.add('disabled');
+        });
+        data.__answered = true;
+        exp.hidden = false;
+      });
+    }
+    function resetQuiz() {
+      state.score = 0; state.answered = 0;
+      render();
+    }
+    function shuffleQuiz() {
+      state.score = 0; state.answered = 0;
+      currentQuestions = buildQuestions();
+      render();
+    }
+    resetBtn.addEventListener('click', resetQuiz);
+    revealBtn.addEventListener('click', revealAll);
+    shuffleBtn.addEventListener('click', shuffleQuiz);
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 – Lab 2 MCQ Quiz: MQTT Pico W MicroPython</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8;
+    color:#111827; }
+    header { background: white; border-bottom: 1px solid #e5e7eb; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid #e5e7eb; background:white;
+    padding:8px 12px; border-radius:10px; font-weight:600; }
+    button.primary { background: var(--accent); color: white; border-color:
+    var(--accent); }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; flex-wrap: wrap; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px
+    10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid #e5e7eb; border-radius:14px;
+    padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:baseline;
+    gap:6px }
+    .qtitle { font-weight:700; margin:0 0 8px }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px
+    solid #e5e7eb; padding:2px 8px; border-radius:999px }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px;
+    border:1px solid #e5e7eb; border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.correct { border-color:#16a34a; background:#f0fdf4; }
+    .opt.wrong { border-color:#dc2626; background:#fef2f2; }
+    .opt.disabled { pointer-events:none; opacity:.8 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px
+    solid #e5e7eb; display:grid; place-items:center; font-weight:700; flex: 0 0 28px; }
+    .exp { margin-top:10px; border-top:1px dashed #e5e7eb; padding-top:10px;
+    color:#111827; }
+    .exp strong { color:#065f46 }
+    pre.code-block {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      margin: 12px 0;
+    }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+    details > summary { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 – Lab 2 MCQ Quiz: MQTT Pico W MicroPython</h1>
+      <div class="sub">CSC2106 – Internet of Things: Protocols and Networks • Lab 2</div>
+      <div class="stats" id="stats">
+        <span class="pill" id="score">Score: 0</span>
+        <span class="pill" id="progress">Answered: 0 / 0</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" title="Reset the quiz to try again">Reset quiz</button>
+        <button id="revealBtn" title="Reveal correct answers for all questions">Reveal all answers</button>
+        <button id="shuffleBtn" title="Shuffle questions and answer options">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Based on the Lab 2 repository and uploaded lab solution. This educational quiz is for practice.
+  </footer>
+  <script>
+    const QUESTIONS = [
+  {
+    "q": "What communication model does MQTT use in this lab?",
+    "options": [
+      "Publish/subscribe using topics",
+      "Request/response using REST endpoints only",
+      "Peer-to-peer raw sockets without a broker",
+      "Polling over HTTP long-polling"
+    ],
+    "correct": 0,
+    "why": "The repo README describes MQTT as a lightweight messaging protocol built around a publish/subscribe model using topics."
+  },
+  {
+    "q": "What is the role of the MQTT broker?",
+    "options": [
+      "It routes messages between clients",
+      "It reads button GPIO pins directly",
+      "It toggles the Pico LED without subscriptions",
+      "It replaces Wi-Fi and provides the WLAN interface"
+    ],
+    "correct": 0,
+    "why": "The README defines the broker as the component that routes messages between clients."
+  },
+  {
+    "q": "Which Mosquitto port is used in the lab setup?",
+    "options": [
+      "1883",
+      "80",
+      "443",
+      "8080"
+    ],
+    "correct": 0,
+    "why": "The README shows mosquitto configured with listener 1883, which is the default MQTT port in the lab."
+  },
+  {
+    "q": "Which line in the sample broker configuration allows unauthenticated access for the lab?",
+    "options": [
+      "allow_anonymous true",
+      "listener 80",
+      "retain_messages false",
+      "qos 1"
+    ],
+    "correct": 0,
+    "why": "The README shows a minimal mosquitto.conf containing 'listener 1883' and 'allow_anonymous true'."
+  },
+  {
+    "q": "Which MicroPython library is used for MQTT communication on the Pico W in this lab?",
+    "options": [
+      "umqtt.simple",
+      "urequests",
+      "machine.net",
+      "socketserver"
+    ],
+    "correct": 0,
+    "why": "The README explicitly states that the Pico W uses umqtt.simple for MQTT communication."
+  },
+  {
+    "q": "Where should the MQTT library file be placed on the Pico W according to the repo instructions?",
+    "options": [
+      "lib/umqtt/simple.py",
+      "boot/simple.py",
+      "src/mqtt.py",
+      "config/mosquitto/simple.py"
+    ],
+    "correct": 0,
+    "why": "The setup steps say to create a lib folder, then umqtt inside it, and upload simple.py there."
+  },
+  {
+    "q": "What does QoS 1 mean in the lab notes?",
+    "options": [
+      "At least once delivery with broker acknowledgement required",
+      "At most once delivery with no acknowledgement",
+      "Exactly once delivery and it is the heaviest mode used everywhere",
+      "Only retained messages can be sent"
+    ],
+    "correct": 0,
+    "why": "The README states QoS 1 is 'at least once' and requires ACK."
+  },
+  {
+    "q": "What does QoS 0 mean?",
+    "options": [
+      "Fire and forget",
+      "Exactly once",
+      "Retained forever",
+      "Encrypted only"
+    ],
+    "correct": 0,
+    "why": "The README lists QoS 0 as fire and forget."
+  },
+  {
+    "q": "Why does the README say QoS 2 is not used here?",
+    "options": [
+      "It is heavier and unnecessary for this lab",
+      "Pico W does not support subscriptions",
+      "Mosquitto blocks QoS 2 on port 1883",
+      "QoS 2 only works over HTTP"
+    ],
+    "correct": 0,
+    "why": "The README describes QoS 2 as exactly once and heavy, and says it is not used here."
+  },
+  {
+    "q": "What is Last Will and Testament (LWT) in MQTT?",
+    "options": [
+      "A message the broker publishes if a client disconnects unexpectedly",
+      "A message sent only when a button is pressed",
+      "The first retained message after boot",
+      "The Wi-Fi password sent to the broker"
+    ],
+    "correct": 0,
+    "why": "The README defines LWT as a message published by the broker on behalf of a client after unexpected disconnect."
+  },
+  {
+    "q": "What is a retained message in MQTT?",
+    "options": [
+      "A message stored by the broker and immediately sent to new subscribers",
+      "A message that can never be overwritten",
+      "A message that bypasses acknowledgements",
+      "A message sent only from broker to broker"
+    ],
+    "correct": 0,
+    "why": "The README explains retained messages as stored by the broker and immediately delivered to new subscribers."
+  },
+  {
+    "q": "Which phrase best captures the difference between state topics and event topics in the repo notes?",
+    "options": [
+      "State topics are retained; event topics are not retained",
+      "Event topics are retained; state topics are deleted",
+      "Both should always be retained",
+      "Neither should use QoS"
+    ],
+    "correct": 0,
+    "why": "The README explicitly says status/state topics are retained while event topics such as cmd, ack, and hello are not."
+  },
+  {
+    "q": "According to the repo README, what is Pico A’s primary role?",
+    "options": [
+      "Command publisher driven by button presses",
+      "Always-on LED consumer only",
+      "Wi-Fi access point for other devices",
+      "HTTP REST server"
+    ],
+    "correct": 0,
+    "why": "The README describes Pico A as an event-driven command publisher."
+  },
+  {
+    "q": "According to the repo README, what is Pico B’s primary role?",
+    "options": [
+      "Command consumer plus actuator controller",
+      "Only a broker monitor",
+      "Only a temperature sensor publisher",
+      "A DHCP server"
+    ],
+    "correct": 0,
+    "why": "The README describes Pico B as a command consumer + actuator."
+  },
+  {
+    "q": "Which topic does the README say Pico B subscribes to in the example architecture?",
+    "options": [
+      "csc2106/led/cmd",
+      "csc2106/devB/status",
+      "csc2106/led/ack",
+      "csc2106/nodeB/led/cmd"
+    ],
+    "correct": 0,
+    "why": "In the README’s example roles, Pico B subscribes to csc2106/led/cmd."
+  },
+  {
+    "q": "Which topic does the README say Pico B publishes acknowledgements to?",
+    "options": [
+      "csc2106/led/ack",
+      "csc2106/led/cmd",
+      "csc2106/devA/status",
+      "csc2106/nodeA/led/cmd"
+    ],
+    "correct": 0,
+    "why": "The README lists csc2106/led/ack as the ACK topic for Pico B."
+  },
+  {
+    "q": "In the uploaded Lab 2 solution, which module provides the MQTTClient class?",
+    "options": [
+      "umqtt.simple",
+      "network",
+      "machine",
+      "socket"
+    ],
+    "correct": 0,
+    "why": "The uploaded solution imports MQTTClient from umqtt.simple."
+  },
+  {
+    "q": "What is the purpose of NODE_ID in the uploaded solution?",
+    "options": [
+      "It decides whether the same program behaves as NodeA or NodeB",
+      "It stores the Wi-Fi SSID",
+      "It sets the MQTT broker port",
+      "It enables JSON encoding"
+    ],
+    "correct": 0,
+    "why": "The code uses NODE_ID to switch topic names and client IDs so one program can be used for either node."
+  },
+  {
+    "q": "If NODE_ID is set to b\"NodeA\", which MQTT command topic does the device subscribe to in the uploaded solution?",
+    "options": [
+      "csc2106/nodeA/led/cmd",
+      "csc2106/nodeB/led/cmd",
+      "csc2106/devA/status",
+      "csc2106/led/ack"
+    ],
+    "correct": 0,
+    "why": "For NodeA, MY_CMD_TOPIC is set to csc2106/nodeA/led/cmd and that is the subscribed topic."
+  },
+  {
+    "q": "If NODE_ID is set to b\"NodeA\", where does the button publish the TOGGLE command?",
+    "options": [
+      "csc2106/nodeB/led/cmd",
+      "csc2106/nodeA/led/cmd",
+      "csc2106/devA/status",
+      "csc2106/devB/status"
+    ],
+    "correct": 0,
+    "why": "For NodeA, OTHER_CMD_TOPIC is csc2106/nodeB/led/cmd, so button presses send TOGGLE there."
+  },
+  {
+    "q": "If NODE_ID is set to b\"NodeB\", which status topic is used in the uploaded solution?",
+    "options": [
+      "csc2106/devB/status",
+      "csc2106/devA/status",
+      "csc2106/nodeB/status",
+      "csc2106/led/status"
+    ],
+    "correct": 0,
+    "why": "The code maps NodeB to STATUS_TOPIC = b'csc2106/devB/status'."
+  },
+  {
+    "q": "What GPIO pin is used for the button in the uploaded solution?",
+    "options": [
+      "GP21",
+      "GP20",
+      "GP22",
+      "GP18"
+    ],
+    "correct": 0,
+    "why": "BUTTON_PIN is set to 21 in the uploaded file."
+  },
+  {
+    "q": "What GPIO pin is used for the LED in the uploaded solution?",
+    "options": [
+      "GP20",
+      "GP21",
+      "GP22",
+      "GP25"
+    ],
+    "correct": 0,
+    "why": "LED_PIN is set to 20 in the uploaded file."
+  },
+  {
+    "q": "Why is the button initialized with Pin.PULL_UP in the uploaded solution?",
+    "options": [
+      "So the input reads high normally and goes low when pressed to ground",
+      "So the button automatically debounces in hardware",
+      "So the button can publish without Wi-Fi",
+      "So the LED turns on by default"
+    ],
+    "correct": 0,
+    "why": "With Pin.PULL_UP, the button is normally 1 and becomes 0 when pressed to GND, which matches the active-low logic in the loop."
+  },
+  {
+    "q": "What does the condition 'if current_button == 0' mean in the main loop?",
+    "options": [
+      "The button is pressed because the input is active low",
+      "The Wi-Fi connection failed",
+      "The LED should be forced off",
+      "The broker sent an offline message"
+    ],
+    "correct": 0,
+    "why": "The comment in the code says 'Button pressed (active low)' when current_button == 0."
+  },
+  {
+    "q": "Why does the code store last_button and compare it with current_button?",
+    "options": [
+      "To detect button state changes instead of publishing continuously every loop",
+      "To count MQTT acknowledgements",
+      "To calculate keepalive timeout",
+      "To remember the last Wi-Fi password"
+    ],
+    "correct": 0,
+    "why": "The code uses edge detection so a publish occurs when the button changes state rather than on every iteration."
+  },
+  {
+    "q": "What does the on_msg callback do when it receives b\"TOGGLE\" on MY_CMD_TOPIC?",
+    "options": [
+      "It flips the LED state and prints whether it is ON or OFF",
+      "It publishes another TOGGLE back immediately",
+      "It disconnects from Wi-Fi",
+      "It changes NODE_ID from A to B"
+    ],
+    "correct": 0,
+    "why": "The callback toggles led.value() and prints the new LED state."
+  },
+  {
+    "q": "Which MQTT method is used inside the main loop to process incoming messages without blocking for long periods?",
+    "options": [
+      "check_msg()",
+      "recv_msg()",
+      "listen()",
+      "loop_forever()"
+    ],
+    "correct": 0,
+    "why": "The main loop calls client.check_msg() to check for incoming MQTT messages."
+  },
+  {
+    "q": "What keepalive value is passed when the MQTT client is created in the uploaded solution?",
+    "options": [
+      "30 seconds",
+      "10 seconds",
+      "60 seconds",
+      "120 seconds"
+    ],
+    "correct": 0,
+    "why": "make_client() constructs MQTTClient(CLIENT_ID, BROKER, keepalive=30)."
+  },
+  {
+    "q": "Why is set_last_will called before connect() in make_client()?",
+    "options": [
+      "So the broker already knows what offline message to publish if the client dies unexpectedly",
+      "So the LED pin can be initialized",
+      "So QoS is upgraded to 2",
+      "So Wi-Fi credentials are saved in flash"
+    ],
+    "correct": 0,
+    "why": "The last will must be registered before the MQTT session is established, so the broker can publish it on unexpected disconnect."
+  },
+  {
+    "q": "What is the retained online status message published after a successful connection?",
+    "options": [
+      "b\"online\"",
+      "b\"ready\"",
+      "b\"connected\"",
+      "b\"hello\""
+    ],
+    "correct": 0,
+    "why": "make_client() publishes STATUS_TOPIC with payload b'online', retain=True, qos=1."
+  },
+  {
+    "q": "What payload is configured as the Last Will in the uploaded solution?",
+    "options": [
+      "b\"offline\"",
+      "b\"TOGGLE\"",
+      "b\"hello\"",
+      "b\"error\""
+    ],
+    "correct": 0,
+    "why": "set_last_will uses the status topic with payload b'offline', retained and QoS 1."
+  },
+  {
+    "q": "Why is retain=True used for the status topic?",
+    "options": [
+      "So a new subscriber can immediately see the node’s last known online/offline state",
+      "So TOGGLE commands are replayed forever",
+      "So the LED state is stored in RAM only",
+      "So the broker ignores disconnects"
+    ],
+    "correct": 0,
+    "why": "Retained status messages let monitoring clients learn the last known state immediately after they subscribe."
+  },
+  {
+    "q": "Why would using retain=True on a TOGGLE command topic usually be a bad idea?",
+    "options": [
+      "Because old event commands could be replayed to new subscribers unexpectedly",
+      "Because retain only works with QoS 2",
+      "Because retained messages cannot contain text",
+      "Because the broker would stop acknowledging publishes"
+    ],
+    "correct": 0,
+    "why": "The README distinguishes state from events: commands are event messages and should generally not be retained."
+  },
+  {
+    "q": "What QoS level is used for publish and subscribe operations in the uploaded solution?",
+    "options": [
+      "QoS 1",
+      "QoS 0",
+      "QoS 2",
+      "No QoS is specified anywhere"
+    ],
+    "correct": 0,
+    "why": "The code subscribes with qos=1 and publishes status and TOGGLE commands with qos=1."
+  },
+  {
+    "q": "Why is QoS 1 a reasonable choice for the button-triggered TOGGLE command in this lab?",
+    "options": [
+      "Because losing a button event would be undesirable, so broker acknowledgement helps reliability",
+      "Because QoS 1 is required for Wi-Fi to connect",
+      "Because it guarantees exactly-once delivery",
+      "Because retained messages only work with QoS 1"
+    ],
+    "correct": 0,
+    "why": "The repo notes specifically justify QoS 1 for important events where losing a command is unacceptable."
+  },
+  {
+    "q": "What does wifi_connect() do before calling wlan.connect()?",
+    "options": [
+      "It activates the station interface with WLAN(STA_IF) and wlan.active(True)",
+      "It starts an access point and waits for clients",
+      "It creates a TCP socket to the broker",
+      "It subscribes to MQTT topics"
+    ],
+    "correct": 0,
+    "why": "wifi_connect() uses network.WLAN(network.STA_IF), activates it, then calls connect()."
+  },
+  {
+    "q": "How does wifi_connect() know the Pico W is connected?",
+    "options": [
+      "It loops until wlan.isconnected() becomes True",
+      "It waits for an HTTP 200 response",
+      "It checks whether led.value() is 1",
+      "It requires a retained MQTT status first"
+    ],
+    "correct": 0,
+    "why": "The function repeatedly sleeps until wlan.isconnected() returns True."
+  },
+  {
+    "q": "What does print(\"WiFi:\", wlan.ifconfig()) show after a successful Wi-Fi connection?",
+    "options": [
+      "The network interface configuration such as IP information",
+      "Only the broker topic list",
+      "The LED duty cycle",
+      "The contents of simple.py"
+    ],
+    "correct": 0,
+    "why": "ifconfig() returns the interface configuration tuple, including the assigned IP address."
+  },
+  {
+    "q": "What is the purpose of publish_toggle(client) returning a client object?",
+    "options": [
+      "It allows the caller to replace the old client with a reconnected one if publish failed",
+      "It returns the topic string for printing only",
+      "It converts the button state to JSON",
+      "It returns the LED brightness level"
+    ],
+    "correct": 0,
+    "why": "If publish fails, publish_toggle() reconnects by calling make_client() and returns the new client."
+  },
+  {
+    "q": "What happens in publish_toggle() if client.publish(...) raises an exception?",
+    "options": [
+      "The code tries to disconnect the old client and build a new MQTT client",
+      "The program exits immediately with no retry",
+      "The LED is permanently turned on",
+      "NODE_ID is changed automatically"
+    ],
+    "correct": 0,
+    "why": "The exception path prints an error, tries client.disconnect(), and returns make_client()."
+  },
+  {
+    "q": "What is the purpose of the broad try/except around the while True loop in main()?",
+    "options": [
+      "To recover from MQTT errors by disconnecting, waiting briefly, and reconnecting",
+      "To suppress all button presses permanently",
+      "To force the LED off every 20 ms",
+      "To convert QoS 1 into QoS 0"
+    ],
+    "correct": 0,
+    "why": "The main loop catches exceptions, disconnects if possible, sleeps 1 second, and rebuilds the MQTT client."
+  },
+  {
+    "q": "Why is there a short time.sleep(0.02) inside the loop?",
+    "options": [
+      "To avoid a tight busy loop and reduce unnecessary CPU usage while still remaining responsive",
+      "To satisfy the MQTT QoS handshake timing requirement exactly",
+      "To debounce Wi-Fi packets only",
+      "To make retained messages expire"
+    ],
+    "correct": 0,
+    "why": "A short sleep prevents the loop from spinning too aggressively while still checking messages and button state frequently."
+  },
+  {
+    "q": "If both Pico nodes run the same uploaded program but with different NODE_ID values, what system behavior is implemented?",
+    "options": [
+      "Each node can send TOGGLE commands to the other node and also react to commands addressed to itself",
+      "Only one node can ever subscribe to MQTT",
+      "Both nodes publish to the same status topic and overwrite each other",
+      "The broker no longer needs topics"
+    ],
+    "correct": 0,
+    "why": "The symmetric topic mapping means each node subscribes to its own command topic and publishes TOGGLE to the other node’s command topic."
+  },
+  {
+    "q": "Why is CLIENT_ID different for NodeA and NodeB?",
+    "options": [
+      "MQTT clients connected to the same broker should have distinct client IDs",
+      "Different client IDs are required for Wi-Fi association",
+      "The LED pin number is encoded inside the client ID",
+      "QoS 1 only works when client IDs match the SSID"
+    ],
+    "correct": 0,
+    "why": "Using unique client IDs avoids clashes at the broker when multiple clients connect."
+  },
+  {
+    "q": "Which statement best describes the BROKER value in the uploaded solution?",
+    "options": [
+      "It is the MQTT broker’s IP address on the local network",
+      "It is the Pico W’s own loopback address",
+      "It is the topic prefix for retained messages",
+      "It is the Wi-Fi SSID"
+    ],
+    "correct": 0,
+    "why": "BROKER is set to an IP address string and passed into MQTTClient as the broker host."
+  },
+  {
+    "q": "What would likely happen if two devices connected to the same broker using the exact same MQTT client ID at the same time?",
+    "options": [
+      "One connection may replace or disconnect the other because client IDs are expected to be unique",
+      "Both become coordinators automatically",
+      "QoS is upgraded to 2",
+      "Retained messages stop working entirely"
+    ],
+    "correct": 0,
+    "why": "MQTT brokers expect unique client IDs per connection; duplicate IDs commonly cause one client session to take over the other."
+  },
+  {
+    "q": "What concept from the README is illustrated by publishing 'online' retained and using an 'offline' LWT on the status topic?",
+    "options": [
+      "Availability tracking or heartbeat-style device status",
+      "REST endpoint discovery",
+      "TCP window scaling",
+      "Sensor calibration"
+    ],
+    "correct": 0,
+    "why": "The repo describes this as the correct pattern for independently tracking device availability."
+  }
+];
+
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const percentEl = document.getElementById('percent');
+    const resetBtn = document.getElementById('resetBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+
+    let currentQuestions = [];
+    const state = { score: 0, answered: 0 };
+
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map(q => (({
+        q: q.q,
+        options: shuffle(q.options.map((txt, i) => ({ txt, isCorrect: i === q.correct }))),
+        correct: 0,
+        why: q.why,
+        __answered: false
+      }))).map(item => {
+        item.correct = item.options.findIndex(o => o.isCorrect);
+        item.options = item.options.map(o => o.txt);
+        return item;
+      });
+    }
+
+    function render() {
+      quizEl.innerHTML = '';
+      currentQuestions.forEach((item, qi) => {
+        const card = document.createElement('div');
+        card.className = 'qcard';
+
+        const head = document.createElement('div');
+        head.className = 'qhead';
+
+        const titleEl = document.createElement('p');
+        titleEl.className = 'qtitle';
+        titleEl.innerHTML = `${qi + 1}. ${item.q}`;
+
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = `Q${qi + 1}`;
+
+        head.appendChild(titleEl);
+        head.appendChild(badge);
+        card.appendChild(head);
+
+        const opts = document.createElement('div');
+        opts.className = 'opts';
+
+        item.options.forEach((opt, oi) => {
+          const row = document.createElement('div');
+          row.className = 'opt';
+          row.setAttribute('data-q', qi);
+          row.setAttribute('data-o', oi);
+
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = String.fromCharCode(65 + oi);
+
+          const span = document.createElement('span');
+          span.innerHTML = opt;
+
+          row.appendChild(letter);
+          row.appendChild(span);
+          row.addEventListener('click', onChoose);
+          opts.appendChild(row);
+        });
+
+        const exp = document.createElement('div');
+        exp.className = 'exp';
+        exp.hidden = true;
+        exp.innerHTML = `<strong>Explanation:</strong> ${item.why}`;
+
+        card.appendChild(opts);
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+
+    function onChoose(e) {
+      const btn = e.currentTarget;
+      const qIndex = +btn.getAttribute('data-q');
+      const oIndex = +btn.getAttribute('data-o');
+      const card = btn.closest('.qcard');
+      const exp = card.querySelector('.exp');
+      const data = currentQuestions[qIndex];
+      if (data.__answered) return;
+
+      const options = card.querySelectorAll('.opt');
+      options.forEach(b => b.classList.add('disabled'));
+      data.__answered = true;
+      state.answered++;
+
+      if (oIndex === data.correct) {
+        btn.classList.add('correct');
+        state.score++;
+      } else {
+        btn.classList.add('wrong');
+        options[data.correct].classList.add('correct');
+      }
+
+      exp.hidden = false;
+      updateStats();
+    }
+
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score / currentQuestions.length) * 100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+
+    function revealAll() {
+      document.querySelectorAll('.qcard').forEach((card, qi) => {
+        const data = currentQuestions[qi];
+        const exp = card.querySelector('.exp');
+        const options = card.querySelectorAll('.opt');
+        options.forEach((b, oi) => {
+          b.classList.remove('wrong');
+          if (oi === data.correct) b.classList.add('correct');
+          b.classList.add('disabled');
+        });
+        data.__answered = true;
+        exp.hidden = false;
+      });
+    }
+
+    function resetQuiz() {
+      state.score = 0;
+      state.answered = 0;
+      render();
+    }
+
+    function shuffleQuiz() {
+      state.score = 0;
+      state.answered = 0;
+      currentQuestions = buildQuestions();
+      render();
+    }
+
+    resetBtn.addEventListener('click', resetQuiz);
+    revealBtn.addEventListener('click', revealAll);
+    shuffleBtn.addEventListener('click', shuffleQuiz);
+
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>

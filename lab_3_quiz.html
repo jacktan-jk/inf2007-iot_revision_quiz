@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 – Lab 3 MCQ Quiz: Simple BLE Flooding Mesh</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8;
+    color:#111827; }
+    header { background: white; border-bottom: 1px solid #e5e7eb; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid #e5e7eb; background:white;
+    padding:8px 12px; border-radius:10px; font-weight:600; }
+    button.primary { background: var(--accent); color: white; border-color:
+    var(--accent); }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px
+    10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid #e5e7eb; border-radius:14px;
+    padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:baseline;
+    gap:6px }
+    .qtitle { font-weight:700; margin:0 0 8px }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px
+    solid #e5e7eb; padding:2px 8px; border-radius:999px }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px;
+    border:1px solid #e5e7eb; border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.correct { border-color:#16a34a; background:#f0fdf4; }
+    .opt.wrong { border-color:#dc2626; background:#fef2f2; }
+    .opt.disabled { pointer-events:none; opacity:.8 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px
+    solid #e5e7eb; display:grid; place-items:center; font-weight:700; }
+    .exp { margin-top:10px; border-top:1px dashed #e5e7eb; padding-top:10px;
+    color:#111827; }
+    .exp strong { color:#065f46 }
+    pre.code-block {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      margin: 12px 0;
+    }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+    details > summary { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 – Lab 3 MCQ Quiz: Simple BLE Flooding Mesh</h1>
+      <div class="sub">CSC2106 – Internet of Things: Protocols and Networks • Lab 3</div>
+      <div class="stats" id="stats">
+        <span class="pill" id="score">Score: 0</span>
+        <span class="pill" id="progress">Answered: 0 / 0</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" title="Reset the quiz to try again">Reset quiz</button>
+        <button id="revealBtn" title="Reveal correct answers for all questions">Reveal all answers</button>
+        <button id="shuffleBtn" title="Shuffle questions and answer options">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Based on lecture material. This educational quiz is for practice.
+  </footer>
+  <script>
+    const QUESTIONS = [
+  {
+    "q": "What is the main communication mechanism used in the Lab 3 repo?",
+    "options": [
+      "BLE advertisements for broadcast plus BLE scanning for receive",
+      "BLE GATT connections with characteristics only",
+      "MQTT over Wi-Fi",
+      "HTTP polling over Ethernet"
+    ],
+    "correct": 0,
+    "why": "The repo states that the lab uses BLE advertisements (broadcast) together with scanning (receive)."
+  },
+  {
+    "q": "According to the repo README, this lab is best described as:",
+    "options": [
+      "A mesh-like flooding relay built at the application layer, not Bluetooth SIG BLE Mesh",
+      "A standards-compliant Bluetooth SIG BLE Mesh stack",
+      "A LoRa multi-hop routing implementation",
+      "A ZigBee coordinator-router-end-device lab"
+    ],
+    "correct": 0,
+    "why": "The README explicitly says it is not Bluetooth SIG BLE Mesh; it is a mesh-like flooding relay at the application layer."
+  },
+  {
+    "q": "What frame format does the repo define for messages?",
+    "options": [
+      "M1|ORIG|MSGID|TTL|TYPE|DATA",
+      "ORIG|M1|TYPE|DATA|TTL|MSGID",
+      "MSGID|TTL|TYPE|DATA",
+      "JSON with keys orig, ttl, type, data"
+    ],
+    "correct": 0,
+    "why": "The README gives the frame format exactly as M1|ORIG|MSGID|TTL|TYPE|DATA."
+  },
+  {
+    "q": "In the repo terminology, “Inject” means:",
+    "options": [
+      "Originate a new message with a new MSGID and ORIG equal to the current node",
+      "Forward a message from another node without changing anything",
+      "Restart BLE scanning after timeout",
+      "Decode the temperature sensor reading"
+    ],
+    "correct": 0,
+    "why": "The README defines Inject as originating a new message with a new MSGID and ORIG = me."
+  },
+  {
+    "q": "In the repo terminology, “Forward” means:",
+    "options": [
+      "Advertise a message that originated from someone else",
+      "Create a brand-new local message",
+      "Convert a BLE frame into Wi-Fi packets",
+      "Store the message in flash"
+    ],
+    "correct": 0,
+    "why": "The README defines Forward as advertising a message that originated from someone else."
+  },
+  {
+    "q": "What is the configured advertising interval in the uploaded `main.py`?",
+    "options": [
+      "200_000 microseconds",
+      "300 microseconds",
+      "10_000 microseconds",
+      "60_000 microseconds"
+    ],
+    "correct": 0,
+    "why": "The code sets ADV_INTERVAL_US = 200_000."
+  },
+  {
+    "q": "How long does each advertise burst last by default?",
+    "options": [
+      "300 ms",
+      "10 s",
+      "60 s",
+      "20 ms"
+    ],
+    "correct": 0,
+    "why": "The code sets ADV_BURST_MS = 300, and the README describes a 300 ms advertise burst."
+  },
+  {
+    "q": "What is the scan duration configured in the uploaded solution?",
+    "options": [
+      "10,000 ms",
+      "300 ms",
+      "60,000 ms",
+      "30,000 ms"
+    ],
+    "correct": 0,
+    "why": "The code sets SCAN_MS = 10_000."
+  },
+  {
+    "q": "How often does the node plan to inject its own temperature message before jitter is applied?",
+    "options": [
+      "Once every 60 seconds",
+      "Once every 10 seconds",
+      "Once every 300 ms",
+      "Once every 20 ms"
+    ],
+    "correct": 0,
+    "why": "The constant INJECT_PERIOD_S is set to 60."
+  },
+  {
+    "q": "What is the maximum random jitter added to the injection schedule?",
+    "options": [
+      "10 seconds",
+      "3 seconds",
+      "20 seconds",
+      "400 seconds"
+    ],
+    "correct": 0,
+    "why": "The code sets INJECT_JITTER_S = 10 and uses it to add 0..10 s jitter."
+  },
+  {
+    "q": "What default TTL value is used in the uploaded `main.py`?",
+    "options": [
+      "3",
+      "0",
+      "1",
+      "400"
+    ],
+    "correct": 0,
+    "why": "DEFAULT_TTL is set to 3 in the code."
+  },
+  {
+    "q": "What does `SEEN_MAX = 400` limit?",
+    "options": [
+      "The maximum number of seen-message keys kept in the de-duplication cache",
+      "The BLE transmit power level",
+      "The number of scan results per second",
+      "The maximum TTL value that can be sent"
+    ],
+    "correct": 0,
+    "why": "The `seen` list stores `orig:msgid` entries, and the code trims it when it grows beyond SEEN_MAX."
+  },
+  {
+    "q": "How is `NODE_ID` derived in the uploaded solution?",
+    "options": [
+      "By taking the last 6 hex characters of `machine.unique_id()`",
+      "By reading the Wi-Fi MAC address from the router",
+      "By generating a random 6-digit number at boot",
+      "By asking the user to type a node name"
+    ],
+    "correct": 0,
+    "why": "The code uses `ubinascii.hexlify(machine.unique_id()).decode()[-6:]`."
+  },
+  {
+    "q": "Which ADC channel is used for the Pico internal temperature sensor in the code?",
+    "options": [
+      "ADC4",
+      "ADC0",
+      "ADC1",
+      "ADC2"
+    ],
+    "correct": 0,
+    "why": "The code creates `temp_adc = machine.ADC(4)` and labels it as the Pico internal temperature sensor."
+  },
+  {
+    "q": "What does `read_temp_c()` return?",
+    "options": [
+      "A calculated temperature in degrees Celsius based on the internal sensor reading",
+      "A raw BLE RSSI measurement",
+      "The TTL remaining in the packet",
+      "The time since boot in milliseconds"
+    ],
+    "correct": 0,
+    "why": "The function reads ADC4, converts voltage, and applies the Pico temperature formula to return Celsius."
+  },
+  {
+    "q": "What does `make_frame(orig, msgid, ttl, typ, data)` produce?",
+    "options": [
+      "A pipe-separated string beginning with `M1|`",
+      "A JSON object with six keys",
+      "A bytes-only payload with no text",
+      "A tuple of `(orig, ttl, type, data)`"
+    ],
+    "correct": 0,
+    "why": "The function returns a formatted string: `M1|{}|{}|{}|{}|{}`."
+  },
+  {
+    "q": "When will `parse_frame(s)` return `None`?",
+    "options": [
+      "If the string does not start with `M1|`, has the wrong number of fields, or TTL cannot be parsed",
+      "Only when RSSI is too weak",
+      "Only when TYPE is `T`",
+      "Only when the payload is longer than 25 characters"
+    ],
+    "correct": 0,
+    "why": "The function checks the `M1|` prefix, splits into exactly 6 parts, converts TTL to int, and catches exceptions."
+  },
+  {
+    "q": "What is the role of `adv_payload_name(name_str)`?",
+    "options": [
+      "Build a BLE advertising payload carrying the message in the Complete Local Name field",
+      "Open a BLE connection to another node",
+      "Encrypt the frame before forwarding",
+      "Store the frame to flash memory"
+    ],
+    "correct": 0,
+    "why": "The README explains that the message is carried inside the device name field, and the function builds that payload."
+  },
+  {
+    "q": "Why does `frame_to_name(frame)` return `frame[:25]`?",
+    "options": [
+      "To keep the message short enough to fit reliably inside BLE advertising data",
+      "To hide the TTL field from receivers",
+      "To remove the ORIG and MSGID fields",
+      "To convert the frame into binary form"
+    ],
+    "correct": 0,
+    "why": "Both the README and code note that frames are kept conservative so they fit in the advertising name field."
+  },
+  {
+    "q": "What does `advertise_burst_start()` do?",
+    "options": [
+      "Starts advertising the given frame and records when the burst should stop",
+      "Starts scanning and disables advertising",
+      "Creates a new message ID and stores it in flash",
+      "Parses the last received BLE packet"
+    ],
+    "correct": 0,
+    "why": "The function converts the frame into advertising payload, starts `gap_advertise`, and sets `_adv_active` plus `_adv_stop_ms`."
+  },
+  {
+    "q": "What is the purpose of `advertise_burst_service()` in the main loop?",
+    "options": [
+      "To stop advertising once the burst window has expired",
+      "To force a fresh temperature reading every 20 ms",
+      "To clear the `seen` cache continuously",
+      "To decrement TTL for all cached messages"
+    ],
+    "correct": 0,
+    "why": "It checks whether the stop time has been reached and calls `gap_advertise(None)` to stop advertising."
+  },
+  {
+    "q": "What happens in `scan()`?",
+    "options": [
+      "The node starts BLE scanning with `SCAN_MS`, interval 30000, and window 30000",
+      "The node transmits one packet immediately",
+      "The node resets its message cache",
+      "The node disconnects from BLE to save power"
+    ],
+    "correct": 0,
+    "why": "The method calls `self.ble.gap_scan(SCAN_MS, 30000, 30000)`."
+  },
+  {
+    "q": "According to the repo Part 1 goal, what should nodes do?",
+    "options": [
+      "Inject new temperature frames periodically and print received frames, but do not forward them",
+      "Forward every received frame with no TTL check",
+      "Use Wi-Fi to publish sensor values to a broker",
+      "Create a central coordinator that polls all nodes"
+    ],
+    "correct": 0,
+    "why": "Part 1 is explicitly “Send new data and listen (no forwarding)”."
+  },
+  {
+    "q": "In the repo Part 2 design, what is intentionally wrong?",
+    "options": [
+      "Forwarding uses no de-duplication and no TTL, which can cause ping-pong and storms",
+      "Messages are encrypted with the wrong key",
+      "Scanning never restarts after timeout",
+      "Temperature messages are sent over TCP instead of BLE"
+    ],
+    "correct": 0,
+    "why": "The README says Part 2 is intentionally flawed: no dedupe and no TTL, so repeated forwarding occurs."
+  },
+  {
+    "q": "What two controls are added in repo Part 3 to stop indefinite flooding?",
+    "options": [
+      "De-duplication using `(ORIG, MSGID)` and TTL-based forwarding",
+      "AES encryption and CRC checking",
+      "Wi-Fi fallback and MQTT retained messages",
+      "Round-robin scheduling and queue priorities"
+    ],
+    "correct": 0,
+    "why": "Part 3 adds a de-duplication cache plus TTL decrementing to bound propagation."
+  },
+  {
+    "q": "What key format does the uploaded solution use in the `seen` cache?",
+    "options": [
+      "`\"orig:msgid\"`",
+      "`\"ttl:type\"`",
+      "`\"addr:rssi\"`",
+      "`\"data:time\"`"
+    ],
+    "correct": 0,
+    "why": "The code constructs keys with `\"{}:{}\".format(orig, msgid)`."
+  },
+  {
+    "q": "What does `seen_check_add(key)` return when the message was already seen?",
+    "options": [
+      "`True`",
+      "`False`",
+      "The TTL value",
+      "The RSSI value"
+    ],
+    "correct": 0,
+    "why": "The helper returns `True` when the key is already present and should be dropped."
+  },
+  {
+    "q": "What happens when `seen_check_add(key)` adds a new key and the cache grows beyond `SEEN_MAX`?",
+    "options": [
+      "The oldest entries are deleted from the front of the list",
+      "The newest entry is rejected",
+      "The program resets the BLE interface",
+      "All entries are kept permanently"
+    ],
+    "correct": 0,
+    "why": "The code removes `self.seen[0:len(self.seen) - SEEN_MAX]` to cap the cache."
+  },
+  {
+    "q": "What does `forward_raw(raw_frame_str)` do in the uploaded file?",
+    "options": [
+      "Re-advertises exactly the received frame string without modifying it",
+      "Parses the frame and decrements TTL before forwarding",
+      "Drops all messages with TTL 0",
+      "Publishes the frame to a Wi-Fi server"
+    ],
+    "correct": 0,
+    "why": "The function simply calls `advertise_burst_start(raw_frame_str)` and prints `FWD:`."
+  },
+  {
+    "q": "Why is `forward_raw()` described in the code as “intentionally wrong for Part 2”?",
+    "options": [
+      "Because it forwards the received frame as-is without TTL decrement or de-duplication logic",
+      "Because it converts the payload into JSON first",
+      "Because it changes ORIG to the forwarding node",
+      "Because it deletes the message immediately after forwarding"
+    ],
+    "correct": 0,
+    "why": "That matches the repo Part 2 explanation: no TTL control and no dedupe can cause looping floods."
+  },
+  {
+    "q": "In `inject_own()`, what TYPE value is used for temperature data?",
+    "options": [
+      "`\"T\"`",
+      "`\"R\"`",
+      "`\"TEMP\"`",
+      "`\"D\"`"
+    ],
+    "correct": 0,
+    "why": "The injected frame is created with `make_frame(NODE_ID, msgid, DEFAULT_TTL, \"T\", data)`."
+  },
+  {
+    "q": "What does the uploaded `inject_own()` do before building the frame?",
+    "options": [
+      "Marks its own `NODE_ID:msgid` as seen to prevent self-forwarding later",
+      "Clears the whole cache to allow repeats",
+      "Forces TTL to zero",
+      "Stops scanning permanently"
+    ],
+    "correct": 0,
+    "why": "The code calls `self.seen_check_add(\"{}:{}\".format(NODE_ID, msgid))` before creating the frame."
+  },
+  {
+    "q": "What TTL is assigned to newly injected temperature frames in the uploaded file?",
+    "options": [
+      "DEFAULT_TTL, which is 3",
+      "0 always",
+      "1 always",
+      "The current RSSI value"
+    ],
+    "correct": 0,
+    "why": "The uploaded solution is using the Part 3 version of injection, so new frames use DEFAULT_TTL."
+  },
+  {
+    "q": "What is the purpose of `inject_custom(ttl, typ, payload)` in the uploaded solution?",
+    "options": [
+      "To create and advertise a locally originated frame with caller-specified TTL, TYPE, and payload",
+      "To parse a received BLE packet into fields",
+      "To reconnect the BLE stack after scanning ends",
+      "To convert a temperature reading into RSSI"
+    ],
+    "correct": 0,
+    "why": "The helper builds a new frame from the provided arguments, marks it as seen, and advertises it."
+  },
+  {
+    "q": "What happens inside `_irq()` when `_IRQ_SCAN_DONE` occurs?",
+    "options": [
+      "Scanning is restarted by calling `self.scan()`",
+      "The node injects a new temperature frame immediately",
+      "The `seen` cache is cleared",
+      "Advertising is forced on for 10 seconds"
+    ],
+    "correct": 0,
+    "why": "Both the starter template and the uploaded code restart scanning on `_IRQ_SCAN_DONE`."
+  },
+  {
+    "q": "How does `_irq()` first try to recover the application frame from BLE advertisement data?",
+    "options": [
+      "It converts `adv_data` to bytes, searches for `b\"M1|\"`, then decodes from that index",
+      "It assumes the whole packet is already plain JSON",
+      "It only looks at the advertiser address",
+      "It reads the frame from a TCP socket"
+    ],
+    "correct": 0,
+    "why": "The code uses `raw = bytes(adv_data)`, `idx = raw.find(b\"M1|\")`, and then decodes from that point."
+  },
+  {
+    "q": "Why does the code call `.split(\"\\x00\")[0]` after decoding the advertisement bytes?",
+    "options": [
+      "To discard any trailing null bytes after the embedded frame",
+      "To separate ORIG from MSGID",
+      "To convert the payload into UTF-16",
+      "To compute the TTL"
+    ],
+    "correct": 0,
+    "why": "The extracted string may include null terminators from the advertisement payload, so the code keeps only the content before them."
+  },
+  {
+    "q": "What happens in `_irq()` if `parse_frame(s)` returns `None`?",
+    "options": [
+      "The handler returns immediately and ignores the advertisement",
+      "The node forwards the raw string anyway",
+      "The node injects a reply frame",
+      "The node resets its BLE hardware"
+    ],
+    "correct": 0,
+    "why": "The code checks `if not parsed: return`."
+  },
+  {
+    "q": "What does the uploaded `_irq()` do when `orig == NODE_ID`?",
+    "options": [
+      "It returns immediately to ignore self-originated frames",
+      "It forwards the frame with a refreshed TTL",
+      "It prints the message as a new remote packet",
+      "It clears the `seen` cache"
+    ],
+    "correct": 0,
+    "why": "The code explicitly checks `if orig == NODE_ID: return`."
+  },
+  {
+    "q": "What is the main reason for checking `seen_check_add(key)` inside `_irq()`?",
+    "options": [
+      "To suppress duplicate processing and reduce looping in flooding behavior",
+      "To measure the BLE channel occupancy",
+      "To assign a new node ID to the sender",
+      "To convert RSSI into temperature"
+    ],
+    "correct": 0,
+    "why": "The comment in the uploaded file labels this as duplicate suppression for loop prevention."
+  },
+  {
+    "q": "How does the uploaded solution treat received frames with `typ == \"R\"`?",
+    "options": [
+      "It prints them as new received messages and returns without forwarding",
+      "It converts them into temperature frames and forwards them",
+      "It drops them silently before printing",
+      "It changes their TTL back to 3 and re-injects them"
+    ],
+    "correct": 0,
+    "why": "The code prints `RX NEW ...` for `R` type and then returns."
+  },
+  {
+    "q": "What additional behavior does the uploaded `main.py` implement for non-`R` messages?",
+    "options": [
+      "It appends formatted summary strings to `self.list` and reacts when 5 messages have accumulated",
+      "It writes every frame to a Wi-Fi database",
+      "It starts a BLE connection to the sender",
+      "It disables future scanning for 60 seconds"
+    ],
+    "correct": 0,
+    "why": "The code stores summary strings in `self.list`, and special logic runs once the list length reaches 5."
+  },
+  {
+    "q": "What exactly triggers the “Received 5 messages” block in the uploaded solution?",
+    "options": [
+      "When `len(self.list) >= 5` after appending a non-`R` message summary",
+      "When five duplicate frames are detected from the same sender",
+      "When TTL reaches zero",
+      "When `_IRQ_SCAN_DONE` fires five times"
+    ],
+    "correct": 0,
+    "why": "The code checks `if len(self.list) >= 5:` after appending the formatted summary."
+  },
+  {
+    "q": "After printing the batch of 5 messages, what custom frame does the uploaded code inject?",
+    "options": [
+      "A frame with TTL 0, TYPE `R`, and payload `rabak`",
+      "A frame with TTL 3, TYPE `T`, and the latest temperature",
+      "A frame with TTL 5, TYPE `A`, and payload `ack`",
+      "No frame is injected; only the list is cleared"
+    ],
+    "correct": 0,
+    "why": "The code calls `self.inject_custom(0, \"R\", \"rabak\")` after printing the 5 collected summaries."
+  },
+  {
+    "q": "Why will the injected custom `R` frame from that block not be forwarded further by this uploaded solution?",
+    "options": [
+      "Because its TTL is 0 and the forwarding condition also excludes `typ == \"R\"`",
+      "Because all `R` frames are converted into temperature frames first",
+      "Because `scan()` is disabled right after the injection",
+      "Because `inject_custom()` never advertises frames"
+    ],
+    "correct": 0,
+    "why": "The forwarding condition is `if ttl > 0 and typ != \"R\":`, and the custom frame is sent with TTL 0 and type `R`."
+  },
+  {
+    "q": "What does `forward_ttl(orig, msgid, ttl, typ, payload)` do before re-advertising?",
+    "options": [
+      "It decrements TTL by 1 and stops if the decremented value becomes negative",
+      "It increments TTL by 1 to extend the message lifetime",
+      "It replaces ORIG with the current node ID",
+      "It clears the seen cache"
+    ],
+    "correct": 0,
+    "why": "The function computes `ttl2 = ttl - 1`, returns if `ttl2 < 0`, otherwise creates and advertises the new frame."
+  },
+  {
+    "q": "If a node receives a frame with TTL = 1, what TTL will the forwarded frame carry?",
+    "options": [
+      "0",
+      "1",
+      "2",
+      "-1"
+    ],
+    "correct": 0,
+    "why": "The forwarding logic decrements TTL first, so 1 becomes 0 and that value is still forwarded."
+  },
+  {
+    "q": "If a node receives a frame with TTL = 0, what does `forward_ttl()` itself do?",
+    "options": [
+      "It would create a forwarded frame with TTL -1 and then stop before advertising, so effectively nothing is forwarded",
+      "It forwards the packet unchanged with TTL 0",
+      "It resets TTL back to DEFAULT_TTL",
+      "It turns the frame into type `R`"
+    ],
+    "correct": 0,
+    "why": "Inside `forward_ttl`, TTL is decremented to -1 and the function returns before advertising. In practice `_irq()` also checks `ttl > 0` before calling it."
+  },
+  {
+    "q": "Which condition controls forwarding in the uploaded `_irq()`?",
+    "options": [
+      "`ttl > 0 and typ != \"R\"`",
+      "`ttl >= 0 and typ == \"R\"`",
+      "`rssi > 0`",
+      "`orig == NODE_ID`"
+    ],
+    "correct": 0,
+    "why": "The final forwarding check in `_irq()` is exactly `if ttl > 0 and typ != \"R\":`."
+  },
+  {
+    "q": "What is the sleep interval used in the `run()` loop?",
+    "options": [
+      "20 ms",
+      "300 ms",
+      "1 s",
+      "10 s"
+    ],
+    "correct": 0,
+    "why": "The main loop ends with `time.sleep_ms(20)`."
+  },
+  {
+    "q": "What two periodic checks happen in the uploaded `run()` loop?",
+    "options": [
+      "It services burst stop timing and checks whether it is time to inject a new local message",
+      "It clears BLE hardware and reboots every minute",
+      "It opens GATT connections and publishes to MQTT",
+      "It writes all frames to persistent storage"
+    ],
+    "correct": 0,
+    "why": "The loop calls `advertise_burst_service()`, compares `now` with `next_inject_ms`, possibly calls `inject_own()`, then sleeps."
+  },
+  {
+    "q": "Why is adding jitter to injection useful in this lab?",
+    "options": [
+      "It reduces the chance that many nodes inject at exactly the same time",
+      "It guarantees every message will have a stronger RSSI",
+      "It eliminates the need for TTL",
+      "It makes BLE advertisements longer"
+    ],
+    "correct": 0,
+    "why": "The README says `_rand_jitter_s()` adds a small random delay so nodes do not all send at the same time."
+  },
+  {
+    "q": "What problem does the repo describe for Part 2 when only two nodes are present?",
+    "options": [
+      "A packet can ping-pong indefinitely",
+      "The temperature sensor stops working",
+      "BLE can no longer advertise at all",
+      "Node IDs become duplicated automatically"
+    ],
+    "correct": 0,
+    "why": "The Part 2 section explicitly says that with two nodes, a packet can ping-pong indefinitely."
+  },
+  {
+    "q": "What is the main learning point of Part 3 in the repo?",
+    "options": [
+      "Flooding-based propagation needs memory and hop limits so every message eventually stops",
+      "BLE only works if every node has a central coordinator",
+      "Temperature data must always use Wi-Fi instead of BLE",
+      "Every forwarded packet should increase its TTL"
+    ],
+    "correct": 0,
+    "why": "The README explains that de-duplication and TTL are the minimum control mechanisms needed so every message eventually stops."
+  }
+]
+    // --- Quiz Logic (DO NOT MODIFY) ---
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const percentEl = document.getElementById('percent');
+    const resetBtn = document.getElementById('resetBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    let state = { score: 0, answered: 0 };
+    let currentQuestions = [];
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map(q => (({
+        q: q.q,
+        options: shuffle(q.options.map((txt, i) => ({ txt, isCorrect: i === q.correct }))),
+        correct: 0,
+        why: q.why,
+        __answered: false
+      }))).map(item => {
+        item.correct = item.options.findIndex(o => o.isCorrect);
+        item.options = item.options.map(o => o.txt);
+        return item;
+      });
+    }
+    function render() {
+      quizEl.innerHTML = '';
+      currentQuestions.forEach((item, qi) => {
+        const card = document.createElement('div');
+        card.className = 'qcard';
+        const head = document.createElement('div');
+        head.className = 'qhead';
+        const titleEl = document.createElement('p');
+        titleEl.className = 'qtitle';
+        titleEl.innerHTML = `${qi + 1}. ${item.q}`;
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = `Q${qi + 1}`;
+        head.appendChild(titleEl);
+        head.appendChild(badge);
+        card.appendChild(head);
+        const opts = document.createElement('div');
+        opts.className = 'opts';
+        item.options.forEach((opt, oi) => {
+          const row = document.createElement('div');
+          row.className = 'opt';
+          row.setAttribute('data-q', qi);
+          row.setAttribute('data-o', oi);
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = String.fromCharCode(65 + oi);
+          const span = document.createElement('span');
+          span.innerHTML = opt;
+          row.appendChild(letter);
+          row.appendChild(span);
+          row.addEventListener('click', onChoose);
+          opts.appendChild(row);
+        });
+        const exp = document.createElement('div');
+        exp.className = 'exp';
+        exp.hidden = true;
+        exp.innerHTML = `<strong>Explanation:</strong> ${item.why}`;
+        card.appendChild(opts);
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+    function onChoose(e) {
+      const btn = e.currentTarget;
+      const qIndex = +btn.getAttribute('data-q');
+      const oIndex = +btn.getAttribute('data-o');
+      const card = btn.closest('.qcard');
+      const exp = card.querySelector('.exp');
+      const data = currentQuestions[qIndex];
+      if (data.__answered) return;
+      const options = card.querySelectorAll('.opt');
+      options.forEach(b => b.classList.add('disabled'));
+      data.__answered = true;
+      state.answered++;
+      if (oIndex === data.correct) {
+        btn.classList.add('correct');
+        state.score++;
+      } else {
+        btn.classList.add('wrong');
+        options[data.correct].classList.add('correct');
+      }
+      exp.hidden = false;
+      updateStats();
+    }
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score/currentQuestions.length)*100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+    function revealAll() {
+      document.querySelectorAll('.qcard').forEach((card, qi) => {
+        const data = currentQuestions[qi];
+        const exp = card.querySelector('.exp');
+        const options = card.querySelectorAll('.opt');
+        options.forEach((b, oi) => {
+          b.classList.remove('wrong');
+          if (oi === data.correct) b.classList.add('correct');
+          b.classList.add('disabled');
+        });
+        data.__answered = true;
+        exp.hidden = false;
+      });
+    }
+    function resetQuiz() {
+      state.score = 0; state.answered = 0;
+      render();
+    }
+    function shuffleQuiz() {
+      state.score = 0; state.answered = 0;
+      currentQuestions = buildQuestions();
+      render();
+    }
+    resetBtn.addEventListener('click', resetQuiz);
+    revealBtn.addEventListener('click', revealAll);
+    shuffleBtn.addEventListener('click', shuffleQuiz);
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>

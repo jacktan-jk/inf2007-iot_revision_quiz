@@ -12,11 +12,20 @@
     .wrap { max-width:var(--maxw); margin:0 auto; padding:18px 16px; }
     h1 { margin:0 0 6px; font-size:clamp(20px,2.6vw,28px); }
     .sub { color:#9ca3af; font-size:14px }
-    main { max-width:var(--maxw); margin:16px auto 40px; padding:0 16px; display:grid; grid-template-columns: 1.1fr .9fr; gap:18px }
-    @media (max-width: 900px) { main { grid-template-columns: 1fr } }
+    .page { max-width:var(--maxw); margin:16px auto 40px; padding:0 16px; }
     .card { background:#0f172a; border:1px solid #1f2937; border-radius:14px; padding:14px; box-shadow:0 1px 0 rgba(0,0,0,.35) }
+    .tabbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+    .tabbtn {
+      appearance:none; cursor:pointer; border:1px solid #1f2937; background:#111827;
+      color:#cbd5e1; padding:10px 14px; border-radius:12px; font-weight:700; font-size:14px;
+    }
+    .tabbtn:hover { border-color:#3b82f6; }
+    .tabbtn.active { background:#1e293b; border-color:#3b82f6; color:#e6f0ff; }
+    .tabpanel[hidden] { display:none; }
+    .layout { display:grid; grid-template-columns: 1.1fr .9fr; gap:18px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr } }
+    .stack { display:flex; flex-direction:column; gap:18px }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px }
-    .grid[hidden] { display:none }
     .lec { display:flex; flex-direction:column; gap:10px; padding:12px; border:1px solid #1f2937; border-radius:12px; background:#0b1328 }
     .lec h3 { margin:0; font-size:16px }
     .lec .tag { color:#93c5fd; font-size:12px }
@@ -28,26 +37,23 @@
     details > summary { cursor:pointer }
     .notes { display:flex; flex-direction:column; gap:10px }
     .notes header { background:transparent; border:0; padding:0 }
-    .notes h2 { margin:0 0 4px; font-size:18px }
-    .notes .bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+    .notes h2, .listcard h2, .infocard h2 { margin:0 0 4px; font-size:18px }
+    .bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap }
     .notes input[type=text] { flex:1; min-width:160px; background:#0b1328; color:#e5e7eb; border:1px solid #1f2937; border-radius:10px; padding:8px 10px }
     .notes article { min-height:280px; max-height:70vh; overflow:auto; padding:12px; border:1px solid #1f2937; border-radius:12px; background:#0b1328 }
     .md h1,.md h2,.md h3,.md h4,.md h5 { margin:.6em 0 .3em }
     .md h1{font-size:22px}.md h2{font-size:20px}.md h3{font-size:18px}
     .md p { margin:.5em 0 }
-    .md code { background:#0a1020; border:1px solid #1f2937; padding:.1em .3em; border-radius:6px; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace }
+    .md code, .infocard code { background:#0a1020; border:1px solid #1f2937; padding:.1em .3em; border-radius:6px; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace }
     .md pre { background:#0a1020; border:1px solid #1f2937; padding:10px; border-radius:10px; overflow:auto }
-    .md ul { margin:.4em 0 .6em 1.2em }
-    .md li { margin:.2em 0 }
+    .md ul, .infocard ul { margin:.4em 0 .6em 1.2em }
+    .md li, .infocard li { margin:.2em 0 }
+    .helper { color:#9ca3af; font-size:14px; margin:0 0 12px }
+    .infocard { display:flex; flex-direction:column; gap:10px }
+    .infocard p { margin:0; color:#cbd5e1 }
     #mdOut:fullscreen {
-      background:#0b1328;
-      border:none;
-      width:100vw;
-      height:100vh;
-      max-height:none;
-      padding:20px;
-      border-radius:0;
-      box-sizing:border-box;
+      background:#0b1328; border:none; width:100vw; height:100vh; max-height:none;
+      padding:20px; border-radius:0; box-sizing:border-box;
     }
     #mdOut:fullscreen .md h1{font-size:26px}
     #mdOut:fullscreen .md h2{font-size:22px}
@@ -59,41 +65,72 @@
   <header>
     <div class="wrap">
       <h1>CSC2106 — Quizzes & Revision Notes</h1>
-      <div class="sub">IoT Protocols & Networks • Lecture quizzes • Markdown viewer for lecture notes</div>
+      <div class="sub">IoT Protocols & Networks • Tabbed quiz index for lectures and labs</div>
     </div>
   </header>
-  <main>
+
+  <main class="page">
     <section class="card">
-      <h2 style="margin-top:0">Lectures</h2>
-      <div class="grid" id="quizGrid"></div>
-      <details>
-        <summary>File naming convention</summary>
-        <div style="margin-top:6px">
-          Keep this index in the same folder as the generated quiz and notes files.<br>
-          Quiz files: <code>lecture_1_quiz.html</code> to <code>lecture_11_quiz.html</code><br>
-          Notes files: <code>lec1.md</code> to <code>lec11.md</code>
+      <div class="tabbar" role="tablist" aria-label="Quiz categories">
+        <button class="tabbtn active" id="tabBtnLectures" type="button" role="tab" aria-selected="true" aria-controls="panelLectures">Lecture Quizzes</button>
+        <button class="tabbtn" id="tabBtnLabs" type="button" role="tab" aria-selected="false" aria-controls="panelLabs">Lab Quizzes</button>
+      </div>
+
+      <section class="tabpanel" id="panelLectures" role="tabpanel" aria-labelledby="tabBtnLectures">
+        <div class="layout">
+          <section class="stack">
+            <section class="card listcard">
+              <h2>Lecture Quizzes</h2>
+              <p class="helper">Start a lecture quiz or open its matching Markdown notes in the built-in viewer.</p>
+              <div class="grid" id="lectureGrid"></div>
+            </section>
+          </section>
+
+          <section class="card notes">
+            <header>
+              <h2>Markdown Notes Viewer</h2>
+              <div class="bar">
+                <input id="mdPath" type="text" placeholder="notes/lec1.md" />
+                <button class="btn primary" id="loadBtn" title="Fetch and render the Markdown file">Load</button>
+                <input type="file" id="filePick" accept=".md,.txt,.markdown" style="display:none" />
+                <button class="btn" id="pickBtn" title="Preview a local .md without hosting">Open .md file…</button>
+                <button class="btn" id="fsBtn" title="Toggle fullscreen for the notes viewer">⛶</button>
+              </div>
+            </header>
+            <article id="mdOut" class="md">
+              <p style="color:#6b7280">Type a lecture note path such as <code>notes/lec1.md</code>, or click “View Notes” on any lecture card.</p>
+            </article>
+          </section>
         </div>
-      </details>
-    </section>
-    <section class="card notes">
-      <header>
-        <h2>Markdown Notes Viewer</h2>
-        <div class="bar">
-          <input id="mdPath" type="text" placeholder="lec1.md" />
-          <button class="btn primary" id="loadBtn" title="Fetch and render the Markdown file">Load</button>
-          <input type="file" id="filePick" accept=".md,.txt,.markdown" style="display:none" />
-          <button class="btn" id="pickBtn" title="Preview a local .md without hosting">Open .md file…</button>
-          <button class="btn" id="fsBtn" title="Toggle fullscreen for the notes viewer">⛶</button>
+      </section>
+
+      <section class="tabpanel" id="panelLabs" role="tabpanel" aria-labelledby="tabBtnLabs" hidden>
+        <div class="layout">
+          <section class="stack">
+            <section class="card listcard">
+              <h2>Lab Quizzes</h2>
+              <p class="helper">Labs are quiz-only. There are no linked notes files for the lab tab.</p>
+              <div class="grid" id="labGrid"></div>
+            </section>
+          </section>
+
+          <section class="card infocard">
+            <h2>Lab Quiz Notes</h2>
+            <p>Lab quizzes do not include Markdown notes in this index.</p>
+            <ul>
+              <li>Lecture quiz files: <code>lecture_1_quiz.html</code> to <code>lecture_11_quiz.html</code></li>
+              <li>Lecture notes files: <code>notes/lec1.md</code> to <code>notes/lec11.md</code></li>
+              <li>Lab quiz files: <code>lab_1_quiz.html</code> to <code>lab_6_quiz.html</code></li>
+            </ul>
+            <p>Keep this <code>index.html</code> in the same folder as the generated quiz files.</p>
+          </section>
         </div>
-      </header>
-      <article id="mdOut" class="md">
-        <p style="color:#6b7280">Type a lecture note path such as <code>lec1.md</code>, or click “View Notes” on any lecture card.</p>
-      </article>
+      </section>
     </section>
   </main>
 
   <script>
-    const QUIZZES = [
+    const LECTURES = [
       { num: 1, title: "Introduction to IoT", desc: "CSC2106 – IoT Protocols & Networks • Lecture 1", file: "lecture_1_quiz.html", notes: "notes/lec1.md" },
       { num: 2, title: "HTTP & REST", desc: "CSC2106 – IoT Protocols & Networks • Lecture 2", file: "lecture_2_quiz.html", notes: "notes/lec2.md" },
       { num: 3, title: "CoAP & MQTT", desc: "CSC2106 – IoT Protocols & Networks • Lecture 3", file: "lecture_3_quiz.html", notes: "notes/lec3.md" },
@@ -107,11 +144,20 @@
       { num: 11, title: "ZigBee & Z-Wave", desc: "CSC2106 – IoT Protocols & Networks • Lecture 11", file: "lecture_11_quiz.html", notes: "notes/lec11.md" }
     ];
 
-    function renderQuizzes() {
-      const grid = document.getElementById('quizGrid');
+    const LABS = [
+      { num: 1, title: "REST on Pico W", desc: "CSC2106 – Lab 1 • REST API with MicroPython", file: "lab_1_quiz.html" },
+      { num: 2, title: "MQTT on Pico W", desc: "CSC2106 – Lab 2 • MQTT publish/subscribe with MicroPython", file: "lab_2_quiz.html" },
+      { num: 3, title: "Simple BLE Flooding Mesh", desc: "CSC2106 – Lab 3 • BLE advertising, scanning, TTL, and dedupe", file: "lab_3_quiz.html" },
+      { num: 4, title: "LoRa", desc: "CSC2106 – Lab 4 • LoRa peer-to-peer messaging", file: "lab_4_quiz.html" },
+      { num: 5, title: "LoRaWAN", desc: "CSC2106 – Lab 5 • TTN and OTAA with LMIC", file: "lab_5_quiz.html" },
+      { num: 6, title: "BLE on Pico W", desc: "CSC2106 – Lab 6 • BLE GATT server/client on MicroPython", file: "lab_6_quiz.html" }
+    ];
+
+    function renderLectureQuizzes() {
+      const grid = document.getElementById('lectureGrid');
       grid.innerHTML = '';
 
-      QUIZZES.forEach(quiz => {
+      LECTURES.forEach(quiz => {
         const card = document.createElement('div');
         card.className = 'lec';
         card.innerHTML = `
@@ -129,7 +175,47 @@
       });
     }
 
-    renderQuizzes();
+    function renderLabQuizzes() {
+      const grid = document.getElementById('labGrid');
+      grid.innerHTML = '';
+
+      LABS.forEach(quiz => {
+        const card = document.createElement('div');
+        card.className = 'lec';
+        card.innerHTML = `
+          <div>
+            <h3>${quiz.title}</h3>
+            <div class="tag">Lab ${quiz.num}</div>
+          </div>
+          <p style="margin:0;color:#9ca3af;font-size:14px">${quiz.desc}</p>
+          <div class="btns">
+            <a href="${quiz.file}" target="_blank" class="btn primary">Start Quiz</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    const tabBtnLectures = document.getElementById('tabBtnLectures');
+    const tabBtnLabs = document.getElementById('tabBtnLabs');
+    const panelLectures = document.getElementById('panelLectures');
+    const panelLabs = document.getElementById('panelLabs');
+
+    function setActiveTab(name) {
+      const showLectures = name === 'lectures';
+      tabBtnLectures.classList.toggle('active', showLectures);
+      tabBtnLabs.classList.toggle('active', !showLectures);
+      tabBtnLectures.setAttribute('aria-selected', String(showLectures));
+      tabBtnLabs.setAttribute('aria-selected', String(!showLectures));
+      panelLectures.hidden = !showLectures;
+      panelLabs.hidden = showLectures;
+    }
+
+    tabBtnLectures.addEventListener('click', () => setActiveTab('lectures'));
+    tabBtnLabs.addEventListener('click', () => setActiveTab('labs'));
+
+    renderLectureQuizzes();
+    renderLabQuizzes();
 
     const mdPath = document.getElementById('mdPath');
     const mdOut = document.getElementById('mdOut');
@@ -180,6 +266,7 @@
     }
 
     window.loadNotes = function(path) {
+      setActiveTab('lectures');
       mdPath.value = path;
       loadBtn.click();
     };
@@ -206,6 +293,7 @@
 
       const reader = new FileReader();
       reader.onload = ev => {
+        setActiveTab('lectures');
         mdOut.innerHTML = parseMarkdown(String(ev.target.result || ''));
         mdPath.value = file.name;
       };
