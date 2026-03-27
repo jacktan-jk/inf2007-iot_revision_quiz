@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 – Lab 4 MCQ Quiz: LoRa Peer-to-Peer Communication</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8;
+    color:#111827; }
+    header { background: white; border-bottom: 1px solid #e5e7eb; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid #e5e7eb; background:white;
+    padding:8px 12px; border-radius:10px; font-weight:600; }
+    button.primary { background: var(--accent); color: white; border-color:
+    var(--accent); }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px
+    10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid #e5e7eb; border-radius:14px;
+    padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:baseline;
+    gap:6px }
+    .qtitle { font-weight:700; margin:0 0 8px }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px
+    solid #e5e7eb; padding:2px 8px; border-radius:999px }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px;
+    border:1px solid #e5e7eb; border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.correct { border-color:#16a34a; background:#f0fdf4; }
+    .opt.wrong { border-color:#dc2626; background:#fef2f2; }
+    .opt.disabled { pointer-events:none; opacity:.8 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px
+    solid #e5e7eb; display:grid; place-items:center; font-weight:700; }
+    .exp { margin-top:10px; border-top:1px dashed #e5e7eb; padding-top:10px;
+    color:#111827; }
+    .exp strong { color:#065f46 }
+    pre.code-block {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      margin: 12px 0;
+    }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+    details > summary { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 – Lab 4 MCQ Quiz: LoRa Peer-to-Peer Communication</h1>
+      <div class="sub">CSC2106 – Internet of Things: Protocols and Networks • Lab 4</div>
+      <div class="stats" id="stats">
+        <span class="pill" id="score">Score: 0</span>
+        <span class="pill" id="progress">Answered: 0 / 0</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" title="Reset the quiz to try again">Reset quiz</button>
+        <button id="revealBtn" title="Reveal correct answers for all questions">Reveal all answers</button>
+        <button id="shuffleBtn" title="Shuffle questions and answer options">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Based on the Lab 4 repo README and committed sketches. This educational quiz is for practice.
+  </footer>
+  <script>
+    const QUESTIONS = [
+      {
+            "q": "What is the main focus of the Lab 4 repo?",
+            "options": [
+                  "LoRaWAN setup with TTN and a gateway",
+                  "LoRa peer-to-peer communication using Arduino and Cytron LoRa-RFM Shield",
+                  "BLE GATT communication on Pico W",
+                  "Wi-Fi MQTT communication with a cloud broker"
+            ],
+            "correct": 1,
+            "why": "The README title and objectives describe a LoRa peer-to-peer communication lab using Arduino and the Cytron LoRa-RFM Shield.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which network style does the README explicitly describe for this lab?",
+            "options": [
+                  "Star network through a LoRaWAN server",
+                  "Peer-to-peer topology",
+                  "Mesh topology with automatic routing",
+                  "Cellular NB-IoT topology"
+            ],
+            "correct": 1,
+            "why": "The introduction states that the lab provides hands-on experience with LoRa devices in a peer-to-peer (P2P) configuration.",
+            "level": "lab 4"
+      },
+      {
+            "q": "According to the README, LoRa is designed mainly for what kind of communication?",
+            "options": [
+                  "High-power short-range video streaming",
+                  "Low-power long-range wireless communication",
+                  "Wired serial communication only",
+                  "High-speed LAN switching"
+            ],
+            "correct": 1,
+            "why": "The introduction describes LoRa as an RF modulation technique for low-powered wireless systems with large transmission ranges.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which two hardware items are listed in the Equipment section?",
+            "options": [
+                  "ESP32 and OLED display",
+                  "Maker Uno and Cytron LoRa-RFM Shield",
+                  "Raspberry Pi and Ethernet hat",
+                  "Cytron UNO and TTN gateway"
+            ],
+            "correct": 1,
+            "why": "The equipment list names Maker Uno and Cytron LoRa-RFM Shield.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What additional driver does the README tell students to install for Maker UNO?",
+            "options": [
+                  "FTDI VCP driver",
+                  "CH341 Serial Driver",
+                  "CP2102 USB driver",
+                  "ST-Link USB driver"
+            ],
+            "correct": 1,
+            "why": "The setup section explicitly tells students to install the CH341 Serial Driver.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which radio library does the README tell students to install?",
+            "options": [
+                  "LoRaWAN LMIC",
+                  "RadioHead by Paul Stoffregen",
+                  "PubSubClient",
+                  "Adafruit BusIO"
+            ],
+            "correct": 1,
+            "why": "The README says to install the open-source RadioHead library by Paul Stoffregen.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which board selection is specified in Arduino IDE?",
+            "options": [
+                  "ESP32 Dev Module",
+                  "Arduino Uno",
+                  "Raspberry Pi Pico",
+                  "Arduino Mega 2560"
+            ],
+            "correct": 1,
+            "why": "The setup instructions say to select Tools > Board > Arduino Uno.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which sketch is provided for the receiver node?",
+            "options": [
+                  "rf95_tx.ino",
+                  "rf95_rx.ino",
+                  "ssd1306_i2c.ino",
+                  "ssd1306_ascii.ino"
+            ],
+            "correct": 1,
+            "why": "The README maps rf95_rx.ino to the Receiver and rf95_tx.ino to the Transmitter.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which sketch is provided for the transmitter node?",
+            "options": [
+                  "rf95_tx.ino",
+                  "rf95_rx.ino",
+                  "ssd1306_i2c.ino",
+                  "ssd1306_ascii.ino"
+            ],
+            "correct": 0,
+            "why": "The README maps rf95_tx.ino to the Transmitter.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What serial monitor baud rate does the README mention for observing the receiver output?",
+            "options": [
+                  "4800",
+                  "9600",
+                  "115200",
+                  "230400"
+            ],
+            "correct": 1,
+            "why": "The operation section says to open the receiver serial monitor and set it to 9600 baud.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which header file is shared by both `rf95_tx.ino` and `rf95_rx.ino` for LoRa radio access?",
+            "options": [
+                  "<LoRa.h>",
+                  "<RH_RF95.h>",
+                  "<WiFi.h>",
+                  "<BLEDevice.h>"
+            ],
+            "correct": 1,
+            "why": "Both sketches include `RH_RF95.h`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What frequency is defined in both transmitter and receiver sketches?",
+            "options": [
+                  "433.0 MHz",
+                  "868.0 MHz",
+                  "915.0 MHz",
+                  "923.0 MHz"
+            ],
+            "correct": 2,
+            "why": "Both sketches define `RF95_FREQ` as `915.0`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Why must the transmitter and receiver frequencies match?",
+            "options": [
+                  "Because the README says different frequencies improve security",
+                  "Because the comments in the code say RX and TX must use the same frequency",
+                  "Because the OLED library requires it",
+                  "Because the USB serial driver depends on it"
+            ],
+            "correct": 1,
+            "why": "The code comment next to `RF95_FREQ` says it must match the other side.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which pin is used as the LoRa chip select (`RFM95_CS`) in both sketches?",
+            "options": [
+                  "2",
+                  "9",
+                  "10",
+                  "13"
+            ],
+            "correct": 2,
+            "why": "Both sketches define `RFM95_CS 10`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which pin is used as the reset pin (`RFM95_RST`) in both sketches?",
+            "options": [
+                  "2",
+                  "7",
+                  "9",
+                  "10"
+            ],
+            "correct": 2,
+            "why": "Both sketches define `RFM95_RST 9`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which interrupt pin is used as `RFM95_INT` in both sketches?",
+            "options": [
+                  "2",
+                  "3",
+                  "8",
+                  "11"
+            ],
+            "correct": 0,
+            "why": "Both sketches define `RFM95_INT 2`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What serial baud rate do both LoRa sketches start with?",
+            "options": [
+                  "4800",
+                  "9600",
+                  "57600",
+                  "115200"
+            ],
+            "correct": 1,
+            "why": "Both `setup()` functions call `Serial.begin(9600);`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What happens if `rf95.init()` fails?",
+            "options": [
+                  "The code silently retries in the background",
+                  "The code prints a failure message and stays in an infinite loop",
+                  "The code switches to Wi-Fi mode",
+                  "The code reconfigures itself for BLE"
+            ],
+            "correct": 1,
+            "why": "Both sketches print `LoRa radio init failed` and then enter `while (1);`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What transmitter power is configured after setup in both LoRa sketches?",
+            "options": [
+                  "5 dBm",
+                  "10 dBm",
+                  "13 dBm",
+                  "23 dBm"
+            ],
+            "correct": 2,
+            "why": "Both sketches call `rf95.setTxPower(13, false);`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which statement best matches the code comments about `RH_RF95`?",
+            "options": [
+                  "It provides full addressing and reliability by default",
+                  "It does not provide addressing or reliability by itself",
+                  "It only works over I2C",
+                  "It is only for OLED displays"
+            ],
+            "correct": 1,
+            "why": "The comments state that `RH_RF95` does not provide addressing or reliability.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What constant identifies the transmitting node in `rf95_tx.ino`?",
+            "options": [
+                  "`device_id = 1`",
+                  "`node_id \"B\"`",
+                  "`sender = \"TX\"`",
+                  "`client_name = \"rf95_tx\"`"
+            ],
+            "correct": 1,
+            "why": "The transmitter sketch defines `#define node_id \"B\"`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "How is the transmitter payload built before sending?",
+            "options": [
+                  "It is hard-coded as `Ping` forever",
+                  "It uses `sprintf` to create `Hello World <packetnum> from <node_id>`",
+                  "It reads a payload from EEPROM",
+                  "It downloads text from a server"
+            ],
+            "correct": 1,
+            "why": "The transmitter uses `sprintf(data, \"Hello World %d from %s\", int(packetnum++), node_id);`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What is the purpose of `packetnum` in `rf95_tx.ino`?",
+            "options": [
+                  "It stores RSSI values",
+                  "It counts transmitted packets",
+                  "It sets the radio frequency",
+                  "It selects the OLED font"
+            ],
+            "correct": 1,
+            "why": "The sketch comment says `packet counter, we increment per transmission`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What message does the transmitter print before sending a packet?",
+            "options": [
+                  "`Waiting for Reply`",
+                  "`Sending to rf95_rx`",
+                  "`Setup Successful`",
+                  "`Receive failed`"
+            ],
+            "correct": 1,
+            "why": "The start of the transmitter loop prints `Sending to rf95_rx`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "After calling `rf95.send(...)`, what does the transmitter do next?",
+            "options": [
+                  "Immediately resets the board",
+                  "Calls `rf95.waitPacketSent()` after a short print/delay",
+                  "Changes frequency to 868 MHz",
+                  "Turns off the serial port"
+            ],
+            "correct": 1,
+            "why": "The transmitter prints `Wait for packet to complete...`, delays briefly, then calls `rf95.waitPacketSent()`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "How long does the transmitter wait for a reply before timing out?",
+            "options": [
+                  "100 ms",
+                  "500 ms",
+                  "1000 ms",
+                  "5000 ms"
+            ],
+            "correct": 2,
+            "why": "The transmitter calls `rf95.waitAvailableTimeout(1000)`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What does the transmitter print if no reply arrives in time?",
+            "options": [
+                  "`Receive failed`",
+                  "`No reply received`",
+                  "`Setup Failed`",
+                  "`Packet dropped`"
+            ],
+            "correct": 1,
+            "why": "The timeout branch prints `No reply received`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "How long does the transmitter wait between loop iterations?",
+            "options": [
+                  "1 second",
+                  "2 seconds",
+                  "5 seconds",
+                  "10 seconds"
+            ],
+            "correct": 3,
+            "why": "The transmitter ends the loop with `delay(10000);`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What condition does the receiver check before trying to read a packet?",
+            "options": [
+                  "`rf95.connected()`",
+                  "`rf95.available()`",
+                  "`Serial.available()`",
+                  "`Wire.available()`"
+            ],
+            "correct": 1,
+            "why": "The receiver loop starts with `if (rf95.available())`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What reply payload does the receiver send back after a successful receive?",
+            "options": [
+                  "`ACK`",
+                  "`Hello from receiver`",
+                  "`And hello back to you`",
+                  "`RSSI OK`"
+            ],
+            "correct": 2,
+            "why": "The receiver defines `uint8_t data[] = \"And hello back to you\";` and sends it.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What additional radio information does the receiver print after getting a packet?",
+            "options": [
+                  "Battery voltage",
+                  "RSSI",
+                  "GPS position",
+                  "Spreading factor"
+            ],
+            "correct": 1,
+            "why": "The receiver prints `RSSI:` followed by `rf95.lastRssi()`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which function is used to display the raw received buffer in the receiver sketch?",
+            "options": [
+                  "`Serial.println(buf)`",
+                  "`RH_RF95::printBuffer(...)`",
+                  "`display.println(...)`",
+                  "`Wire.write(...)`"
+            ],
+            "correct": 1,
+            "why": "The receiver calls `RH_RF95::printBuffer(\"Received: \", buf, len);`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What does the receiver print if `rf95.recv(buf, &len)` fails?",
+            "options": [
+                  "`No reply received`",
+                  "`Receive failed`",
+                  "`LoRa radio init failed`",
+                  "`SSD1306 allocation failed`"
+            ],
+            "correct": 1,
+            "why": "The receiver has an `else` branch that prints `Receive failed`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which library pair is used by `ssd1306_i2c.ino` for OLED output?",
+            "options": [
+                  "`SSD1306Ascii` and `SSD1306AsciiWire`",
+                  "`Adafruit_GFX` and `Adafruit_SSD1306`",
+                  "`U8g2` and `Wire`",
+                  "`LiquidCrystal` and `SPI`"
+            ],
+            "correct": 1,
+            "why": "The I2C OLED example includes `Adafruit_GFX.h` and `Adafruit_SSD1306.h`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What display size is configured in `ssd1306_i2c.ino`?",
+            "options": [
+                  "128x32",
+                  "128x64",
+                  "64x32",
+                  "64x48"
+            ],
+            "correct": 0,
+            "why": "The file defines `SCREEN_WIDTH 128` and `SCREEN_HEIGHT 32`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which I2C address is used in the `display.begin(...)` call of `ssd1306_i2c.ino`?",
+            "options": [
+                  "0x20",
+                  "0x27",
+                  "0x3C",
+                  "0x68"
+            ],
+            "correct": 2,
+            "why": "The I2C OLED example uses `display.begin(SSD1306_SWITCHCAPVCC, 0x3C)`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What text does the Adafruit SSD1306 example print to the screen?",
+            "options": [
+                  "`Setup Successful`",
+                  "`Hello, World!`",
+                  "`LoRa Ready`",
+                  "`Node B`"
+            ],
+            "correct": 1,
+            "why": "The example prints `Hello, World!` before calling `display.display();`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which library pair is used by `ssd1306_ascii.ino`?",
+            "options": [
+                  "`Adafruit_GFX` and `Adafruit_SSD1306`",
+                  "`SSD1306Ascii` and `SSD1306AsciiWire`",
+                  "`U8glib` and `SPI`",
+                  "`LoRa` and `Wire`"
+            ],
+            "correct": 1,
+            "why": "The ASCII OLED example includes `SSD1306Ascii.h` and `SSD1306AsciiWire.h`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What I2C address constant is defined in `ssd1306_ascii.ino`?",
+            "options": [
+                  "0x3C",
+                  "0x3D",
+                  "0x68",
+                  "0x76"
+            ],
+            "correct": 0,
+            "why": "The ASCII example defines `I2C_ADDRESS 0x3C`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which font is selected in `ssd1306_ascii.ino` before printing text?",
+            "options": [
+                  "Arial14",
+                  "System5x7",
+                  "TinyFont",
+                  "Default8x8"
+            ],
+            "correct": 1,
+            "why": "The example calls `display.setFont(System5x7);`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which call in `ssd1306_ascii.ino` demonstrates larger text rendering?",
+            "options": [
+                  "`display.setTextSize(2)`",
+                  "`display.set2X()`",
+                  "`display.zoom(2)`",
+                  "`display.scale(2)`"
+            ],
+            "correct": 1,
+            "why": "The ASCII example demonstrates 2X text by calling `display.set2X();`.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which assignment requirement specifically targets improved reliability?",
+            "options": [
+                  "Use BLE pairing before every send",
+                  "Implement ACK and retransmit to prevent crosstalk traffic interference",
+                  "Switch from LoRa to Wi-Fi",
+                  "Compress messages with GZIP"
+            ],
+            "correct": 1,
+            "why": "The Lab Assignment explicitly asks students to enhance peer-to-peer reliability with features such as ACK and retransmit.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which assignment requirement asks for selective acceptance of messages?",
+            "options": [
+                  "Use an OLED splash screen only",
+                  "Implement ID-based messaging with header, payload, and checksum for at least three devices",
+                  "Connect the node to TTN",
+                  "Store payloads in EEPROM"
+            ],
+            "correct": 1,
+            "why": "The README asks for ID-based messaging with a header, payload, and checksum, and simple filtering so a node only accepts messages directed to its agreed ID.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which status text is included in the OLED assignment list?",
+            "options": [
+                  "`Gateway Joined`",
+                  "`Setup Successful`",
+                  "`Scan Complete`",
+                  "`WiFi Connected`"
+            ],
+            "correct": 1,
+            "why": "The README includes `Setup Successful` among the OLED messages to display.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Which other status text is included in the OLED assignment list?",
+            "options": [
+                  "`Sending Message`",
+                  "`Join Accepted`",
+                  "`Config Saved`",
+                  "`Pairing Complete`"
+            ],
+            "correct": 0,
+            "why": "The README explicitly lists `Sending Message` as one of the OLED statuses.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What is the most accurate description of the provided `rf95_tx` and `rf95_rx` sketches?",
+            "options": [
+                  "They already implement multi-device addressing and checksum validation",
+                  "They provide a basic peer-to-peer send/reply example that students are expected to extend",
+                  "They are full LoRaWAN examples with gateway registration",
+                  "They are OLED-only demos with no radio traffic"
+            ],
+            "correct": 1,
+            "why": "The repo sketches implement a simple send/reply P2P example, while the README assignment asks students to extend it with OLED states, reliability, and ID-based filtering.",
+            "level": "lab 4"
+      }
+];
+    // --- Quiz Logic (DO NOT MODIFY) ---
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const percentEl = document.getElementById('percent');
+    const resetBtn = document.getElementById('resetBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    let state = { score: 0, answered: 0 };
+    let currentQuestions = [];
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map(q => (({
+        q: q.q,
+        options: shuffle(q.options.map((txt, i) => ({ txt, isCorrect: i === q.correct }))),
+        correct: 0,
+        why: q.why,
+        __answered: false
+      }))).map(item => {
+        item.correct = item.options.findIndex(o => o.isCorrect);
+        item.options = item.options.map(o => o.txt);
+        return item;
+      });
+    }
+    function render() {
+      quizEl.innerHTML = '';
+      currentQuestions.forEach((item, qi) => {
+        const card = document.createElement('div');
+        card.className = 'qcard';
+        const head = document.createElement('div');
+        head.className = 'qhead';
+        const titleEl = document.createElement('p');
+        titleEl.className = 'qtitle';
+        titleEl.innerHTML = `${qi + 1}. ${item.q}`;
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = `Q${qi + 1}`;
+        head.appendChild(titleEl);
+        head.appendChild(badge);
+        card.appendChild(head);
+        const opts = document.createElement('div');
+        opts.className = 'opts';
+        item.options.forEach((opt, oi) => {
+          const row = document.createElement('div');
+          row.className = 'opt';
+          row.setAttribute('data-q', qi);
+          row.setAttribute('data-o', oi);
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = String.fromCharCode(65 + oi);
+          const span = document.createElement('span');
+          span.innerHTML = opt;
+          row.appendChild(letter);
+          row.appendChild(span);
+          row.addEventListener('click', onChoose);
+          opts.appendChild(row);
+        });
+        const exp = document.createElement('div');
+        exp.className = 'exp';
+        exp.hidden = true;
+        exp.innerHTML = `<strong>Explanation:</strong> ${item.why}`;
+        card.appendChild(opts);
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+    function onChoose(e) {
+      const btn = e.currentTarget;
+      const qIndex = +btn.getAttribute('data-q');
+      const oIndex = +btn.getAttribute('data-o');
+      const card = btn.closest('.qcard');
+      const exp = card.querySelector('.exp');
+      const data = currentQuestions[qIndex];
+      if (data.__answered) return;
+      const options = card.querySelectorAll('.opt');
+      options.forEach(b => b.classList.add('disabled'));
+      data.__answered = true;
+      state.answered++;
+      if (oIndex === data.correct) {
+        btn.classList.add('correct');
+        state.score++;
+      } else {
+        btn.classList.add('wrong');
+        options[data.correct].classList.add('correct');
+      }
+      exp.hidden = false;
+      updateStats();
+    }
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score/currentQuestions.length)*100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+    function revealAll() {
+      document.querySelectorAll('.qcard').forEach((card, qi) => {
+        const data = currentQuestions[qi];
+        const exp = card.querySelector('.exp');
+        const options = card.querySelectorAll('.opt');
+        options.forEach((b, oi) => {
+          b.classList.remove('wrong');
+          if (oi === data.correct) b.classList.add('correct');
+          b.classList.add('disabled');
+        });
+        data.__answered = true;
+        exp.hidden = false;
+      });
+    }
+    function resetQuiz() {
+      state.score = 0; state.answered = 0;
+      render();
+    }
+    function shuffleQuiz() {
+      state.score = 0; state.answered = 0;
+      currentQuestions = buildQuestions();
+      render();
+    }
+    resetBtn.addEventListener('click', resetQuiz);
+    revealBtn.addEventListener('click', revealAll);
+    shuffleBtn.addEventListener('click', shuffleQuiz);
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>
