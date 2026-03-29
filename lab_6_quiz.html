@@ -74,67 +74,34 @@
   </header>
   <main id="quiz"></main>
   <footer>
-    Based on Lab 6 repo material and uploaded solution code. This educational quiz is for practice.
+    Lab 6 BLE server and client revision quiz.
   </footer>
   <script>
     const QUESTIONS = [
   {
-    "q": "In this lab, which BLE roles are assigned to the two Pico W boards?",
+    "q": "Which Pico W acts as the BLE server/peripheral in this lab?",
     "options": [
-      "Pico W 1 is the Server/Peripheral and Pico W 2 is the Client/Central",
-      "Pico W 1 is the Client/Central and Pico W 2 is the Server/Peripheral",
-      "Both boards act only as beacons",
-      "Both boards act only as scanners"
+      "Pico W 1",
+      "Pico W 2",
+      "Both Pico Ws act as servers",
+      "Neither Pico W acts as a server"
     ],
     "correct": 0,
-    "why": "The repo describes Node A as the Server/Peripheral and Node B as the Client/Central."
+    "why": "The server code is labeled Pico W 1 - Server/Peripheral."
   },
   {
-    "q": "Which communication model is the main focus of the core Lab 6 exercise before the beacon extension?",
+    "q": "Which Pico W acts as the BLE client/central in this lab?",
     "options": [
-      "GATT-based BLE communication using services and characteristics",
-      "BLE audio streaming",
-      "Classic Bluetooth SPP",
-      "Wi-Fi HTTP REST APIs"
+      "Pico W 2",
+      "Pico W 1",
+      "Both are beacon-only nodes",
+      "Both are Wi-Fi clients only"
     ],
     "correct": 0,
-    "why": "The lab objectives center on GATT services and characteristics for read, write, and notify."
+    "why": "The client code is labeled Pico W 2 - Client/Central."
   },
   {
-    "q": "How many Raspberry Pi Pico W boards are listed as required hardware in the repo prerequisites?",
-    "options": [
-      "Two",
-      "One",
-      "Three",
-      "Four"
-    ],
-    "correct": 0,
-    "why": "The prerequisites section specifies two Raspberry Pi Pico W boards."
-  },
-  {
-    "q": "Which IDE is explicitly named in the repo setup section?",
-    "options": [
-      "Thonny IDE",
-      "Arduino IDE",
-      "VS Code only",
-      "Keil uVision"
-    ],
-    "correct": 0,
-    "why": "The prerequisites mention Thonny IDE."
-  },
-  {
-    "q": "What firmware does the repo say should be installed on both Pico Ws?",
-    "options": [
-      "Latest MicroPython UF2 firmware",
-      "CircuitPython nightly firmware",
-      "Arduino bootloader only",
-      "Raspberry Pi OS Lite"
-    ],
-    "correct": 0,
-    "why": "The setup section states the latest MicroPython UF2 firmware should be installed on both boards."
-  },
-  {
-    "q": "Which custom UUID is used for the LED State characteristic?",
+    "q": "Which custom UUID is used for the LED characteristic in this lab?",
     "options": [
       "0x1A00",
       "0x1A01",
@@ -142,10 +109,10 @@
       "0x180F"
     ],
     "correct": 0,
-    "why": "Both the repo and your client code use 0x1A00 for the LED characteristic."
+    "why": "The server and client both use 0x1A00 for the LED characteristic."
   },
   {
-    "q": "Which custom UUID is used for the Status characteristic?",
+    "q": "Which custom UUID is used for the Status characteristic in this lab?",
     "options": [
       "0x1A01",
       "0x1A00",
@@ -153,65 +120,43 @@
       "0x2A19"
     ],
     "correct": 0,
-    "why": "The status characteristic uses UUID 0x1A01."
+    "why": "The server and client both use 0x1A01 for the Status characteristic."
   },
   {
-    "q": "Which custom UUID identifies the service that contains the LED and Status characteristics?",
+    "q": "Which custom UUID identifies the BLE service in this lab?",
     "options": [
       "0x1A02",
       "0x1A01",
       "0x1A00",
-      "0x180A"
+      "0x181A"
     ],
     "correct": 0,
-    "why": "The custom service UUID is 0x1A02."
+    "why": "The server and client both use 0x1A02 as the service UUID."
   },
   {
-    "q": "According to the repo, what permissions are assigned to the LED State characteristic on the server?",
+    "q": "Which advertised device name must the client find before attempting a connection?",
     "options": [
-      "READ and WRITE",
-      "READ and NOTIFY only",
-      "WRITE only",
-      "INDICATE only"
+      "PicoW_A_Server_yxjk",
+      "PicoW_A_Server",
+      "PicoW_B_Client",
+      "BLE_Lab_Node"
     ],
     "correct": 0,
-    "why": "The README table says the LED State characteristic supports READ and WRITE."
+    "why": "The server advertises as PicoW_A_Server_yxjk and the client TARGET_NAME uses the same name."
   },
   {
-    "q": "According to the repo, what permissions are assigned to the Status characteristic on the server?",
+    "q": "What advertising interval constant is used on the server?",
     "options": [
-      "READ and NOTIFY",
-      "READ and WRITE",
-      "WRITE and INDICATE",
-      "NOTIFY only"
+      "200000 microseconds",
+      "50000 microseconds",
+      "10000 microseconds",
+      "1 second"
     ],
     "correct": 0,
-    "why": "The README table says the Status characteristic supports READ and NOTIFY."
+    "why": "The server sets _ADV_INTERVAL_US = 200000."
   },
   {
-    "q": "What is the purpose of the LED State characteristic in the lab?",
-    "options": [
-      "To let the client read and change the server onboard LED state",
-      "To stream advertisement packets",
-      "To send Wi-Fi credentials",
-      "To carry beacon major/minor values only"
-    ],
-    "correct": 0,
-    "why": "The repo states the LED characteristic allows the client to read and change the LED state."
-  },
-  {
-    "q": "What kind of information is placed in the Status characteristic on the server?",
-    "options": [
-      "Formatted temperature and voltage status text",
-      "Only the MAC address",
-      "Only the LED state bit",
-      "Raw RSSI samples only"
-    ],
-    "correct": 0,
-    "why": "The server code formats a status string containing temperature and voltage values."
-  },
-  {
-    "q": "Which ADC channel does the repo server code use to read the Pico W internal temperature sensor?",
+    "q": "Which ADC channel does the server use for the Pico W internal temperature sensor?",
     "options": [
       "ADC(4)",
       "ADC(0)",
@@ -219,87 +164,98 @@
       "ADC(3)"
     ],
     "correct": 0,
-    "why": "The server example sets temp_sensor = machine.ADC(4)."
+    "why": "The server code sets temp_sensor = machine.ADC(4)."
   },
   {
-    "q": "In the repo server code, what is the approximate fixed supply voltage string used in the status payload?",
+    "q": "What kind of string does read_pico_status() return on the server?",
     "options": [
-      "3.3 V",
-      "5.0 V",
-      "1.8 V",
-      "12 V"
+      "A formatted temperature and voltage string",
+      "Only the MAC address",
+      "Only the LED state",
+      "A JSON dictionary"
     ],
     "correct": 0,
-    "why": "The sample server code sets volt = 3.3 before formatting the status string."
+    "why": "The function returns a string formatted like T:<temp>V:<volt>."
   },
   {
-    "q": "What does the server method update_status(notify=True) do beyond writing characteristic values?",
+    "q": "What permissions are assigned to the server LED characteristic?",
     "options": [
-      "It sends a NOTIFY on the status characteristic to all connected clients",
-      "It forces all clients to disconnect",
-      "It restarts advertising only",
-      "It changes the service UUID dynamically"
+      "READ and WRITE",
+      "READ and NOTIFY",
+      "WRITE and NOTIFY",
+      "INDICATE only"
     ],
     "correct": 0,
-    "why": "When notify=True, the server loops through its connections and calls gatts_notify on the status handle."
+    "why": "The server creates _LED_CHAR with bluetooth.FLAG_READ | bluetooth.FLAG_WRITE."
   },
   {
-    "q": "What collection type does the repo server use to keep track of connected clients?",
+    "q": "What permissions are assigned to the server Status characteristic?",
+    "options": [
+      "READ and NOTIFY",
+      "READ and WRITE",
+      "WRITE only",
+      "INDICATE only"
+    ],
+    "correct": 0,
+    "why": "The server creates _STATUS_CHAR with bluetooth.FLAG_READ | bluetooth.FLAG_NOTIFY."
+  },
+  {
+    "q": "What data structure does the server use to track active BLE connections?",
     "options": [
       "A set",
+      "A list",
       "A tuple",
-      "A string",
-      "A bytes object"
+      "A string"
     ],
     "correct": 0,
-    "why": "The server stores connection handles in self._connections = set()."
+    "why": "The server initializes self._connections = set()."
   },
   {
-    "q": "What happens on the server when a central disconnects?",
+    "q": "How does the server convert a written LED value before applying it?",
     "options": [
-      "The connection handle is removed and advertising starts again",
-      "The service is unregistered permanently",
-      "The Pico reboots immediately",
-      "The LED characteristic is deleted"
+      "It reads bytes, decodes them to text, and converts the result to int",
+      "It parses a JSON object",
+      "It converts the value to float",
+      "It treats the bytes as raw RSSI"
     ],
     "correct": 0,
-    "why": "On disconnect, the server removes the handle and resumes advertising."
+    "why": "The server uses self._ble.gatts_read(value_handle), then int(data.decode())."
   },
   {
-    "q": "What is the advertised server name in the repo README example?",
+    "q": "What extra action does server.update_status(notify=True) perform?",
     "options": [
-      "PicoW_A_Server",
-      "PicoW_A_Server_yxjk",
-      "CSC2106-BLE#01",
-      "BLE_Server_Node"
+      "It sends notifications on the status handle to connected clients",
+      "It forces every client to disconnect",
+      "It changes the advertised name",
+      "It starts scanning for other devices"
     ],
     "correct": 0,
-    "why": "The README sample creates the server as BLEServer(\"PicoW_A_Server\")."
+    "why": "When notify=True, the server loops through connections and calls gatts_notify(conn_handle, self._status_handle)."
   },
   {
-    "q": "What target device name does your uploaded client actually look for?",
+    "q": "How does the server simulate Button A in check_button_a()?",
     "options": [
-      "PicoW_A_Server_yxjk",
-      "PicoW_A_Server",
-      "PicoW_B_Client",
-      "CSC2106_BLE_Server"
+      "By returning true when ticks_ms() % 10000 < 50",
+      "By reading GP20",
+      "By reading GP21",
+      "By using a hardware interrupt on the LED pin"
     ],
     "correct": 0,
-    "why": "Your uploaded client sets TARGET_NAME = \"PicoW_A_Server_yxjk\"."
+    "why": "check_button_a() returns time.ticks_ms() % 10000 < 50."
   },
   {
-    "q": "Compared with the README client example, what is one important customization in your uploaded client?",
+    "q": "What delay is used at the end of each server loop iteration?",
     "options": [
-      "It targets a different advertised server name",
-      "It changes BLE into Wi-Fi scanning",
-      "It removes service discovery completely",
-      "It converts the client into beacon-only mode"
+      "100 ms",
+      "50 ms",
+      "500 ms",
+      "10 s"
     ],
     "correct": 0,
-    "why": "Your client changes the target name from the repo example to PicoW_A_Server_yxjk."
+    "why": "The server loop ends with time.sleep_ms(100)."
   },
   {
-    "q": "Which GPIO pins are used for Button A and Button B in your uploaded client?",
+    "q": "Which GPIO pins are used for Button A and Button B on the client?",
     "options": [
       "GP20 and GP21",
       "GP0 and GP1",
@@ -307,439 +263,317 @@
       "GP26 and GP27"
     ],
     "correct": 0,
-    "why": "Your client maps btn_a to GP20 and btn_b to GP21."
+    "why": "The client maps btn_a to GP20 and btn_b to GP21."
   },
   {
-    "q": "What pin mode configuration is used for both client buttons in your uploaded code?",
+    "q": "How are the client buttons configured?",
     "options": [
-      "Input with pull-up resistor",
-      "Analog input",
-      "Open-drain output",
-      "PWM output"
+      "As inputs with pull-up resistors",
+      "As analog inputs",
+      "As PWM outputs",
+      "As open-drain outputs"
     ],
     "correct": 0,
-    "why": "Both buttons are created as machine.Pin.IN with machine.Pin.PULL_UP."
+    "why": "Both buttons are created with machine.Pin.IN and machine.Pin.PULL_UP."
   },
   {
-    "q": "What hardware resource does the client onboard LED represent in your code?",
+    "q": "Which helper method walks through advertising data to decode the device name on the client?",
     "options": [
-      "A local indicator that mirrors the read server LED state and helps choose the next write state",
-      "The BLE status characteristic itself",
-      "The server temperature sensor",
-      "A Wi-Fi connection indicator only"
+      "_decode_name()",
+      "scan()",
+      "read_led()",
+      "write_led()"
     ],
     "correct": 0,
-    "why": "The onboard LED is updated after a read result and its current value is used to compute the next write state."
+    "why": "The client defines _decode_name(self, adv_data) for that purpose."
   },
   {
-    "q": "What method is used in your client to turn on BLE and register the IRQ callback?",
-    "options": [
-      "self._ble.active(True) and self._ble.irq(self._irq)",
-      "self._ble.enable() and self._ble.callback(self._irq)",
-      "bluetooth.start() and bluetooth.on_irq(self._irq)",
-      "machine.ble_on() and machine.irq(self._irq)"
-    ],
-    "correct": 0,
-    "why": "The client constructor activates BLE and binds the IRQ handler using active(True) and irq(self._irq)."
-  },
-  {
-    "q": "Why does your client implement a custom _decode_name() helper?",
-    "options": [
-      "To extract the advertised device name from BLE advertising payload fields",
-      "To decode JSON from the status characteristic",
-      "To parse Wi-Fi SSIDs",
-      "To calculate the temperature formula"
-    ],
-    "correct": 0,
-    "why": "The helper walks through advertisement data and extracts the name from AD type 0x08 or 0x09."
-  },
-  {
-    "q": "Which BLE advertising data types does your _decode_name() treat as device names?",
+    "q": "Which AD types does _decode_name() treat as local-name fields?",
     "options": [
       "0x08 and 0x09",
-      "0x01 and 0x02",
+      "0x01 and 0x06",
       "0x16 and 0xFF",
-      "0x0A and 0x12"
+      "0x02 and 0x03"
     ],
     "correct": 0,
-    "why": "The function checks for AD type 0x08 (shortened local name) and 0x09 (complete local name)."
+    "why": "The helper checks for AD type 0x08 and 0x09."
   },
   {
-    "q": "What does your client do immediately after finding a matching advertised device name during scanning?",
+    "q": "What does the client do immediately after a target-name match is found during scanning?",
     "options": [
-      "Stops scanning and starts a connection attempt",
-      "Starts beacon mode",
-      "Writes to the LED characteristic immediately",
-      "Reads the status characteristic without connecting"
+      "Stores address info, stops scanning, and calls gap_connect()",
+      "Starts advertising as a peripheral",
+      "Writes to the LED characteristic without connecting",
+      "Reboots the board"
     ],
     "correct": 0,
-    "why": "On a name match, the client stores the address, stops scanning with gap_scan(None), and calls gap_connect."
+    "why": "The client stores addr_type and addr, calls gap_scan(None), and then calls gap_connect()."
   },
   {
-    "q": "Which IRQ event in your client indicates that the connection to the peripheral has been established?",
+    "q": "What argument does client.scan() pass to gap_scan()?",
     "options": [
-      "_IRQ_PERIPHERAL_CONNECT",
-      "_IRQ_SCAN_DONE",
+      "0",
+      "None",
+      "50",
+      "500"
+    ],
+    "correct": 0,
+    "why": "The client scan() method calls self._ble.gap_scan(0)."
+  },
+  {
+    "q": "When does client.read_led() attempt a gattc_read()?",
+    "options": [
+      "Only when both self._conn_handle and self._led_handle are truthy",
+      "On every loop iteration",
+      "Only before scanning starts",
+      "Only after a status notification arrives"
+    ],
+    "correct": 0,
+    "why": "read_led() is guarded by if self._conn_handle and self._led_handle."
+  },
+  {
+    "q": "How does client.write_led(state) prepare the value before writing?",
+    "options": [
+      "It converts the state to a string and encodes it as UTF-8 bytes",
+      "It packs the state as a float",
+      "It converts the state to JSON",
+      "It sends the raw Python integer object"
+    ],
+    "correct": 0,
+    "why": "write_led() uses str(state).encode('utf-8')."
+  },
+  {
+    "q": "What does the client do in _IRQ_GATTC_NOTIFY when the value handle matches the status handle?",
+    "options": [
+      "Decodes the bytes as UTF-8 and prints the server status text",
+      "Treats the bytes as an RSSI sample",
+      "Starts a new BLE scan",
+      "Turns off the onboard LED permanently"
+    ],
+    "correct": 0,
+    "why": "The notify branch decodes value.decode('utf-8') and prints the resulting status string."
+  },
+  {
+    "q": "How is state_to_write computed when Button B is pressed on the client?",
+    "options": [
+      "1 - onboard_led.value()",
+      "onboard_led.value() + 1",
+      "btn_b.value() * 2",
+      "time.ticks_ms() // 1000"
+    ],
+    "correct": 0,
+    "why": "The client computes state_to_write = 1 - onboard_led.value()."
+  },
+  {
+    "q": "What debounce threshold does the client use for button actions?",
+    "options": [
+      "More than 500 ms since the last action",
+      "More than 50 ms since the last action",
+      "Exactly 10 seconds since boot",
+      "No debounce is used"
+    ],
+    "correct": 0,
+    "why": "Both button branches check whether time.ticks_ms() - last_action_time > 500."
+  },
+  {
+    "q": "What delay is used at the end of each client loop iteration?",
+    "options": [
+      "50 ms",
+      "100 ms",
+      "500 ms",
+      "10 s"
+    ],
+    "correct": 0,
+    "why": "The client loop ends with time.sleep_ms(50)."
+  },
+  {
+    "q": "Which client-side event is intended to receive server status notifications?",
+    "options": [
       "_IRQ_GATTC_NOTIFY",
-      "_IRQ_GATTC_WRITE_DONE"
+      "_IRQ_SCAN_DONE",
+      "_IRQ_GATTS_WRITE",
+      "_IRQ_CENTRAL_DISCONNECT"
     ],
     "correct": 0,
-    "why": "The client begins service discovery when _IRQ_PERIPHERAL_CONNECT is received."
+    "why": "The client handles status notifications in the _IRQ_GATTC_NOTIFY branch."
   },
   {
-    "q": "What BLE procedure does your client start right after _IRQ_PERIPHERAL_CONNECT?",
+    "q": "Which server-side action produces those status notifications?",
     "options": [
-      "Service discovery using gattc_discover_services()",
-      "Immediate LED write",
-      "Beacon advertising",
-      "A Wi-Fi reconnect sequence"
+      "Calling update_status(notify=True)",
+      "Calling gap_scan(0)",
+      "Reading the LED characteristic only",
+      "Creating btn_a and btn_b"
     ],
     "correct": 0,
-    "why": "After connecting, the client prints a message and calls gattc_discover_services(self._conn_handle)."
+    "why": "The server sends notifications when update_status is called with notify=True."
   },
   {
-    "q": "Which pair of values from _IRQ_GATTC_SERVICE_RESULT does your client save for later characteristic discovery?",
+    "q": "What limitation is explicitly stated in the client code comments?",
     "options": [
-      "start_handle and end_handle of the target service",
-      "RSSI and adv_type",
-      "GPIO numbers and pull modes",
-      "Major and minor beacon IDs"
+      "Some IRQ handlers are omitted for brevity",
+      "The code has no BLE scanning support",
+      "The code is beacon-only",
+      "The code has no button handling"
     ],
     "correct": 0,
-    "why": "When the discovered service UUID matches _SVC_UUID, the client stores the start and end handles."
+    "why": "A comment in the client code says other IRQ handlers are omitted for brevity."
   },
   {
-    "q": "Why does your client use the _char_discovery_started flag?",
+    "q": "Which extra module is imported by the server file for MAC-address formatting?",
     "options": [
-      "To avoid starting characteristic discovery more than once",
-      "To count button presses",
-      "To compute the next LED state",
-      "To identify beacon packets"
+      "ubinascii",
+      "json",
+      "ssl",
+      "socket"
     ],
     "correct": 0,
-    "why": "The flag ensures characteristic discovery is started only once after a valid service is found."
+    "why": "The server file imports ubinascii near the top and uses it inside get_mac()."
   },
   {
-    "q": "What condition marks discovery as complete in your uploaded client?",
+    "q": "Which module is imported inside the server get_mac() function?",
     "options": [
-      "Both the LED handle and status handle have been found",
-      "Scanning has stopped",
-      "A write has succeeded",
-      "The client LED is ON"
+      "network",
+      "struct",
+      "math",
+      "select"
     ],
     "correct": 0,
-    "why": "The code sets _discovery_complete only when both _led_handle and _status_handle are not None."
+    "why": "The get_mac() function contains an inner import network statement."
   },
   {
-    "q": "Which IRQ event in your client provides characteristic UUIDs and value handles?",
+    "q": "Which server IRQ constant is assigned const(1)?",
     "options": [
-      "_IRQ_GATTC_CHARACTERISTIC_RESULT",
+      "_IRQ_CENTRAL_CONNECT",
+      "_IRQ_CENTRAL_DISCONNECT",
+      "_IRQ_GATTS_WRITE",
+      "_IRQ_GATTC_NOTIFY"
+    ],
+    "correct": 0,
+    "why": "The server defines _IRQ_CENTRAL_CONNECT = const(1)."
+  },
+  {
+    "q": "Which server IRQ constant is assigned const(2)?",
+    "options": [
+      "_IRQ_CENTRAL_DISCONNECT",
+      "_IRQ_CENTRAL_CONNECT",
+      "_IRQ_GATTS_WRITE",
+      "_IRQ_SCAN_DONE"
+    ],
+    "correct": 0,
+    "why": "The server defines _IRQ_CENTRAL_DISCONNECT = const(2)."
+  },
+  {
+    "q": "Which server IRQ constant is assigned const(3)?",
+    "options": [
+      "_IRQ_GATTS_WRITE",
+      "_IRQ_CENTRAL_CONNECT",
+      "_IRQ_CENTRAL_DISCONNECT",
+      "_IRQ_GATTC_READ_DONE"
+    ],
+    "correct": 0,
+    "why": "The server defines _IRQ_GATTS_WRITE = const(3)."
+  },
+  {
+    "q": "What message does the server print when a client connects?",
+    "options": [
+      "Client Connected.",
+      "Scan complete",
+      "Found Server. Connecting...",
+      "Write successful"
+    ],
+    "correct": 0,
+    "why": "In the _IRQ_CENTRAL_CONNECT branch, the server prints Client Connected."
+  },
+  {
+    "q": "What message does the server print when a client disconnects?",
+    "options": [
+      "Client Disconnected. Advertising...",
+      "Scan complete",
+      "Client Button A pressed",
+      "Pico W MAC Address"
+    ],
+    "correct": 0,
+    "why": "In the _IRQ_CENTRAL_DISCONNECT branch, the server prints Client Disconnected. Advertising..."
+  },
+  {
+    "q": "What message pattern does the server print after handling a client LED write?",
+    "options": [
+      "LED state set to: <new_state>",
+      "LED toggled from RSSI",
+      "Status written to flash",
+      "Peripheral discovery complete"
+    ],
+    "correct": 0,
+    "why": "After decoding the written value, the server prints LED state set to: followed by the new state."
+  },
+  {
+    "q": "Which client IRQ constant is assigned const(5)?",
+    "options": [
+      "_IRQ_SCAN_RESULT",
+      "_IRQ_SCAN_DONE",
+      "_IRQ_GATTC_READ_DONE",
+      "_IRQ_GATTC_NOTIFY"
+    ],
+    "correct": 0,
+    "why": "The client defines _IRQ_SCAN_RESULT = const(5)."
+  },
+  {
+    "q": "Which client IRQ constant is assigned const(6)?",
+    "options": [
+      "_IRQ_SCAN_DONE",
+      "_IRQ_SCAN_RESULT",
+      "_IRQ_GATTC_READ_DONE",
+      "_IRQ_GATTC_NOTIFY"
+    ],
+    "correct": 0,
+    "why": "The client defines _IRQ_SCAN_DONE = const(6)."
+  },
+  {
+    "q": "Which client IRQ constant is assigned const(15)?",
+    "options": [
+      "_IRQ_GATTC_READ_DONE",
+      "_IRQ_GATTC_NOTIFY",
+      "_IRQ_SCAN_DONE",
+      "_IRQ_SCAN_RESULT"
+    ],
+    "correct": 0,
+    "why": "The client defines _IRQ_GATTC_READ_DONE = const(15)."
+  },
+  {
+    "q": "Which client IRQ constant is assigned const(18)?",
+    "options": [
+      "_IRQ_GATTC_NOTIFY",
       "_IRQ_GATTC_READ_DONE",
       "_IRQ_SCAN_DONE",
-      "_IRQ_PERIPHERAL_DISCONNECT"
+      "_IRQ_SCAN_RESULT"
     ],
     "correct": 0,
-    "why": "Characteristic result events deliver def_handle, value_handle, properties, and uuid."
+    "why": "The client defines _IRQ_GATTC_NOTIFY = const(18)."
   },
   {
-    "q": "What does your client do when the discovered characteristic UUID equals _LED_UUID?",
+    "q": "Which fields are shown in the client's named scan-result debug print?",
     "options": [
-      "Stores its value_handle as the LED handle",
-      "Disconnects from the server",
-      "Treats it as a beacon packet",
-      "Writes the current button state immediately"
+      "Address, RSSI, and decoded name",
+      "Temperature, voltage, and GPIO pin",
+      "Only the device name",
+      "Only the service UUID"
     ],
     "correct": 0,
-    "why": "The client saves the LED characteristic value_handle in self._led_handle."
+    "why": "The print statement includes bytes(addr).hex(), rssi, and the decoded device name."
   },
   {
-    "q": "What does your client do when the discovered characteristic UUID equals _STATUS_UUID?",
+    "q": "What is the purpose of the client _reset() method?",
     "options": [
-      "Stores its value_handle as the status handle",
-      "Marks the write as successful",
-      "Stops all scanning permanently",
-      "Changes the target name"
+      "To initialize connection, address, and characteristic-handle state to None",
+      "To erase the quiz score",
+      "To stop server advertising",
+      "To calibrate the temperature sensor"
     ],
     "correct": 0,
-    "why": "The client saves the Status characteristic value_handle in self._status_handle."
-  },
-  {
-    "q": "Which event handler in your client processes the actual bytes returned from a read request?",
-    "options": [
-      "_IRQ_GATTC_READ_RESULT",
-      "_IRQ_GATTC_READ_DONE",
-      "_IRQ_SCAN_RESULT",
-      "_IRQ_GATTC_WRITE_DONE"
-    ],
-    "correct": 0,
-    "why": "Your client decodes the LED value inside _IRQ_GATTC_READ_RESULT, while _READ_DONE only checks status."
-  },
-  {
-    "q": "What does your client print when a status notification arrives on the status handle?",
-    "options": [
-      "A Task 2 NOTIFY message containing decoded UTF-8 status text",
-      "Only the raw binary address bytes",
-      "A Wi-Fi IP address",
-      "The full service table"
-    ],
-    "correct": 0,
-    "why": "In _IRQ_GATTC_NOTIFY, the client decodes the bytes as UTF-8 and prints the server status string."
-  },
-  {
-    "q": "What action does your client take when _IRQ_PERIPHERAL_DISCONNECT occurs?",
-    "options": [
-      "Resets internal state and starts scanning again",
-      "Keeps stale handles and waits forever",
-      "Switches to beacon mode",
-      "Writes zero to the LED characteristic"
-    ],
-    "correct": 0,
-    "why": "On disconnect, the client calls _reset() and then scan() to reconnect later."
-  },
-  {
-    "q": "What does is_connected() require in your client?",
-    "options": [
-      "A non-None connection handle and completed characteristic discovery",
-      "Only that scanning has started",
-      "Only that the client LED is on",
-      "Only that the target name matches once"
-    ],
-    "correct": 0,
-    "why": "is_connected() returns True only if there is a connection handle and discovery is complete."
-  },
-  {
-    "q": "In your client, what happens if Button A is pressed before discovery is complete?",
-    "options": [
-      "The code prints that it is not connected or characteristics are not discovered yet",
-      "The client crashes immediately",
-      "It writes to the LED characteristic anyway",
-      "It silently toggles beacon mode"
-    ],
-    "correct": 0,
-    "why": "read_led() guards against premature access and prints that message when not ready."
-  },
-  {
-    "q": "In your client, what happens if Button B is pressed before discovery is complete?",
-    "options": [
-      "The code prints that it is not connected or characteristics are not discovered yet",
-      "It force-connects without scanning",
-      "It toggles the local LED only",
-      "It reformats the advertising payload"
-    ],
-    "correct": 0,
-    "why": "write_led() uses the same readiness guard as read_led()."
-  },
-  {
-    "q": "How does your client compute the next LED state to write when Button B is pressed?",
-    "options": [
-      "It uses 1 - onboard_led.value()",
-      "It always writes 1",
-      "It always writes 0",
-      "It reads the RSSI and maps it to 0 or 1"
-    ],
-    "correct": 0,
-    "why": "The main loop toggles based on the inverse of the current onboard LED value."
-  },
-  {
-    "q": "What data type is sent in write_led(state) before calling gattc_write?",
-    "options": [
-      "UTF-8 encoded bytes created from the string form of the state",
-      "A floating-point voltage value",
-      "A JSON object",
-      "A Python list of integers"
-    ],
-    "correct": 0,
-    "why": "write_led() converts the integer state to a string and then encodes it as UTF-8 bytes."
-  },
-  {
-    "q": "What does a status value of 0 mean in your _IRQ_GATTC_WRITE_DONE handler?",
-    "options": [
-      "The write completed successfully",
-      "The server requested a disconnect",
-      "Scanning timed out",
-      "Characteristic discovery failed"
-    ],
-    "correct": 0,
-    "why": "The handler prints a success message when the write status equals 0."
-  },
-  {
-    "q": "Your scan() method calls gap_scan(0, 30000, 30000). Based on the code, what is the effect of the first argument being 0?",
-    "options": [
-      "The scan continues until explicitly stopped by the code",
-      "The scan lasts exactly 30 seconds",
-      "Scanning is disabled",
-      "The device performs a Wi-Fi scan instead"
-    ],
-    "correct": 0,
-    "why": "In MicroPython BLE, a duration of 0 means continuous scanning until gap_scan(None) is used to stop it."
-  },
-  {
-    "q": "What does your client use to stop scanning once the target server has been found?",
-    "options": [
-      "gap_scan(None)",
-      "gap_advertise(None)",
-      "disconnect()",
-      "machine.reset()"
-    ],
-    "correct": 0,
-    "why": "The code explicitly calls self._ble.gap_scan(None) before connecting."
-  },
-  {
-    "q": "What timing guard is used in the main loop to debounce button-triggered actions?",
-    "options": [
-      "500 ms",
-      "50 ms",
-      "5 s",
-      "10 s"
-    ],
-    "correct": 0,
-    "why": "The code checks current_time - last_action_time > 500 before acting on either button."
-  },
-  {
-    "q": "What extra delay is inserted right after a valid button action in the main loop?",
-    "options": [
-      "200 ms",
-      "20 ms",
-      "1 s",
-      "10 s"
-    ],
-    "correct": 0,
-    "why": "After a valid button action, the code sleeps for 200 ms."
-  },
-  {
-    "q": "What is the idle loop delay at the end of each main loop iteration?",
-    "options": [
-      "50 ms",
-      "500 ms",
-      "200 ms",
-      "5 ms"
-    ],
-    "correct": 0,
-    "why": "The loop ends with time.sleep_ms(50)."
-  },
-  {
-    "q": "According to the repo checklist, what is Task 2 in the lab flow?",
-    "options": [
-      "Server Notify",
-      "Client Write",
-      "Beacon Verification",
-      "Firmware Flashing"
-    ],
-    "correct": 0,
-    "why": "The README checklist labels Task 2 as Server Notify."
-  },
-  {
-    "q": "According to the repo checklist, what is Task 3?",
-    "options": [
-      "Client Read",
-      "Server Notify",
-      "Beacon Scan",
-      "Client Advertise"
-    ],
-    "correct": 0,
-    "why": "The checklist labels Task 3 as Client Read."
-  },
-  {
-    "q": "According to the repo checklist, what is Task 4?",
-    "options": [
-      "Client Write",
-      "Server Read",
-      "Beacon Broadcast",
-      "Wi-Fi Pairing"
-    ],
-    "correct": 0,
-    "why": "The checklist labels Task 4 as Client Write."
-  },
-  {
-    "q": "In the repo checklist, what server-side action triggers the NOTIFY example?",
-    "options": [
-      "Waiting about 10 seconds for the simulated server button event",
-      "Pressing the client Button B",
-      "Reading the LED characteristic from the client",
-      "Flashing the Pico with new firmware"
-    ],
-    "correct": 0,
-    "why": "The README says Task 2 is triggered by the server-side simulated button event, described as waiting 10 seconds."
-  },
-  {
-    "q": "What is the core difference between a GATT Peripheral and a BLE Beacon according to the repo?",
-    "options": [
-      "A beacon only advertises custom data and does not offer connectable services",
-      "A beacon always supports more characteristics than GATT",
-      "A peripheral cannot advertise at all",
-      "A GATT peripheral never uses UUIDs"
-    ],
-    "correct": 0,
-    "why": "The beacon section states that a beacon only advertises custom data and does not offer services to connect to."
-  },
-  {
-    "q": "Why does the repo describe beacon mode as very energy-efficient?",
-    "options": [
-      "Because it broadcasts packets without establishing connections",
-      "Because it uses Wi-Fi instead of BLE",
-      "Because it disables advertising",
-      "Because it stores all data in flash only"
-    ],
-    "correct": 0,
-    "why": "The beacon section says a beacon broadcasts simple packets at intervals without ever attempting a connection."
-  },
-  {
-    "q": "In the beacon example, what advertising interval is used?",
-    "options": [
-      "500000 us",
-      "200000 us",
-      "30000 us",
-      "10000 us"
-    ],
-    "correct": 0,
-    "why": "The beacon example sets _ADV_INTERVAL_US = 500000."
-  },
-  {
-    "q": "Which beacon payload field is described as the group identifier in the repo example?",
-    "options": [
-      "Major ID",
-      "Minor ID",
-      "TX Power",
-      "Company ID"
-    ],
-    "correct": 0,
-    "why": "The beacon example comments describe MAJOR_ID as the group identifier."
-  },
-  {
-    "q": "Which beacon payload field is described as the specific device identifier in the repo example?",
-    "options": [
-      "Minor ID",
-      "Major ID",
-      "Service UUID",
-      "RSSI"
-    ],
-    "correct": 0,
-    "why": "The beacon example comments describe MINOR_ID as the specific device identifier."
-  },
-  {
-    "q": "What mobile apps does the repo suggest for verifying the beacon?",
-    "options": [
-      "nRF Connect or BLE Scanner",
-      "Thonny or PuTTY",
-      "Wireshark only",
-      "MQTTX only"
-    ],
-    "correct": 0,
-    "why": "The verification section recommends using nRF Connect or BLE Scanner."
-  },
-  {
-    "q": "Which statement best describes the relationship between the repo and your uploaded Lab 6 client?",
-    "options": [
-      "The repo defines the lab objectives and baseline BLE flow, while your client customizes the target name, button pins, and full discovery handling",
-      "They are unrelated projects using different protocols",
-      "Your client removes all GATT behavior from the repo design",
-      "The repo is only about Wi-Fi and your file is only about LoRa"
-    ],
-    "correct": 0,
-    "why": "The repo supplies the lab design and checklist, and your client refines the central-side implementation details."
+    "why": "The _reset() method initializes connection, address, and characteristic-handle state to None."
   }
 ];
-    // --- Quiz Logic (DO NOT MODIFY) ---
     const quizEl = document.getElementById('quiz');
     const scoreEl = document.getElementById('score');
     const progressEl = document.getElementById('progress');
@@ -838,7 +672,7 @@
     function updateStats() {
       scoreEl.textContent = `Score: ${state.score}`;
       progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
-      const pct = currentQuestions.length ? Math.round((state.score/currentQuestions.length)*100) : 0;
+      const pct = currentQuestions.length ? Math.round((state.score / currentQuestions.length) * 100) : 0;
       percentEl.textContent = `${pct}%`;
     }
     function revealAll() {
@@ -856,11 +690,13 @@
       });
     }
     function resetQuiz() {
-      state.score = 0; state.answered = 0;
+      state.score = 0;
+      state.answered = 0;
       render();
     }
     function shuffleQuiz() {
-      state.score = 0; state.answered = 0;
+      state.score = 0;
+      state.answered = 0;
       currentQuestions = buildQuestions();
       render();
     }
