@@ -101,37 +101,37 @@
     "why": "The client code is labeled Pico W 2 - Client/Central."
   },
   {
-    "q": "Which custom UUID is used for the LED characteristic in this lab?",
+    "q": "What is the purpose of a writable LED characteristic in this lab?",
     "options": [
-      "0x1A00",
-      "0x1A01",
-      "0x1A02",
-      "0x180F"
+      "It lets the client remotely request a change to the server's LED state",
+      "It stores the BLE scan RSSI history",
+      "It replaces the need for advertising",
+      "It forces the server to disconnect after every write"
     ],
     "correct": 0,
-    "why": "The server and client both use 0x1A00 for the LED characteristic."
+    "why": "A writable LED characteristic is a simple way to demonstrate remote actuation through GATT."
   },
   {
-    "q": "Which custom UUID is used for the Status characteristic in this lab?",
+    "q": "What is the purpose of a status characteristic that supports notifications?",
     "options": [
-      "0x1A01",
-      "0x1A00",
-      "0x1A02",
-      "0x2A19"
+      "It lets the server expose changing state and push updates to the client without requiring constant polling",
+      "It prevents the client from writing any characteristic",
+      "It sets the advertising interval automatically",
+      "It replaces characteristic discovery"
     ],
     "correct": 0,
-    "why": "The server and client both use 0x1A01 for the Status characteristic."
+    "why": "A notify-capable status characteristic is useful when the peripheral wants to publish changing information to the central asynchronously."
   },
   {
-    "q": "Which custom UUID identifies the BLE service in this lab?",
+    "q": "Why group related BLE characteristics under a single service in this lab?",
     "options": [
-      "0x1A02",
-      "0x1A01",
-      "0x1A00",
-      "0x181A"
+      "So the client can discover one logical feature group that contains the control and status characteristics",
+      "So the peripheral can skip advertising entirely",
+      "So UUID values do not need to be unique anymore",
+      "So button debouncing happens in hardware"
     ],
     "correct": 0,
-    "why": "The server and client both use 0x1A02 as the service UUID."
+    "why": "A service acts as the container for related characteristics, making discovery and organization clearer for the client."
   },
   {
     "q": "Why does the client filter scan results by advertised device name before connecting?",
@@ -156,15 +156,15 @@
     "why": "Advertising more often usually improves discoverability, but it also uses more airtime and energy."
   },
   {
-    "q": "Which ADC channel does the server use for the Pico W internal temperature sensor?",
+    "q": "Why is the onboard temperature sensor a useful status source in this BLE lab?",
     "options": [
-      "ADC(4)",
-      "ADC(0)",
-      "ADC(1)",
-      "ADC(3)"
+      "It gives the peripheral real changing data to expose through its status characteristic",
+      "It is required before the LED can be written",
+      "It replaces the need for BLE notifications",
+      "It determines the advertised device name"
     ],
     "correct": 0,
-    "why": "The server code sets temp_sensor = machine.ADC(4)."
+    "why": "An onboard sensor provides a simple live value the peripheral can read, package, and send to the client without extra hardware."
   },
   {
     "q": "What kind of string does read_pico_status() return on the server?",
@@ -244,15 +244,15 @@
     "why": "check_button_a() returns time.ticks_ms() % 10000 < 50."
   },
   {
-    "q": "What delay is used at the end of each server loop iteration?",
+    "q": "Why include a short delay at the end of the server loop?",
     "options": [
-      "100 ms",
-      "50 ms",
-      "500 ms",
-      "10 s"
+      "To avoid busy-spinning while still checking BLE-related work frequently",
+      "To guarantee a stronger BLE signal",
+      "To make the LED characteristic read-only",
+      "To disable advertising between connections"
     ],
     "correct": 0,
-    "why": "The server loop ends with time.sleep_ms(100)."
+    "why": "A small pause keeps the loop responsive without wasting CPU time in a tight spin."
   },
   {
     "q": "Why is it useful for the client lab to have separate controls for reading state and changing state?",
@@ -266,15 +266,15 @@
     "why": "Using separate controls for read and write interactions makes the client-side BLE behavior easier to reason about during the lab."
   },
   {
-    "q": "How are the client buttons configured?",
+    "q": "Why are pull-up input configurations common for physical buttons in embedded labs like this one?",
     "options": [
-      "As inputs with pull-up resistors",
-      "As analog inputs",
-      "As PWM outputs",
-      "As open-drain outputs"
+      "They provide a stable default logic level and let a button press pull the input low cleanly",
+      "They make debouncing unnecessary",
+      "They turn buttons into BLE advertisements",
+      "They prevent the need for GPIO reads"
     ],
     "correct": 0,
-    "why": "Both buttons are created with machine.Pin.IN and machine.Pin.PULL_UP."
+    "why": "Pull-up wiring is common because it gives a defined idle state and a simple active-low press behavior."
   },
   {
     "q": "Which helper method walks through advertising data to decode the device name on the client?",
@@ -376,15 +376,15 @@
     "why": "Both button branches check whether time.ticks_ms() - last_action_time > 500."
   },
   {
-    "q": "What delay is used at the end of each client loop iteration?",
+    "q": "Why include a short delay at the end of the client loop?",
     "options": [
-      "50 ms",
-      "100 ms",
-      "500 ms",
-      "10 s"
+      "To keep the client responsive without burning CPU in a tight polling loop",
+      "To force notifications to arrive in order",
+      "To avoid characteristic discovery altogether",
+      "To make every write confirmed automatically"
     ],
     "correct": 0,
-    "why": "The client loop ends with time.sleep_ms(50)."
+    "why": "Client loops often need a small pause so they do not busy-spin while still reacting quickly to buttons and BLE events."
   },
   {
     "q": "Which client-side event is intended to receive server status notifications?",

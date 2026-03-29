@@ -127,39 +127,39 @@
             "level": "lab 4"
       },
       {
-            "q": "What additional driver does the README tell students to install for Maker UNO?",
+            "q": "Why do USB-serial drivers matter when using an Arduino-compatible board in this lab?",
             "options": [
-                  "FTDI VCP driver",
-                  "CH341 Serial Driver",
-                  "CP2102 USB driver",
-                  "ST-Link USB driver"
+                  "They let the host computer recognize the board's USB serial interface for upload and monitoring",
+                  "They change the LoRa carrier frequency",
+                  "They replace the radio library",
+                  "They enable OLED graphics acceleration"
             ],
-            "correct": 1,
-            "why": "The setup section explicitly tells students to install the CH341 Serial Driver.",
+            "correct": 0,
+            "why": "Without the correct USB-serial driver, the computer may not communicate properly with the board for sketch upload or serial debugging.",
             "level": "lab 4"
       },
       {
-            "q": "Which radio library does the README tell students to install?",
+            "q": "Why use a radio library in this lab instead of writing every transceiver interaction from scratch?",
             "options": [
-                  "LoRaWAN LMIC",
-                  "RadioHead by Paul Stoffregen",
-                  "PubSubClient",
-                  "Adafruit BusIO"
+                  "It abstracts common radio operations so students can focus on packet flow and lab behavior",
+                  "It eliminates the need for antenna matching",
+                  "It replaces the Arduino core completely",
+                  "It makes the sketches work without SPI"
             ],
-            "correct": 1,
-            "why": "The README says to install the open-source RadioHead library by Paul Stoffregen.",
+            "correct": 0,
+            "why": "A radio library provides a tested interface for initialization, sending, receiving, and other transceiver operations.",
             "level": "lab 4"
       },
       {
-            "q": "Which board selection is specified in Arduino IDE?",
+            "q": "Why does choosing the correct board profile in Arduino IDE matter?",
             "options": [
-                  "ESP32 Dev Module",
-                  "Arduino Uno",
-                  "Raspberry Pi Pico",
-                  "Arduino Mega 2560"
+                  "It selects the right MCU assumptions, toolchain settings, and upload behavior for the target board",
+                  "It automatically chooses the correct RF frequency",
+                  "It sets the OLED font and address",
+                  "It guarantees reliable radio packets by itself"
             ],
-            "correct": 1,
-            "why": "The setup instructions say to select Tools > Board > Arduino Uno.",
+            "correct": 0,
+            "why": "Using the correct board profile matters because it drives compilation and upload settings for the hardware you are actually programming.",
             "level": "lab 4"
       },
       {
@@ -187,27 +187,27 @@
             "level": "lab 4"
       },
       {
-            "q": "What serial monitor baud rate does the README mention for observing the receiver output?",
+            "q": "Why is watching the receiver's serial output useful during this lab?",
             "options": [
-                  "4800",
-                  "9600",
-                  "115200",
-                  "230400"
+                  "It lets students verify packet reception, acknowledgements, and diagnostic information such as RSSI",
+                  "It directly increases the radio range",
+                  "It replaces the need for the transmitter sketch",
+                  "It changes the LoRa modulation mode"
             ],
-            "correct": 1,
-            "why": "The operation section says to open the receiver serial monitor and set it to 9600 baud.",
+            "correct": 0,
+            "why": "The receiver serial log is one of the easiest places to confirm whether packets are arriving and what the radio reports about them.",
             "level": "lab 4"
       },
       {
-            "q": "Which header file is shared by both `rf95_tx.ino` and `rf95_rx.ino` for LoRa radio access?",
+            "q": "Why is it useful that both the transmitter and receiver sketches use the same radio API header?",
             "options": [
-                  "LoRa.h",
-                  "RH_RF95.h",
-                  "WiFi.h",
-                  "BLEDevice.h"
+                  "It keeps the programming model consistent across both sides of the link",
+                  "It forces the sketches to use different frequencies",
+                  "It removes the need for serial debugging",
+                  "It means the sketches are actually LoRaWAN nodes"
             ],
-            "correct": 1,
-            "why": "Both sketches include `RH_RF95.h`.",
+            "correct": 0,
+            "why": "Using the same driver interface on both sides makes the request and reply sketches easier to compare and maintain.",
             "level": "lab 4"
       },
       {
@@ -295,15 +295,15 @@
             "level": "lab 4"
       },
       {
-            "q": "What transmitter power is configured after setup in both LoRa sketches?",
+            "q": "Why might a teaching lab choose a moderate fixed transmit power instead of simply using maximum power by default?",
             "options": [
-                  "5 dBm",
-                  "10 dBm",
-                  "13 dBm",
-                  "23 dBm"
+                  "It gives a predictable baseline without assuming that maximum output is always the right engineering choice",
+                  "Because LoRa radios cannot transmit above 13 dBm at all",
+                  "Because lower power automatically adds acknowledgements",
+                  "Because transmit power only affects OLED brightness"
             ],
-            "correct": 2,
-            "why": "Both sketches call `rf95.setTxPower(13, false);`.",
+            "correct": 0,
+            "why": "A lab often picks a known transmit-power setting so students can debug the link under controlled conditions rather than treating maximum power as a substitute for correct configuration.",
             "level": "lab 4"
       },
       {
@@ -475,39 +475,39 @@
             "level": "lab 4"
       },
       {
-            "q": "Which library pair is used by `ssd1306_i2c.ino` for OLED output?",
+            "q": "Why are both a graphics library and a display-driver library useful in an OLED example like <code>ssd1306_i2c.ino</code>?",
             "options": [
-                  "`SSD1306Ascii` and `SSD1306AsciiWire`",
-                  "`Adafruit_GFX` and `Adafruit_SSD1306`",
-                  "`U8g2` and `Wire`",
-                  "`LiquidCrystal` and `SPI`"
-            ],
-            "correct": 1,
-            "why": "The I2C OLED example includes `Adafruit_GFX.h` and `Adafruit_SSD1306.h`.",
-            "level": "lab 4"
-      },
-      {
-            "q": "What display size is configured in `ssd1306_i2c.ino`?",
-            "options": [
-                  "128x32",
-                  "128x64",
-                  "64x32",
-                  "64x48"
+                  "One provides drawing and text primitives while the other knows how to talk to the specific OLED controller",
+                  "One handles Wi-Fi and the other handles LoRaWAN join",
+                  "Both are required only to set the serial baud rate",
+                  "They are used to replace the radio interrupt line"
             ],
             "correct": 0,
-            "why": "The file defines `SCREEN_WIDTH 128` and `SCREEN_HEIGHT 32`.",
+            "why": "OLED display stacks often separate general drawing logic from the controller-specific code that drives the actual hardware.",
             "level": "lab 4"
       },
       {
-            "q": "Which I2C address is used in the `display.begin(...)` call of `ssd1306_i2c.ino`?",
+            "q": "What practical effect does choosing a 128x32 OLED have compared with a taller display?",
             "options": [
-                  "0x20",
-                  "0x27",
-                  "0x3C",
-                  "0x68"
+                  "There is less vertical space, so the on-screen status design must stay concise",
+                  "The radio range doubles automatically",
+                  "The I2C bus becomes optional",
+                  "The display can only show numbers"
             ],
-            "correct": 2,
-            "why": "The I2C OLED example uses `display.begin(SSD1306_SWITCHCAPVCC, 0x3C)`.",
+            "correct": 0,
+            "why": "Display size affects layout decisions because a shorter screen gives less room for multiple lines of status text.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Why does the sketch need the correct I2C address for the OLED?",
+            "options": [
+                  "Because devices on the same I2C bus are selected by address, and the MCU must talk to the intended display",
+                  "Because the I2C address changes the radio spreading factor",
+                  "Because the address determines the packet counter",
+                  "Because the display address stores the LoRa reply text"
+            ],
+            "correct": 0,
+            "why": "I2C peripherals share a bus, so the microcontroller needs the right address to reach the specific display module.",
             "level": "lab 4"
       },
       {
@@ -523,15 +523,15 @@
             "level": "lab 4"
       },
       {
-            "q": "Which library pair is used by `ssd1306_ascii.ino`?",
+            "q": "Why might an ASCII-focused OLED library be a good fit for a simple status screen?",
             "options": [
-                  "`Adafruit_GFX` and `Adafruit_SSD1306`",
-                  "`SSD1306Ascii` and `SSD1306AsciiWire`",
-                  "`U8glib` and `SPI`",
-                  "`LoRa` and `Wire`"
+                  "It is lightweight and well suited for straightforward text-oriented output",
+                  "It is required for LoRa packet acknowledgements",
+                  "It automatically discovers the I2C address",
+                  "It disables the need for fonts"
             ],
-            "correct": 1,
-            "why": "The ASCII OLED example includes `SSD1306Ascii.h` and `SSD1306AsciiWire.h`.",
+            "correct": 0,
+            "why": "When a screen only needs simple text status, an ASCII-oriented library can be a pragmatic, low-overhead choice.",
             "level": "lab 4"
       },
       {
@@ -547,15 +547,15 @@
             "level": "lab 4"
       },
       {
-            "q": "Which font is selected in `ssd1306_ascii.ino` before printing text?",
+            "q": "Why would a sketch choose a specific font before printing status text?",
             "options": [
-                  "Arial14",
-                  "System5x7",
-                  "TinyFont",
-                  "Default8x8"
+                  "To balance readability and how much information fits on the limited screen",
+                  "To change the LoRa receive frequency",
+                  "To decide the SPI chip-select pin",
+                  "To enable BLE notifications"
             ],
-            "correct": 1,
-            "why": "The example calls `display.setFont(System5x7);`.",
+            "correct": 0,
+            "why": "Font choice affects legibility and layout, which matters when the display area is small and the lab wants clear status text.",
             "level": "lab 4"
       },
       {

@@ -103,27 +103,27 @@
             "level": "lab 5"
       },
       {
-            "q": "Which device is used as the gateway in the lab?",
+            "q": "What is the main job of a LoRaWAN gateway in this lab architecture?",
             "options": [
-                  "Raspberry Pi Pico W",
-                  "ESP32 DevKit",
-                  "RAK7268/RAK7268C WisGate Edge Lite 2",
-                  "Cytron Maker Pi RP2040"
+                  "To relay LoRa packets between end devices and the network server",
+                  "To replace the end device and generate sensor data itself",
+                  "To compile Arduino sketches for TTN",
+                  "To store OTAA keys so the end device does not need them"
             ],
-            "correct": 2,
-            "why": "The equipment list and gateway setup section name the RAK7268/RAK7268C WisGate Edge Lite 2 as the LoRaWAN gateway.",
+            "correct": 0,
+            "why": "In LoRaWAN, the gateway is the bridge between the radio traffic from end devices and the IP-connected network server side.",
             "level": "lab 5"
       },
       {
-            "q": "Which platform is used as the network server in the lab walkthrough?",
+            "q": "What does the network/application server platform provide in this lab flow?",
             "options": [
-                  "Firebase",
-                  "The Things Network (TTN)",
-                  "ThingSpeak",
-                  "Mosquitto"
+                  "Device registration, uplink visibility, and downlink/application integration",
+                  "A direct SPI bus to the radio chip",
+                  "USB flashing for the Arduino sketch",
+                  "A replacement for the gateway antenna"
             ],
-            "correct": 1,
-            "why": "The README repeatedly uses The Things Network (TTN) as the LoRaWAN network server and application platform example.",
+            "correct": 0,
+            "why": "The server side of a LoRaWAN deployment manages registered devices, receives forwarded uplinks, and coordinates application-facing features such as decoded payloads and downlinks.",
             "level": "lab 5"
       },
       {
@@ -187,39 +187,39 @@
             "level": "lab 5"
       },
       {
-            "q": "In the gateway's default Wi-Fi AP mode, what SSID pattern is expected?",
+            "q": "Why is the gateway's default Wi-Fi AP mode useful during initial setup?",
             "options": [
-                  "TTN_Gateway_XXXX",
-                  "RAK7268_XXXX",
-                  "WisGate_AP_915",
-                  "LoRaWAN_Lab_XXXX"
+                  "It lets students connect locally and configure the gateway before it joins another network",
+                  "It is the only mode in which LoRa radios can receive uplinks",
+                  "It automatically registers the gateway with TTN",
+                  "It disables the need for a packet forwarder"
             ],
-            "correct": 1,
-            "why": "The gateway access section says the gateway works in Wi-Fi AP mode by default and broadcasts an SSID named `RAK7268_XXXX`.",
+            "correct": 0,
+            "why": "A local AP mode is useful because it gives an out-of-band way to reach the gateway's settings before wider network connectivity is configured.",
             "level": "lab 5"
       },
       {
-            "q": "What is the default browser address for the gateway in Wi-Fi AP mode?",
+            "q": "Why does the gateway expose a local web UI during AP-mode setup?",
             "options": [
-                  "192.168.1.1",
-                  "10.0.0.1",
-                  "192.168.230.1",
-                  "169.254.15.1"
+                  "So initial network and packet-forwarder settings can be configured through a management interface",
+                  "So uplinks can bypass the network server entirely",
+                  "So the end device can obtain OTAA keys over HTTP",
+                  "So the gateway can perform BLE scanning"
             ],
-            "correct": 2,
-            "why": "The README lists `192.168.230.1` as the browser address in AP mode.",
+            "correct": 0,
+            "why": "A local management UI gives administrators a practical way to enter network, forwarding, and regional settings without modifying firmware.",
             "level": "lab 5"
       },
       {
-            "q": "Which login credentials are given for the gateway Web UI in AP mode?",
+            "q": "Why should a gateway management UI require authentication?",
             "options": [
-                  "admin / admin",
-                  "root / admin12345678!",
-                  "root / password",
-                  "ttn / ttn"
+                  "To prevent unauthorized users from changing network and radio configuration",
+                  "To increase LoRa receive sensitivity",
+                  "To convert uplinks into downlinks",
+                  "To make the packet forwarder choose the right region automatically"
             ],
-            "correct": 1,
-            "why": "The README lists username `root` and password `admin12345678!` for the gateway web interface.",
+            "correct": 0,
+            "why": "A gateway UI controls important network and forwarding settings, so access control matters even in a lab context.",
             "level": "lab 5"
       },
       {
@@ -235,51 +235,51 @@
             "level": "lab 5"
       },
       {
-            "q": "What server URL is specified for the gateway's TTN packet forwarder configuration?",
+            "q": "Why must the gateway packet forwarder point at the correct network-server endpoint?",
             "options": [
-                  "sg1.cloud.thethings.network",
-                  "eu1.cloud.thethings.network",
-                  "au1.cloud.thethings.network",
-                  "mqtt.thethings.network"
+                  "So uplinks are sent to the server instance that matches the intended deployment and routing context",
+                  "So the SPI bus can synchronize with TTN",
+                  "So the end device can skip OTAA join",
+                  "So the gateway can operate without an antenna"
             ],
-            "correct": 2,
-            "why": "The gateway setup section explicitly says to enter `au1.cloud.thethings.network`.",
+            "correct": 0,
+            "why": "The forwarder needs to send packets to the correct server-side destination or the gateway will not be feeding the intended LoRaWAN backend.",
             "level": "lab 5"
       },
       {
-            "q": "Which TTN cluster is selected in the walkthrough?",
+            "q": "Why does choosing the correct TTN cluster or region matter during setup?",
             "options": [
-                  "eu1",
-                  "nam1",
-                  "au1",
-                  "as1"
+                  "Because device registration and traffic routing must align with the intended regional deployment",
+                  "Because the cluster determines the OLED font size",
+                  "Because the cluster changes SPI pin numbers on the Arduino",
+                  "Because only one cluster supports OTAA"
             ],
-            "correct": 2,
-            "why": "The TTN console instructions say to select `au1` for the region.",
+            "correct": 0,
+            "why": "Selecting the intended regional server environment helps keep registration, packet forwarding, and application-side visibility aligned.",
             "level": "lab 5"
       },
       {
-            "q": "Which frequency plan does the README specify for the gateway/device registration steps?",
+            "q": "Why must the gateway and end device use the same regional frequency plan?",
             "options": [
-                  "EU_863_870",
-                  "US_902_928_FSB_1",
-                  "AU_915_928_FSB_2",
-                  "AS_923"
+                  "Because both sides need to operate on the same channel plan and regional rules to exchange packets reliably",
+                  "Because matching frequency plans only affects the web UI theme",
+                  "Because the frequency plan decides the OTAA AppKey",
+                  "Because TTN ignores uplinks from gateways that use antennas"
             ],
-            "correct": 2,
-            "why": "The README explicitly names `AU_915_928_FSB_2` / `Australia 915-928 MHz, FSB 2` during gateway and end-device setup.",
+            "correct": 0,
+            "why": "A regional mismatch means the gateway and node can end up using incompatible channel sets and regulatory assumptions, which breaks communication.",
             "level": "lab 5"
       },
       {
-            "q": "Which activation mode is used for the end device in the TTN registration steps?",
+            "q": "Why is OTAA a sensible activation mode for this kind of lab?",
             "options": [
-                  "ABP",
-                  "OTAA",
-                  "Class C multicast",
-                  "Passive scan"
+                  "It demonstrates the network join process rather than relying on pre-shared session state",
+                  "It removes the need for device credentials",
+                  "It turns every end device into a gateway",
+                  "It disables all downlinks"
             ],
-            "correct": 1,
-            "why": "The end-device registration section specifies Over The Air Activation (OTAA).",
+            "correct": 0,
+            "why": "OTAA is useful in a learning setting because it shows how a device establishes a session with the network rather than assuming one already exists.",
             "level": "lab 5"
       },
       {
@@ -295,27 +295,27 @@
             "level": "lab 5"
       },
       {
-            "q": "Which Arduino library does the README tell you to install for the end device sketch?",
+            "q": "Why does the end-device sketch need a LoRaWAN stack library instead of only a basic radio driver?",
             "options": [
-                  "RadioHead",
-                  "PubSubClient",
-                  "MCCI LoRaWAN LMIC",
-                  "ArduinoJson"
+                  "Because OTAA join, LoRaWAN MAC handling, and session management require protocol logic above raw radio transmit and receive",
+                  "Because a radio driver automatically includes TTN device registration",
+                  "Because LoRaWAN libraries are only for OLED rendering",
+                  "Because the gateway will reject packets from sketches that use SPI directly"
             ],
-            "correct": 2,
-            "why": "The library installation section tells students to install the MCCI LoRaWAN LMIC library.",
+            "correct": 0,
+            "why": "A raw transceiver library can move bytes, but LoRaWAN adds join, session, timing, and MAC behavior that needs a dedicated protocol stack.",
             "level": "lab 5"
       },
       {
-            "q": "Which configuration change is required in `lmic_project_config.h` according to the README?",
+            "q": "Why is setting the LMIC region correctly important before trying to join the network?",
             "options": [
-                  "Comment `#define CFG_au915 1` and uncomment `#define CFG_us915 1`",
-                  "Comment `#define CFG_us915 1` and uncomment `#define CFG_au915 1`",
-                  "Enable both `CFG_us915` and `CFG_au915` together",
-                  "No region change is required"
+                  "The channel plan and regional behavior must match the gateway and network deployment, or OTAA join will likely fail",
+                  "The region setting only changes serial output text",
+                  "Enabling every region at once improves compatibility",
+                  "The region is ignored once AppKey is correct"
             ],
-            "correct": 1,
-            "why": "The README instructs users to change the LMIC project config from US915 to AU915 by commenting out `CFG_us915` and enabling `CFG_au915`.",
+            "correct": 0,
+            "why": "Region selection controls which channels and related rules the node uses, so a mismatch with the deployment environment can prevent successful join and traffic exchange.",
             "level": "lab 5"
       },
       {
@@ -355,15 +355,15 @@
             "level": "lab 5"
       },
       {
-            "q": "What transmit interval is configured in the sketch?",
+            "q": "Why are uplinks spaced apart in a periodic demo sketch like this one?",
             "options": [
-                  "10 seconds",
-                  "30 seconds",
-                  "60 seconds",
-                  "120 seconds"
+                  "To avoid flooding the network and to leave time for receive windows and observation between transmissions",
+                  "Because LoRaWAN can only send once per hour",
+                  "Because the interval determines the AppKey",
+                  "Because downlinks require continuous transmitting"
             ],
-            "correct": 2,
-            "why": "The sketch sets `const unsigned TX_INTERVAL = 60;`.",
+            "correct": 0,
+            "why": "Periodic demos usually space transmissions out so the node, gateway, and students can clearly observe each send/receive cycle without unnecessary chatter.",
             "level": "lab 5"
       },
       {
@@ -619,15 +619,15 @@
             "level": "lab 5"
       },
       {
-            "q": "Which payload formatter type does the README suggest for making uplink data readable in TTN?",
+            "q": "Why would a payload formatter be useful in TTN during this lab?",
             "options": [
-                  "CBOR",
-                  "Python",
-                  "JavaScript",
-                  "XML"
+                  "It converts raw uplink bytes into a more human-readable application representation",
+                  "It changes the radio region from US915 to AU915",
+                  "It replaces OTAA join credentials",
+                  "It lets the gateway bypass the network server"
             ],
-            "correct": 2,
-            "why": "The TTN display-data section instructs users to choose `Formatter type: Javascript` for uplink payload formatting.",
+            "correct": 0,
+            "why": "Payload formatting is helpful because the network may receive bytes successfully even when humans still need a clearer decoded view of what those bytes mean.",
             "level": "lab 5"
       },
       {
@@ -667,15 +667,15 @@
             "level": "lab 5"
       },
       {
-            "q": "What is the safest reading of the committed `APPEUI` array being all zeros?",
+            "q": "If example credential values in a repo look placeholder-like, what is the correct engineering takeaway?",
             "options": [
-                  "All LoRaWAN applications must permanently use zeros here",
-                  "The repo example shows zeros in the committed sketch, but students should still follow TTN registration values and lab instructions for their own device",
-                  "It means the sketch is using ABP instead of OTAA",
-                  "It disables the gateway login password"
+                  "Students still need to use the registration values that belong to their own device and deployment",
+                  "Placeholder-like values are safe to reuse unchanged in production",
+                  "The network server will automatically replace bad credentials",
+                  "Any visible AppEUI means the sketch is already joined"
             ],
-            "correct": 1,
-            "why": "The committed sketch shows an all-zero `APPEUI`, but the README's registration/setup flow makes clear that students must use the right TTN registration values for their own device and configuration.",
+            "correct": 0,
+            "why": "Example credentials in teaching material are not a substitute for the values that actually correspond to the student's registered end device.",
             "level": "lab 5"
       },
       {

@@ -101,15 +101,15 @@
     "why": "The README defines the broker as the component that routes messages between clients."
   },
   {
-    "q": "Which Mosquitto port is used in the lab setup?",
+    "q": "Why do MQTT clients and the broker need to agree on the broker port?",
     "options": [
-      "1883",
-      "80",
-      "443",
-      "8080"
+      "Because the client must connect to the listening service the broker is actually exposing",
+      "Because the port number determines the QoS level",
+      "Because the broker port chooses the LED pin automatically",
+      "Because retained messages only work on port 80"
     ],
     "correct": 0,
-    "why": "The README shows mosquitto configured with listener 1883, which is the default MQTT port in the lab."
+    "why": "If the client tries the wrong port, it will not reach the MQTT service the broker is listening on."
   },
   {
     "q": "Which line in the sample broker configuration allows unauthenticated access for the lab?",
@@ -123,26 +123,26 @@
     "why": "The README shows a minimal mosquitto.conf containing 'listener 1883' and 'allow_anonymous true'."
   },
   {
-    "q": "Which MicroPython library is used for MQTT communication on the Pico W in this lab?",
+    "q": "Why does the Pico W need an MQTT client library in this lab?",
     "options": [
-      "umqtt.simple",
-      "urequests",
-      "machine.net",
-      "socketserver"
+      "Because publishing, subscribing, and MQTT session handling require protocol logic on the device",
+      "Because MQTT always replaces Wi-Fi drivers",
+      "Because LEDs can only be toggled through third-party libraries",
+      "Because a broker cannot accept packets from built-in socket code"
     ],
     "correct": 0,
-    "why": "The README explicitly states that the Pico W uses umqtt.simple for MQTT communication."
+    "why": "The Pico W needs code that speaks the MQTT protocol, not just raw networking primitives."
   },
   {
-    "q": "Where should the MQTT library file be placed on the Pico W according to the repo instructions?",
+    "q": "Why must supporting library files be placed where MicroPython can import them?",
     "options": [
-      "lib/umqtt/simple.py",
-      "boot/simple.py",
-      "src/mqtt.py",
-      "config/mosquitto/simple.py"
+      "Otherwise the application cannot load the module it depends on at runtime",
+      "Otherwise the broker switches to QoS 2",
+      "Otherwise retained messages are disabled",
+      "Otherwise the button input becomes active high"
     ],
     "correct": 0,
-    "why": "The setup steps say to create a lib folder, then umqtt inside it, and upload simple.py there."
+    "why": "Import paths matter on MicroPython just as they do in other Python environments, so dependency files must live where the runtime can find them."
   },
   {
     "q": "What does QoS 1 mean in the lab notes?",
@@ -211,7 +211,7 @@
     "why": "The README explicitly says status/state topics are retained while event topics such as cmd, ack, and hello are not."
   },
   {
-    "q": "According to the repo README, what is Pico A’s primary role?",
+    "q": "What is the main role of a command-publishing node in this lab?",
     "options": [
       "Command publisher driven by button presses",
       "Always-on LED consumer only",
@@ -219,10 +219,10 @@
       "HTTP REST server"
     ],
     "correct": 0,
-    "why": "The README describes Pico A as an event-driven command publisher."
+    "why": "One side of the demo is meant to originate control events from a local input, which is the publisher role."
   },
   {
-    "q": "According to the repo README, what is Pico B’s primary role?",
+    "q": "What is the main role of a command-consuming actuator node in this lab?",
     "options": [
       "Command consumer plus actuator controller",
       "Only a broker monitor",
@@ -230,29 +230,29 @@
       "A DHCP server"
     ],
     "correct": 0,
-    "why": "The README describes Pico B as a command consumer + actuator."
+    "why": "The other side of the demo is meant to receive control events and turn them into an observable hardware action."
   },
   {
-    "q": "Which topic does the README say Pico B subscribes to in the example architecture?",
+    "q": "Why does a node subscribe to a command topic in this MQTT architecture?",
     "options": [
-      "csc2106/led/cmd",
-      "csc2106/devB/status",
-      "csc2106/led/ack",
-      "csc2106/nodeB/led/cmd"
+      "So it can react to control messages published by another client",
+      "So it can replace the broker and route traffic itself",
+      "So it can convert QoS 1 messages into Wi-Fi packets",
+      "So it can store sensor readings without callbacks"
     ],
     "correct": 0,
-    "why": "In the README’s example roles, Pico B subscribes to csc2106/led/cmd."
+    "why": "A subscriber listens on a command topic so published control events can drive an actuator or other application behavior."
   },
   {
-    "q": "Which topic does the README say Pico B publishes acknowledgements to?",
+    "q": "Why is a separate acknowledgement topic useful in a command-and-actuator MQTT demo?",
     "options": [
-      "csc2106/led/ack",
-      "csc2106/led/cmd",
-      "csc2106/devA/status",
-      "csc2106/nodeA/led/cmd"
+      "It lets other clients know the command was received or acted upon without confusing that message with the original command itself",
+      "It eliminates the need for a broker",
+      "It makes retained commands safe by default",
+      "It forces QoS 0 on all status traffic"
     ],
     "correct": 0,
-    "why": "The README lists csc2106/led/ack as the ACK topic for Pico B."
+    "why": "Splitting commands and acknowledgements into different topics keeps request traffic and response traffic easier to reason about."
   },
   {
     "q": "In the uploaded Lab 2 solution, which module provides the MQTTClient class?",
@@ -376,15 +376,15 @@
     "why": "The callback toggles led.value() and prints the new LED state."
   },
   {
-    "q": "Which MQTT method is used inside the main loop to process incoming messages without blocking for long periods?",
+    "q": "Why is a non-blocking message check useful in the MQTT main loop?",
     "options": [
-      "check_msg()",
-      "recv_msg()",
-      "listen()",
-      "loop_forever()"
+      "It lets the device keep servicing buttons and connection health while still reacting to incoming MQTT messages",
+      "It forces every publish to become retained",
+      "It removes the need for subscriptions",
+      "It guarantees exactly-once delivery"
     ],
     "correct": 0,
-    "why": "The main loop calls client.check_msg() to check for incoming MQTT messages."
+    "why": "A responsive embedded loop often needs to handle inputs and network events together, so non-blocking MQTT checks are a practical fit."
   },
   {
     "q": "What is the purpose of MQTT keepalive in a client connection?",

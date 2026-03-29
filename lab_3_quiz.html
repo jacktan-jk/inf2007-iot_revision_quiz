@@ -90,7 +90,7 @@
     "why": "The repo states that the lab uses BLE advertisements (broadcast) together with scanning (receive)."
   },
   {
-    "q": "According to the repo README, this lab is best described as:",
+    "q": "How should this BLE lab be understood at a system-design level?",
     "options": [
       "A mesh-like flooding relay built at the application layer, not Bluetooth SIG BLE Mesh",
       "A standards-compliant Bluetooth SIG BLE Mesh stack",
@@ -98,7 +98,7 @@
       "A ZigBee coordinator-router-end-device lab"
     ],
     "correct": 0,
-    "why": "The README explicitly says it is not Bluetooth SIG BLE Mesh; it is a mesh-like flooding relay at the application layer."
+    "why": "The lab demonstrates mesh-like behavior by flooding application messages over BLE advertising and scanning rather than using the official Bluetooth SIG mesh stack."
   },
   {
     "q": "What frame format does the repo define for messages?",
@@ -189,15 +189,15 @@
     "why": "The code sets INJECT_JITTER_S = 10 and uses it to add 0..10 s jitter."
   },
   {
-    "q": "What default TTL value is used in the uploaded `main.py`?",
+    "q": "Why is a TTL field useful in a flooding-style message format?",
     "options": [
-      "3",
-      "0",
-      "1",
-      "400"
+      "It limits how many times a message can be forwarded before propagation stops",
+      "It guarantees every node receives the message exactly once",
+      "It replaces the need for message IDs",
+      "It chooses the BLE advertising interval"
     ],
     "correct": 0,
-    "why": "DEFAULT_TTL is set to 3 in the code."
+    "why": "TTL is a standard way to bound forwarding so a message does not keep circulating forever."
   },
   {
     "q": "Why does the de-duplication cache need a maximum size?",
@@ -222,15 +222,15 @@
     "why": "Using unique hardware-derived identity reduces manual setup mistakes and lets forwarded frames keep a stable origin identifier."
   },
   {
-    "q": "Which ADC channel is used for the Pico internal temperature sensor in the code?",
+    "q": "Why is local temperature a sensible payload for injected demo messages in this lab?",
     "options": [
-      "ADC4",
-      "ADC0",
-      "ADC1",
-      "ADC2"
+      "It gives each node real sensor data to publish and forward through the BLE mesh behavior",
+      "It is required for BLE advertisements to be accepted",
+      "It disables duplicate suppression automatically",
+      "It causes the node ID to change on every message"
     ],
     "correct": 0,
-    "why": "The code creates `temp_adc = machine.ADC(4)` and labels it as the Pico internal temperature sensor."
+    "why": "Using a simple onboard sensor creates realistic payloads without extra hardware, which is useful in a forwarding lab."
   },
   {
     "q": "What does `read_temp_c()` return?",
@@ -409,15 +409,15 @@
     "why": "That matches the repo Part 2 explanation: no TTL control and no dedupe can cause looping floods."
   },
   {
-    "q": "In `inject_own()`, what TYPE value is used for temperature data?",
+    "q": "Why is having a TYPE field in the frame format useful?",
     "options": [
-      "`\"T\"`",
-      "`\"R\"`",
-      "`\"TEMP\"`",
-      "`\"D\"`"
+      "It lets nodes distinguish different kinds of messages and handle them differently",
+      "It removes the need for a message ID",
+      "It prevents all duplicate forwarding by itself",
+      "It replaces the BLE device name"
     ],
     "correct": 0,
-    "why": "The injected frame is created with `make_frame(NODE_ID, msgid, DEFAULT_TTL, \"T\", data)`."
+    "why": "A type marker is useful when the protocol may carry temperature readings, reports, or other message classes that need different handling."
   },
   {
     "q": "What does the uploaded `inject_own()` do before building the frame?",
@@ -431,15 +431,15 @@
     "why": "The code calls `self.seen_check_add(\"{}:{}\".format(NODE_ID, msgid))` before creating the frame."
   },
   {
-    "q": "What TTL is assigned to newly injected temperature frames in the uploaded file?",
+    "q": "Why should a newly injected local message start with a positive TTL in this lab?",
     "options": [
-      "DEFAULT_TTL, which is 3",
-      "0 always",
-      "1 always",
-      "The current RSSI value"
+      "So the message has some forwarding budget and can propagate beyond the originating node",
+      "So the message can never be deduplicated",
+      "So the BLE advertisement becomes connectable",
+      "So RSSI is encoded into the packet header"
     ],
     "correct": 0,
-    "why": "The uploaded solution is using the Part 3 version of injection, so new frames use DEFAULT_TTL."
+    "why": "A positive TTL gives a new message room to travel through the network, while still keeping propagation bounded."
   },
   {
     "q": "What is the purpose of `inject_custom(ttl, typ, payload)` in the uploaded solution?",

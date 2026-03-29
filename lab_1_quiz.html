@@ -90,15 +90,15 @@
     "why": "The lab manual states that the session objective is to create and consume a basic RESTful API on the Pico W for onboard sensor reading (temperature) and actuator control (LED)."
   },
   {
-    "q": "According to the repo README, which two files make up the core lab solution?",
+    "q": "Why is the lab solution split between <code>main.py</code> and <code>web_server.py</code>?",
     "options": [
-      "<code>main.py</code> and <code>web_server.py</code>",
-      "<code>app.py</code> and <code>routes.py</code>",
-      "<code>index.html</code> and <code>server.js</code>",
-      "<code>wifi.py</code> and <code>sensor.py</code>"
+      "It separates device/runtime setup from HTTP parsing and routing logic",
+      "It is required because MicroPython cannot handle sockets in one file",
+      "It makes Wi-Fi optional",
+      "It forces the API to return only HTML"
     ],
     "correct": 0,
-    "why": "The repo describes the RESTful API logic as being broken into <code>main.py</code> and <code>web_server.py</code>."
+    "why": "Splitting the lab this way keeps the runtime loop and hardware setup separate from request parsing and response generation."
   },
   {
     "q": "What is the role of <code>main.py</code> in this lab?",
@@ -123,15 +123,15 @@
     "why": "The repo and uploaded file describe <code>web_server.py</code> as containing the HTTP parsing, routing, and response-building logic."
   },
   {
-    "q": "Which Wi-Fi interface mode is used in <code>main.py</code>?",
+    "q": "Why is station mode the right Wi-Fi role for the Pico W in this lab?",
     "options": [
-      "<code>network.STA_IF</code>",
-      "<code>network.AP_IF</code>",
-      "<code>network.MONITOR_IF</code>",
-      "<code>network.LOOPBACK_IF</code>"
+      "Because the Pico W is joining an existing network so other clients can reach its API",
+      "Because station mode is required for ADC readings",
+      "Because access point mode is the only way to use sockets",
+      "Because the LED can only be controlled in station mode"
     ],
     "correct": 0,
-    "why": "The code creates the WLAN object with <code>network.WLAN(network.STA_IF)</code>, which is station mode."
+    "why": "The device is acting as a networked API endpoint on an existing Wi-Fi network, which matches the station role."
   },
   {
     "q": "What does the code do immediately after creating the WLAN object?",
@@ -200,15 +200,15 @@
     "why": "The uploaded code initializes the onboard LED with <code>machine.Pin(\"LED\", machine.Pin.OUT)</code>."
   },
   {
-    "q": "Which ADC channel is used for the internal temperature sensor?",
+    "q": "Why does the Pico W use an ADC path for the internal temperature sensor in this lab?",
     "options": [
-      "<code>machine.ADC(4)</code>",
-      "<code>machine.ADC(0)</code>",
-      "<code>machine.ADC(\"TEMP\")</code>",
-      "<code>machine.ADC(26)</code>"
+      "Because the sensor is exposed as an analog reading that must be sampled and converted into a digital value",
+      "Because HTTP requests can only read analog data",
+      "Because ADC channels automatically publish JSON",
+      "Because Wi-Fi signal strength is measured through the ADC"
     ],
     "correct": 0,
-    "why": "The code sets <code>temp_sensor = machine.ADC(4)</code>."
+    "why": "The temperature value is derived from a sensor voltage path, so the program must sample it through the ADC before computing a temperature estimate."
   },
   {
     "q": "What does <code>conversion_factor = 3.3 / 65535</code> represent?",
@@ -222,15 +222,15 @@
     "why": "The ADC reading from <code>read_u16()</code> ranges to 65535, so the code multiplies by <code>3.3/65535</code> to estimate voltage."
   },
   {
-    "q": "Which formula is used to compute temperature in the uploaded <code>main.py</code>?",
+    "q": "Why does the lab convert the ADC-derived voltage using a calibration formula instead of exposing the raw reading directly?",
     "options": [
-      "<code>27 - (voltage - 0.706) / 0.001721</code>",
-      "<code>(voltage * 100) / 3.3</code>",
-      "<code>25 + (voltage / 0.706)</code>",
-      "<code>(65535 - reading) / 27</code>"
+      "Because clients care about a meaningful temperature estimate, not an uncalibrated ADC count",
+      "Because HTTP headers require floating-point sensor values",
+      "Because the LED route can only accept calibrated numbers",
+      "Because raw ADC values are not available in MicroPython"
     ],
     "correct": 0,
-    "why": "The uploaded code computes temperature with <code>27 - (voltage - 0.706) / 0.001721</code>."
+    "why": "A calibration formula turns the sampled sensor voltage into a temperature value that is more meaningful to API clients than a raw integer reading."
   },
   {
     "q": "Why does the main loop call <code>read_temperature()</code> before <code>serve_client()</code>?",
@@ -244,15 +244,15 @@
     "why": "The current temperature is computed before serving the request and passed into <code>serve_client()</code>."
   },
   {
-    "q": "What address is used when binding the socket?",
+    "q": "Why does the server bind to <code>0.0.0.0</code> rather than only to a loopback address?",
     "options": [
-      "<code>0.0.0.0</code> on port <code>80</code>",
-      "<code>127.0.0.1</code> on port <code>8080</code>",
-      "The Pico W IP address on port <code>22</code>",
-      "<code>255.255.255.255</code> on port <code>80</code>"
+      "So clients on the network can connect to the API through the Pico W's interface",
+      "So the server becomes hidden from the local network",
+      "So Wi-Fi authentication is skipped",
+      "So the LED defaults to ON after boot"
     ],
     "correct": 0,
-    "why": "The code gets the bind address from <code>socket.getaddrinfo('0.0.0.0', 80)</code> and binds the server socket there."
+    "why": "Binding to all interfaces allows incoming connections from the network, whereas loopback would only allow local-only access."
   },
   {
     "q": "What does <code>s.listen(1)</code> do in the lab code?",
@@ -310,15 +310,15 @@
     "why": "A status resource is useful because monitoring clients often need more than one value, such as sensor data and actuator state, in a single response."
   },
   {
-    "q": "Which endpoint is described in the repo README as returning the current temperature?",
+    "q": "Why is a dedicated read endpoint for temperature useful in a REST-style device API?",
     "options": [
-      "<code>GET /temp</code>",
-      "<code>POST /temp</code>",
-      "<code>GET /status</code>",
-      "<code>POST /sensor</code>"
+      "It lets clients query sensor state without also triggering an actuator change",
+      "It prevents the server from using JSON anywhere else",
+      "It makes <code>POST</code> impossible for LED control",
+      "It forces the socket to reopen after every request"
     ],
     "correct": 0,
-    "why": "The repo documentation lists <code>GET /temp</code> as the endpoint for current temperature."
+    "why": "Separating sensor reads from actuator writes makes the API easier to understand and closer to REST-style expectations."
   },
   {
     "q": "Which HTTP method is required for <code>/led</code>?",
