@@ -134,26 +134,26 @@
     "why": "The server and client both use 0x1A02 as the service UUID."
   },
   {
-    "q": "Which advertised device name must the client find before attempting a connection?",
+    "q": "Why does the client filter scan results by advertised device name before connecting?",
     "options": [
-      "PicoW_A_Server_yxjk",
-      "PicoW_A_Server",
-      "PicoW_B_Client",
-      "BLE_Lab_Node"
+      "So it connects to the intended peripheral instead of an arbitrary nearby BLE device",
+      "So BLE notifications become retained messages",
+      "So the server can skip characteristic discovery",
+      "So the client does not need an address anymore"
     ],
     "correct": 0,
-    "why": "The server advertises as PicoW_A_Server_yxjk and the client TARGET_NAME uses the same name."
+    "why": "Name filtering is a simple discovery strategy that helps a central choose the correct target in an environment with multiple BLE advertisements."
   },
   {
-    "q": "What advertising interval constant is used on the server?",
+    "q": "What trade-off does the advertising interval control in a BLE peripheral?",
     "options": [
-      "200000 microseconds",
-      "50000 microseconds",
-      "10000 microseconds",
-      "1 second"
+      "How quickly the device is discovered versus how much airtime and power advertising consumes",
+      "Whether GATT writes are encrypted",
+      "How many characteristics the service can contain",
+      "Whether the central must use notifications"
     ],
     "correct": 0,
-    "why": "The server sets _ADV_INTERVAL_US = 200000."
+    "why": "Advertising more often usually improves discoverability, but it also uses more airtime and energy."
   },
   {
     "q": "Which ADC channel does the server use for the Pico W internal temperature sensor?",
@@ -255,15 +255,15 @@
     "why": "The server loop ends with time.sleep_ms(100)."
   },
   {
-    "q": "Which GPIO pins are used for Button A and Button B on the client?",
+    "q": "Why is it useful for the client lab to have separate controls for reading state and changing state?",
     "options": [
-      "GP20 and GP21",
-      "GP0 and GP1",
-      "GP14 and GP15",
-      "GP26 and GP27"
+      "It lets students observe the difference between a GATT read path and a GATT write path",
+      "It makes BLE pairing unnecessary",
+      "It replaces characteristic discovery",
+      "It forces notifications to act like acknowledgements"
     ],
     "correct": 0,
-    "why": "The client maps btn_a to GP20 and btn_b to GP21."
+    "why": "Using separate controls for read and write interactions makes the client-side BLE behavior easier to reason about during the lab."
   },
   {
     "q": "How are the client buttons configured?",
@@ -409,40 +409,40 @@
     "why": "The server sends notifications when update_status is called with notify=True."
   },
   {
-    "q": "What limitation is explicitly stated in the client code comments?",
+    "q": "Why might a teaching example omit some IRQ handlers?",
     "options": [
-      "Some IRQ handlers are omitted for brevity",
-      "The code has no BLE scanning support",
-      "The code is beacon-only",
-      "The code has no button handling"
+      "To keep the example focused on the core read, write, and notify flow instead of every production detail",
+      "Because BLE does not support more IRQ handlers",
+      "Because omitted handlers would corrupt the MAC address",
+      "Because only Wi-Fi interrupts are allowed in MicroPython"
     ],
     "correct": 0,
-    "why": "A comment in the client code says other IRQ handlers are omitted for brevity."
+    "why": "Teaching code often narrows the implementation to the callbacks needed for the learning objective so students can follow the control flow more easily."
   },
   {
-    "q": "Which extra module is imported by the server file for MAC-address formatting?",
+    "q": "Why can printing a unique hardware or MAC identifier be useful during BLE debugging?",
     "options": [
-      "ubinascii",
-      "json",
-      "ssl",
-      "socket"
+      "It helps distinguish one board from another and confirm which device is being observed",
+      "It guarantees stronger RSSI",
+      "It replaces BLE advertising",
+      "It automatically pairs the central and peripheral"
     ],
     "correct": 0,
-    "why": "The server file imports ubinascii near the top and uses it inside get_mac()."
+    "why": "Unique device identifiers are useful in labs because they help students tell nearby boards apart during setup and debugging."
   },
   {
-    "q": "Which module is imported inside the server get_mac() function?",
+    "q": "What kind of information is a helper like <code>get_mac()</code> trying to retrieve?",
     "options": [
-      "network",
-      "struct",
-      "math",
-      "select"
+      "A unique network or hardware identifier for the board",
+      "The current battery temperature",
+      "The list of discovered GATT characteristics",
+      "The debounced button state"
     ],
     "correct": 0,
-    "why": "The get_mac() function contains an inner import network statement."
+    "why": "A MAC helper is typically used to read a board-specific identifier that can be shown in logs or used to distinguish devices."
   },
   {
-    "q": "Which server IRQ constant is assigned const(1)?",
+    "q": "Which server-side event should add a client to the active connection set?",
     "options": [
       "_IRQ_CENTRAL_CONNECT",
       "_IRQ_CENTRAL_DISCONNECT",
@@ -450,10 +450,10 @@
       "_IRQ_GATTC_NOTIFY"
     ],
     "correct": 0,
-    "why": "The server defines _IRQ_CENTRAL_CONNECT = const(1)."
+    "why": "When the central connects, the peripheral should remember that connection so later reads, writes, and notifications can target the active client."
   },
   {
-    "q": "Which server IRQ constant is assigned const(2)?",
+    "q": "Which server-side event should remove a client from the active connection set and restart advertising?",
     "options": [
       "_IRQ_CENTRAL_DISCONNECT",
       "_IRQ_CENTRAL_CONNECT",
@@ -461,10 +461,10 @@
       "_IRQ_SCAN_DONE"
     ],
     "correct": 0,
-    "why": "The server defines _IRQ_CENTRAL_DISCONNECT = const(2)."
+    "why": "After a disconnect, the old connection handle is no longer valid and the peripheral usually resumes advertising so another client can connect."
   },
   {
-    "q": "Which server IRQ constant is assigned const(3)?",
+    "q": "Which server-side event tells the peripheral that a client wrote to one of its characteristics?",
     "options": [
       "_IRQ_GATTS_WRITE",
       "_IRQ_CENTRAL_CONNECT",
@@ -472,43 +472,43 @@
       "_IRQ_GATTC_READ_DONE"
     ],
     "correct": 0,
-    "why": "The server defines _IRQ_GATTS_WRITE = const(3)."
+    "why": "A GATTS write event is what tells the peripheral that a remote central has updated a writable characteristic value."
   },
   {
-    "q": "What message does the server print when a client connects?",
+    "q": "What should the server do when a client connects?",
     "options": [
-      "Client Connected.",
-      "Scan complete",
-      "Found Server. Connecting...",
-      "Write successful"
+      "Remember the connection so it can service later reads and notifications",
+      "Immediately stop all BLE activity permanently",
+      "Delete the status characteristic",
+      "Reset the board to clear old data"
     ],
     "correct": 0,
-    "why": "In the _IRQ_CENTRAL_CONNECT branch, the server prints Client Connected."
+    "why": "Connection-oriented BLE operations depend on a valid connection handle, so the server should keep track of connected clients."
   },
   {
-    "q": "What message does the server print when a client disconnects?",
+    "q": "Why should the server restart advertising after a disconnect?",
     "options": [
-      "Client Disconnected. Advertising...",
-      "Scan complete",
-      "Client Button A pressed",
-      "Pico W MAC Address"
+      "So a central can discover the peripheral again and reconnect later",
+      "So the LED state is erased automatically",
+      "So the service UUID changes",
+      "So GATT reads become synchronous"
     ],
     "correct": 0,
-    "why": "In the _IRQ_CENTRAL_DISCONNECT branch, the server prints Client Disconnected. Advertising..."
+    "why": "A peripheral that stops advertising after a disconnect becomes hard to rediscover, so restarting advertising keeps the lab flow usable."
   },
   {
-    "q": "What message pattern does the server print after handling a client LED write?",
+    "q": "What is the most useful behavior after a valid LED write from the client?",
     "options": [
-      "LED state set to: <new_state>",
-      "LED toggled from RSSI",
-      "Status written to flash",
-      "Peripheral discovery complete"
+      "Update the actuator state and refresh any status value that clients may read or receive by notification",
+      "Erase the BLE service and start over",
+      "Disconnect immediately after every write",
+      "Switch the peripheral into Wi-Fi mode"
     ],
     "correct": 0,
-    "why": "After decoding the written value, the server prints LED state set to: followed by the new state."
+    "why": "After a write changes the LED, the server should keep its exposed status consistent so reads and notifications reflect the new state."
   },
   {
-    "q": "Which client IRQ constant is assigned const(5)?",
+    "q": "Which client-side event indicates that a scan result has arrived?",
     "options": [
       "_IRQ_SCAN_RESULT",
       "_IRQ_SCAN_DONE",
@@ -516,10 +516,10 @@
       "_IRQ_GATTC_NOTIFY"
     ],
     "correct": 0,
-    "why": "The client defines _IRQ_SCAN_RESULT = const(5)."
+    "why": "A scan-result event is what carries the advertisement data the client can inspect before choosing whether to connect."
   },
   {
-    "q": "Which client IRQ constant is assigned const(6)?",
+    "q": "Which client-side event indicates that scanning has completed?",
     "options": [
       "_IRQ_SCAN_DONE",
       "_IRQ_SCAN_RESULT",
@@ -527,10 +527,10 @@
       "_IRQ_GATTC_NOTIFY"
     ],
     "correct": 0,
-    "why": "The client defines _IRQ_SCAN_DONE = const(6)."
+    "why": "The scan-done event marks the end of a scanning phase, which is useful for deciding what the client should do next."
   },
   {
-    "q": "Which client IRQ constant is assigned const(15)?",
+    "q": "Which client-side event reports completion of a GATT read request?",
     "options": [
       "_IRQ_GATTC_READ_DONE",
       "_IRQ_GATTC_NOTIFY",
@@ -538,10 +538,10 @@
       "_IRQ_SCAN_RESULT"
     ],
     "correct": 0,
-    "why": "The client defines _IRQ_GATTC_READ_DONE = const(15)."
+    "why": "A GATT read-done event is how the client learns that an earlier read request has completed."
   },
   {
-    "q": "Which client IRQ constant is assigned const(18)?",
+    "q": "Which client-side event carries asynchronous status updates from the server?",
     "options": [
       "_IRQ_GATTC_NOTIFY",
       "_IRQ_GATTC_READ_DONE",
@@ -549,18 +549,18 @@
       "_IRQ_SCAN_RESULT"
     ],
     "correct": 0,
-    "why": "The client defines _IRQ_GATTC_NOTIFY = const(18)."
+    "why": "Notifications are the asynchronous path for the server to push updated status values to the central without requiring a fresh read request."
   },
   {
-    "q": "Which fields are shown in the client's named scan-result debug print?",
+    "q": "Why is address, RSSI, and decoded name a useful debug print during scanning?",
     "options": [
-      "Address, RSSI, and decoded name",
-      "Temperature, voltage, and GPIO pin",
-      "Only the device name",
-      "Only the service UUID"
+      "It helps the client identify the likely target device and estimate signal quality before connecting",
+      "It guarantees the device supports notifications",
+      "It replaces the need for characteristic discovery",
+      "It automatically toggles the LED"
     ],
     "correct": 0,
-    "why": "The print statement includes bytes(addr).hex(), rssi, and the decoded device name."
+    "why": "Those fields together help students decide whether the scan result is the right device and whether the link looks strong enough to be worth connecting to."
   },
   {
     "q": "What is the purpose of the client _reset() method?",

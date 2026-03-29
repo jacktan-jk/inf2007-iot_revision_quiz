@@ -277,59 +277,59 @@
     "why": "The code uses NODE_ID to switch topic names and client IDs so one program can be used for either node."
   },
   {
-    "q": "If NODE_ID is set to b\"NodeA\", which MQTT command topic does the device subscribe to in the uploaded solution?",
+    "q": "Why is it useful for each node to subscribe to its own command topic?",
     "options": [
-      "csc2106/nodeA/led/cmd",
-      "csc2106/nodeB/led/cmd",
-      "csc2106/devA/status",
-      "csc2106/led/ack"
+      "So commands can target one device without every subscriber acting on them",
+      "So retained messages become impossible",
+      "So both nodes can share one client ID",
+      "So Wi-Fi connection is optional"
     ],
     "correct": 0,
-    "why": "For NodeA, MY_CMD_TOPIC is set to csc2106/nodeA/led/cmd and that is the subscribed topic."
+    "why": "Node-specific command topics let the broker deliver a control message to the intended device instead of broadcasting one action to all subscribers."
   },
   {
-    "q": "If NODE_ID is set to b\"NodeA\", where does the button publish the TOGGLE command?",
+    "q": "Why does one node publish a TOGGLE command to the other node's command topic?",
     "options": [
-      "csc2106/nodeB/led/cmd",
-      "csc2106/nodeA/led/cmd",
-      "csc2106/devA/status",
-      "csc2106/devB/status"
+      "Because the lab demonstrates remote actuation, where one node's input controls the other node's LED",
+      "Because MQTT clients cannot publish to their own topics",
+      "Because status topics reject button events",
+      "Because retained messages only work across different nodes"
     ],
     "correct": 0,
-    "why": "For NodeA, OTHER_CMD_TOPIC is csc2106/nodeB/led/cmd, so button presses send TOGGLE there."
+    "why": "The point of the demo is that a local event on one Pico becomes a remote action on the other Pico through publish and subscribe."
   },
   {
-    "q": "If NODE_ID is set to b\"NodeB\", which status topic is used in the uploaded solution?",
+    "q": "Why publish status on a node-specific status topic instead of one shared status topic?",
     "options": [
-      "csc2106/devB/status",
-      "csc2106/devA/status",
-      "csc2106/nodeB/status",
-      "csc2106/led/status"
+      "So monitoring clients can track each device independently",
+      "So the broker can avoid TCP",
+      "So command messages are automatically retained",
+      "So LEDs can be toggled without callbacks"
     ],
     "correct": 0,
-    "why": "The code maps NodeB to STATUS_TOPIC = b'csc2106/devB/status'."
+    "why": "Separate status topics prevent ambiguity when multiple devices publish availability or state information to the same broker."
   },
   {
-    "q": "What GPIO pin is used for the button in the uploaded solution?",
+    "q": "What role does the physical button play in this lab architecture?",
     "options": [
-      "GP21",
-      "GP20",
-      "GP22",
-      "GP18"
+      "It generates a local event that is published as an MQTT command",
+      "It selects the broker IP address",
+      "It stores retained messages in flash",
+      "It acknowledges QoS packets in hardware"
     ],
     "correct": 0,
-    "why": "BUTTON_PIN is set to 21 in the uploaded file."
+    "why": "The button is the local trigger in the demo: a physical press is turned into a publish on the control topic."
   },
   {
-    "q": "What GPIO pin is used for the LED in the uploaded solution?",
+    "q": "What role does the LED play in this MQTT demo?",
     "options": [
-      "GP20",
-      "GP21",
-      "GP22",
-      "GP25"
+      "It acts as an actuator whose state changes in response to received commands",
+      "It measures Wi-Fi signal strength",
+      "It replaces the MQTT broker",
+      "It stores queued messages"
     ],
     "correct": 0,
-    "why": "LED_PIN is set to 20 in the uploaded file."
+    "why": "The LED is the observable actuator in the lab, so students can see command messages producing a physical effect."
   },
   {
     "q": "Why is the button initialized with Pin.PULL_UP in the uploaded solution?",
@@ -387,15 +387,15 @@
     "why": "The main loop calls client.check_msg() to check for incoming MQTT messages."
   },
   {
-    "q": "What keepalive value is passed when the MQTT client is created in the uploaded solution?",
+    "q": "What is the purpose of MQTT keepalive in a client connection?",
     "options": [
-      "30 seconds",
-      "10 seconds",
-      "60 seconds",
-      "120 seconds"
+      "It helps detect dead connections so the broker and client do not assume a silent link is still alive",
+      "It encrypts payloads before publish",
+      "It guarantees exactly-once delivery",
+      "It replaces the Last Will message"
     ],
     "correct": 0,
-    "why": "make_client() constructs MQTTClient(CLIENT_ID, BROKER, keepalive=30)."
+    "why": "Keepalive exists so both sides can detect stale sessions instead of treating a dead connection as healthy forever."
   },
   {
     "q": "Why is set_last_will called before connect() in make_client()?",
@@ -409,26 +409,26 @@
     "why": "The last will must be registered before the MQTT session is established, so the broker can publish it on unexpected disconnect."
   },
   {
-    "q": "What is the retained online status message published after a successful connection?",
+    "q": "Why publish an online status immediately after connecting?",
     "options": [
-      "b\"online\"",
-      "b\"ready\"",
-      "b\"connected\"",
-      "b\"hello\""
+      "So subscribers learn that the device is currently available",
+      "So QoS is increased to 2",
+      "So the broker clears all retained messages",
+      "So button presses are debounced"
     ],
     "correct": 0,
-    "why": "make_client() publishes STATUS_TOPIC with payload b'online', retain=True, qos=1."
+    "why": "Publishing an online state after a successful session gives observers an immediate indication that the node is up and connected."
   },
   {
-    "q": "What payload is configured as the Last Will in the uploaded solution?",
+    "q": "When should the broker publish a client's Last Will message?",
     "options": [
-      "b\"offline\"",
-      "b\"TOGGLE\"",
-      "b\"hello\"",
-      "b\"error\""
+      "When the client disconnects unexpectedly without a clean shutdown",
+      "After every successful publish",
+      "Only when the button is pressed",
+      "Whenever a retained message expires"
     ],
     "correct": 0,
-    "why": "set_last_will uses the status topic with payload b'offline', retained and QoS 1."
+    "why": "The broker uses the Last Will as a fallback status update when a client disappears without ending the session cleanly."
   },
   {
     "q": "Why is retain=True used for the status topic?",
@@ -453,15 +453,15 @@
     "why": "The README distinguishes state from events: commands are event messages and should generally not be retained."
   },
   {
-    "q": "What QoS level is used for publish and subscribe operations in the uploaded solution?",
+    "q": "What trade-off does QoS 1 introduce for control messages?",
     "options": [
-      "QoS 1",
-      "QoS 0",
-      "QoS 2",
-      "No QoS is specified anywhere"
+      "Delivery is more reliable, but the receiver may need to tolerate duplicate messages",
+      "Messages are encrypted automatically, but slower",
+      "No acknowledgements are sent, but bandwidth drops",
+      "Commands are retained forever, but cannot fail"
     ],
     "correct": 0,
-    "why": "The code subscribes with qos=1 and publishes status and TOGGLE commands with qos=1."
+    "why": "QoS 1 is an at-least-once mode, so reliability improves, but application logic should be prepared for a message to arrive more than once."
   },
   {
     "q": "Why is QoS 1 a reasonable choice for the button-triggered TOGGLE command in this lab?",
@@ -574,15 +574,15 @@
     "why": "Using unique client IDs avoids clashes at the broker when multiple clients connect."
   },
   {
-    "q": "Which statement best describes the BROKER value in the uploaded solution?",
+    "q": "Why is the broker host stored as a configurable value rather than repeated inside every MQTT call?",
     "options": [
-      "It is the MQTT broker’s IP address on the local network",
-      "It is the Pico W’s own loopback address",
-      "It is the topic prefix for retained messages",
-      "It is the Wi-Fi SSID"
+      "It makes the program easier to move between lab setups without changing publish and subscribe logic in many places",
+      "It prevents the need for a client ID",
+      "It forces QoS 0",
+      "It lets each topic choose a different transport layer"
     ],
     "correct": 0,
-    "why": "BROKER is set to an IP address string and passed into MQTTClient as the broker host."
+    "why": "Keeping the broker address in one configuration value reduces duplication and makes the lab code easier to adapt to another broker or network."
   },
   {
     "q": "What would likely happen if two devices connected to the same broker using the exact same MQTT client ID at the same time?",

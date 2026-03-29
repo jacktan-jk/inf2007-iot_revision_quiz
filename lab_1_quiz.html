@@ -288,26 +288,26 @@
     "why": "The import line in <code>main.py</code> is <code>from web_server import serve_client</code>."
   },
   {
-    "q": "What does a return value of <code>-1</code> from <code>serve_client()</code> mean?",
+    "q": "Why is it useful for <code>serve_client()</code> to return an LED action to the main loop instead of directly controlling hardware?",
     "options": [
-      "No LED state change should be applied",
-      "The LED must blink continuously",
-      "The request was always invalid",
-      "The socket should be rebound"
+      "It keeps HTTP parsing separate from hardware control in the main loop",
+      "It allows <code>GET</code> requests to bypass routing",
+      "It removes the need for sockets",
+      "It forces every response to be HTML"
     ],
     "correct": 0,
-    "why": "The code comments define <code>-1</code> as a sentinel meaning no LED change."
+    "why": "The lab splits responsibilities between <code>web_server.py</code> and <code>main.py</code>, so returning an action lets request handling stay separate from the final GPIO update."
   },
   {
-    "q": "In the uploaded solution, which endpoint returns temperature and LED state together as JSON?",
+    "q": "Why is a combined <code>/status</code> endpoint useful in an IoT API like this one?",
     "options": [
-      "<code>GET /status</code>",
-      "<code>POST /status</code>",
-      "<code>GET /led</code>",
-      "<code>GET /sensor</code>"
+      "It lets a client fetch multiple device states in one request",
+      "It makes <code>POST</code> unnecessary everywhere else",
+      "It guarantees lower Wi-Fi power consumption",
+      "It hides sensor readings from the network"
     ],
     "correct": 0,
-    "why": "The uploaded <code>web_server.py</code> adds a <code>/status</code> route that returns JSON containing temperature and LED state."
+    "why": "A status resource is useful because monitoring clients often need more than one value, such as sensor data and actuator state, in a single response."
   },
   {
     "q": "Which endpoint is described in the repo README as returning the current temperature?",
@@ -475,37 +475,37 @@
     "why": "If parsing returns <code>None</code>, the router responds with 400 and keeps <code>led_state</code> at -1."
   },
   {
-    "q": "Which response is specific to the uploaded solution, but not shown in the base repo README flow for <code>/led</code>?",
+    "q": "Why is <code>POST</code> a better fit than <code>GET</code> for <code>/led</code> in this lab?",
     "options": [
-      "<code>304 Not Modified</code> when the requested LED state is already the current state",
-      "<code>201 Created</code> for every LED change",
-      "<code>301 Moved Permanently</code> to <code>/status</code>",
-      "<code>202 Accepted</code> with deferred LED updates"
+      "Because <code>POST</code> is intended for state-changing operations while <code>GET</code> should be safe and read-only",
+      "Because <code>GET</code> cannot carry headers",
+      "Because <code>POST</code> is the only method supported by sockets",
+      "Because <code>GET</code> always returns <code>404</code> on Pico W"
     ],
     "correct": 0,
-    "why": "The uploaded <code>web_server.py</code> adds logic that returns 304 when the requested LED state matches the current one."
+    "why": "Changing the LED modifies device state, so using <code>POST</code> better matches HTTP semantics than a read-oriented <code>GET</code>."
   },
   {
-    "q": "Why does the uploaded <code>serve_client()</code> function accept <code>led_is_active</code> as an argument?",
+    "q": "Why might an API handler need the current LED state when processing a write request?",
     "options": [
-      "So it can compare requested state against the current LED state and decide whether to return 304 or 200",
+      "So it can compare the requested state against the current state before building the response",
       "So it can calculate Wi-Fi signal strength",
       "So it can decode the HTTP version",
       "So it can compute the ADC conversion factor"
     ],
     "correct": 0,
-    "why": "The uploaded solution passes the current LED value into <code>serve_client()</code> and uses it for the not-modified checks."
+    "why": "Write handlers often need the current actuator state so they can decide whether a change is needed and respond consistently."
   },
   {
-    "q": "What content type does the uploaded solution use for the <code>/status</code> response?",
+    "q": "Why is <code>application/json</code> a good response type for <code>/status</code>?",
     "options": [
-      "<code>application/json</code>",
-      "<code>text/plain</code>",
-      "<code>image/png</code>",
-      "<code>application/xml</code>"
+      "It gives a structured format that other programs can parse easily",
+      "It is required for all HTTP responses",
+      "It makes the socket stay open automatically",
+      "It prevents invalid requests"
     ],
     "correct": 0,
-    "why": "The <code>/status</code> route calls <code>http_response(..., content_type=\"application/json\")</code>."
+    "why": "JSON is a machine-readable way to return multiple named values such as temperature and LED state in one response."
   },
   {
     "q": "How is the LED state represented in the JSON body for <code>/status</code>?",
@@ -563,15 +563,15 @@
     "why": "The code catches <code>OSError</code>, ignores timeout code 110, prints other connection errors, and continues the loop."
   },
   {
-    "q": "What does the comment say about error code <code>110</code> in the main loop?",
+    "q": "Why is it reasonable for the server loop to ignore a timeout and continue listening?",
     "options": [
-      "It is treated as <code>ETIMEDOUT</code>",
-      "It means the LED is already on",
-      "It means Wi-Fi connected successfully",
-      "It is the ADC overflow code"
+      "A timeout can happen without the server being broken, so the loop can keep serving later clients",
+      "A timeout means the LED state changed successfully",
+      "A timeout automatically reconnects Wi-Fi",
+      "A timeout proves the request was valid"
     ],
     "correct": 0,
-    "why": "The comment explicitly labels <code>e.args[0] == 110</code> as <code>ETIMEDOUT</code>."
+    "why": "Timeouts are usually transient in an iterative server, so continuing the loop keeps the service available instead of crashing on a temporary wait condition."
   },
   {
     "q": "In the overall request flow, which sequence is correct?",

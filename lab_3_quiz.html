@@ -134,15 +134,15 @@
     "why": "The README defines Forward as advertising a message that originated from someone else."
   },
   {
-    "q": "What is the configured advertising interval in the uploaded `main.py`?",
+    "q": "Why does this lab use short advertising bursts instead of advertising continuously?",
     "options": [
-      "200_000 microseconds",
-      "300 microseconds",
-      "10_000 microseconds",
-      "60_000 microseconds"
+      "To reduce airtime and leave time for nodes to scan for each other",
+      "Because BLE advertising must stop after exactly one packet",
+      "To make TTL unnecessary",
+      "Because scanning and advertising can never coexist in one program"
     ],
     "correct": 0,
-    "why": "The code sets ADV_INTERVAL_US = 200_000."
+    "why": "Bursty advertising balances transmitting with discovery and avoids occupying the radio all the time."
   },
   {
     "q": "How long does each advertise burst last by default?",
@@ -156,15 +156,15 @@
     "why": "The code sets ADV_BURST_MS = 300, and the README describes a 300 ms advertise burst."
   },
   {
-    "q": "What is the scan duration configured in the uploaded solution?",
+    "q": "Why does the node still need a long scan window in a flooding-style BLE lab?",
     "options": [
-      "10,000 ms",
-      "300 ms",
-      "60,000 ms",
-      "30,000 ms"
+      "To give it enough time to hear advertisements from other nodes that may transmit at different moments",
+      "To increase ADC precision",
+      "To make packet TTL grow automatically",
+      "To prevent duplicate frames at the source"
     ],
     "correct": 0,
-    "why": "The code sets SCAN_MS = 10_000."
+    "why": "Different nodes advertise at different times, so scanning for long enough improves the chance of actually hearing the network traffic."
   },
   {
     "q": "How often does the node plan to inject its own temperature message before jitter is applied?",
@@ -200,26 +200,26 @@
     "why": "DEFAULT_TTL is set to 3 in the code."
   },
   {
-    "q": "What does `SEEN_MAX = 400` limit?",
+    "q": "Why does the de-duplication cache need a maximum size?",
     "options": [
-      "The maximum number of seen-message keys kept in the de-duplication cache",
-      "The BLE transmit power level",
-      "The number of scan results per second",
-      "The maximum TTL value that can be sent"
+      "So memory use stays bounded on a small microcontroller",
+      "So BLE can switch to Wi-Fi when the cache is full",
+      "So TTL values can exceed the cache size",
+      "So only 400 nodes can ever join the lab"
     ],
     "correct": 0,
-    "why": "The `seen` list stores `orig:msgid` entries, and the code trims it when it grows beyond SEEN_MAX."
+    "why": "A bounded cache prevents the node from consuming unbounded memory while still remembering recently seen messages for de-duplication."
   },
   {
-    "q": "How is `NODE_ID` derived in the uploaded solution?",
+    "q": "Why is deriving <code>NODE_ID</code> from device-unique hardware information useful?",
     "options": [
-      "By taking the last 6 hex characters of `machine.unique_id()`",
-      "By reading the Wi-Fi MAC address from the router",
-      "By generating a random 6-digit number at boot",
-      "By asking the user to type a node name"
+      "It helps each node identify itself without manually assigning the same ID to multiple boards",
+      "It guarantees the broker IP address",
+      "It forces all advertisements to have the same length",
+      "It disables forwarding loops by itself"
     ],
     "correct": 0,
-    "why": "The code uses `ubinascii.hexlify(machine.unique_id()).decode()[-6:]`."
+    "why": "Using unique hardware-derived identity reduces manual setup mistakes and lets forwarded frames keep a stable origin identifier."
   },
   {
     "q": "Which ADC channel is used for the Pico internal temperature sensor in the code?",
@@ -354,15 +354,15 @@
     "why": "Part 3 adds a de-duplication cache plus TTL decrementing to bound propagation."
   },
   {
-    "q": "What key format does the uploaded solution use in the `seen` cache?",
+    "q": "Why is a key such as <code>orig:msgid</code> a sensible de-duplication key?",
     "options": [
-      "`\"orig:msgid\"`",
-      "`\"ttl:type\"`",
-      "`\"addr:rssi\"`",
-      "`\"data:time\"`"
+      "It identifies a message instance by who created it and which message number it was",
+      "It stores the strongest RSSI seen so far",
+      "It encodes the BLE scan duration",
+      "It replaces the need for TTL entirely"
     ],
     "correct": 0,
-    "why": "The code constructs keys with `\"{}:{}\".format(orig, msgid)`."
+    "why": "A message origin plus its sequence number is a practical way to recognize that the same frame is being seen again at another node."
   },
   {
     "q": "What does `seen_check_add(key)` return when the message was already seen?",
@@ -541,26 +541,26 @@
     "why": "The code stores summary strings in `self.list`, and special logic runs once the list length reaches 5."
   },
   {
-    "q": "What exactly triggers the “Received 5 messages” block in the uploaded solution?",
+    "q": "Why might the program batch received-message summaries before printing them?",
     "options": [
-      "When `len(self.list) >= 5` after appending a non-`R` message summary",
-      "When five duplicate frames are detected from the same sender",
-      "When TTL reaches zero",
-      "When `_IRQ_SCAN_DONE` fires five times"
+      "To make repeated network activity easier for students to inspect without printing every event immediately",
+      "To increase BLE range",
+      "To reset TTL values after every five messages",
+      "To guarantee every frame is reliable"
     ],
     "correct": 0,
-    "why": "The code checks `if len(self.list) >= 5:` after appending the formatted summary."
+    "why": "A short batch summary can make noisy flooding behavior easier to read during a lab demo than printing every single event line by line."
   },
   {
-    "q": "After printing the batch of 5 messages, what custom frame does the uploaded code inject?",
+    "q": "What is the purpose of injecting a custom frame in a lab like this?",
     "options": [
-      "A frame with TTL 0, TYPE `R`, and payload `rabak`",
-      "A frame with TTL 3, TYPE `T`, and the latest temperature",
-      "A frame with TTL 5, TYPE `A`, and payload `ack`",
-      "No frame is injected; only the list is cleared"
+      "To let students observe how the forwarding rules handle different frame types and TTL values",
+      "To authenticate nodes with WPA2",
+      "To start a GATT connection between peers",
+      "To clear the seen cache remotely"
     ],
     "correct": 0,
-    "why": "The code calls `self.inject_custom(0, \"R\", \"rabak\")` after printing the 5 collected summaries."
+    "why": "Injecting a known custom frame is a useful teaching tool because it gives students a controlled packet to reason about as it moves through the forwarding logic."
   },
   {
     "q": "Why will the injected custom `R` frame from that block not be forwarded further by this uploaded solution?",
@@ -618,15 +618,15 @@
     "why": "The final forwarding check in `_irq()` is exactly `if ttl > 0 and typ != \"R\":`."
   },
   {
-    "q": "What is the sleep interval used in the `run()` loop?",
+    "q": "Why is a short sleep useful in the <code>run()</code> loop?",
     "options": [
-      "20 ms",
-      "300 ms",
-      "1 s",
-      "10 s"
+      "It prevents the main loop from busy-spinning and gives time for radio and event processing between iterations",
+      "It makes every frame travel farther",
+      "It guarantees no duplicates will occur",
+      "It changes advertisements into connection packets"
     ],
     "correct": 0,
-    "why": "The main loop ends with `time.sleep_ms(20)`."
+    "why": "A tight loop with no pause wastes CPU time, while a small delay keeps the program responsive without busy-spinning unnecessarily."
   },
   {
     "q": "What two periodic checks happen in the uploaded `run()` loop?",

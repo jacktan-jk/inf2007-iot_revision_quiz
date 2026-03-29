@@ -343,15 +343,15 @@
             "level": "lab 5"
       },
       {
-            "q": "What payload does the committed sketch send by default?",
+            "q": "Why is a short fixed payload useful during initial LoRaWAN bring-up?",
             "options": [
-                  "\"status=ok\"",
-                  "\"Hello, world!\"",
-                  "\"uplink\"",
-                  "\"temperature=25\""
+                  "It simplifies testing so students can focus on join and uplink flow before designing custom payloads",
+                  "It enables Class C mode automatically",
+                  "It prevents the need for TTN registration",
+                  "It makes downlinks impossible"
             ],
-            "correct": 1,
-            "why": "The sketch defines `static uint8_t mydata[] = \"Hello, world!\";`.",
+            "correct": 0,
+            "why": "A simple payload is enough to verify OTAA join, uplink scheduling, and TTN visibility before adding application-specific encoding.",
             "level": "lab 5"
       },
       {
@@ -367,75 +367,75 @@
             "level": "lab 5"
       },
       {
-            "q": "Which radio library headers are included by the committed sketch?",
+            "q": "Why are both LMIC and SPI-related headers needed in this sketch?",
             "options": [
-                  "`<WiFi.h>`, `<HTTPClient.h>`, `<SPI.h>`",
-                  "`<lmic.h>`, `<hal/hal.h>`, `<SPI.h>`",
-                  "`<RH_RF95.h>`, `<Wire.h>`, `<SPI.h>`",
-                  "`<LoRa.h>`, `<EEPROM.h>`, `<SPI.h>`"
-            ],
-            "correct": 1,
-            "why": "The top of the sketch includes `lmic.h`, `hal/hal.h`, and `SPI.h`.",
-            "level": "lab 5"
-      },
-      {
-            "q": "Which pin is used for `nss` in the committed LMIC pin map?",
-            "options": [
-                  "2",
-                  "5",
-                  "7",
-                  "10"
-            ],
-            "correct": 3,
-            "why": "The `lmic_pins` structure sets `.nss = 10`.",
-            "level": "lab 5"
-      },
-      {
-            "q": "Which pin is used for the radio reset line (`rst`) in the committed pin map?",
-            "options": [
-                  "7",
-                  "8",
-                  "9",
-                  "10"
+                  "LMIC handles LoRaWAN logic while SPI provides low-level communication with the radio chip",
+                  "One is for OLED text and the other is for Wi-Fi",
+                  "Both are only needed to print session keys",
+                  "They are included only to satisfy Arduino syntax"
             ],
             "correct": 0,
-            "why": "The sketch sets `.rst = 7` in `lmic_pins`.",
+            "why": "A LoRaWAN stack still needs a hardware transport layer, and SPI is how the microcontroller exchanges data with the radio transceiver.",
             "level": "lab 5"
       },
       {
-            "q": "What `dio` pin mapping is used in the sketch?",
+            "q": "What is the role of `nss` in an SPI-connected radio design?",
             "options": [
-                  "`{2, 5, 6}`",
-                  "`{3, 4, 5}`",
-                  "`{10, 11, 12}`",
-                  "`{A0, A1, A2}`"
+                  "It selects the radio as the active SPI peripheral",
+                  "It resets the gateway",
+                  "It stores the AppKey",
+                  "It controls the uplink interval"
             ],
             "correct": 0,
-            "why": "The sketch sets `.dio = {2, 5, 6}`.",
+            "why": "The chip-select line is what tells the SPI bus which device should respond during a transaction.",
             "level": "lab 5"
       },
       {
-            "q": "What is `rxtx` set to in the sketch's LMIC pin map?",
+            "q": "Why does the radio reset line matter during startup?",
             "options": [
-                  "`0`",
-                  "`7`",
-                  "`LMIC_UNUSED_PIN`",
-                  "`A0`"
+                  "It lets the board force the transceiver into a known initial state",
+                  "It selects the TTN cluster",
+                  "It sets the spreading factor directly",
+                  "It stores the DevEUI"
             ],
-            "correct": 2,
-            "why": "The committed pin map uses `.rxtx = LMIC_UNUSED_PIN`.",
+            "correct": 0,
+            "why": "A reset line is commonly used so the microcontroller can restart the radio cleanly before initialization.",
             "level": "lab 5"
       },
       {
-            "q": "What does `printHex2()` do?",
+            "q": "Why are DIO lines mapped from the radio to the microcontroller in an LMIC sketch?",
             "options": [
-                  "Prints decimal values with two digits",
-                  "Prints a byte in hex and pads values below 16 with a leading zero",
-                  "Converts ASCII to hexadecimal",
-                  "Encrypts the AppKey"
+                  "So the radio can signal events such as TX/RX progress to the MCU",
+                  "So the board can emulate a Wi-Fi antenna",
+                  "So AppKeys can be stored in hardware",
+                  "So TTN chooses the nearest gateway"
             ],
-            "correct": 1,
-            "why": "The helper masks to one byte and prints a leading `0` if the value is below `0x10`, then prints the value in hexadecimal.",
+            "correct": 0,
+            "why": "LMIC needs radio event signals from the transceiver, and DIO lines provide those event notifications to the microcontroller.",
+            "level": "lab 5"
+      },
+      {
+            "q": "What does using <code>LMIC_UNUSED_PIN</code> for <code>rxtx</code> imply in this setup?",
+            "options": [
+                  "This board setup does not need a separate RX/TX direction-control pin",
+                  "The radio cannot receive at all",
+                  "The node must use ABP instead of OTAA",
+                  "The sketch will never use SPI"
+            ],
+            "correct": 0,
+            "why": "Marking a pin as unused indicates that this hardware design does not require that extra control signal for normal operation.",
+            "level": "lab 5"
+      },
+      {
+            "q": "Why is hex formatting useful when printing LoRaWAN identifiers or session keys?",
+            "options": [
+                  "It shows byte values in a compact form that matches how radio identifiers and keys are usually represented",
+                  "It increases radio range by two bytes",
+                  "It converts plaintext into encrypted keys",
+                  "It is required before every uplink"
+            ],
+            "correct": 0,
+            "why": "LoRaWAN identifiers and keys are byte-oriented values, so hexadecimal output is a natural format for inspection and debugging.",
             "level": "lab 5"
       },
       {
@@ -451,15 +451,15 @@
             "level": "lab 5"
       },
       {
-            "q": "What is the main job of `loop()` in the committed sketch?",
+            "q": "Why is <code>loop()</code> mostly an LMIC event pump in this style of sketch?",
             "options": [
-                  "Toggle an LED every second",
-                  "Serve HTTP requests",
-                  "Run one LMIC event-loop iteration with `os_runloop_once()`",
-                  "Read a sensor over I2C"
+                  "Because LMIC manages time-sensitive MAC and radio work through its event loop",
+                  "Because Arduino requires every loop to send an uplink",
+                  "Because TTN only accepts packets from blocking code",
+                  "Because OTAA credentials must be recalculated on every iteration"
             ],
-            "correct": 2,
-            "why": "The entire `loop()` function is just `os_runloop_once();`.",
+            "correct": 0,
+            "why": "The sketch is structured around the LMIC event system, so the main loop's job is primarily to keep that radio and MAC state machine progressing.",
             "level": "lab 5"
       },
       {
@@ -499,15 +499,15 @@
             "level": "lab 5"
       },
       {
-            "q": "Which FPort is used by the committed sketch for the uplink?",
+            "q": "What is the purpose of FPort in a LoRaWAN uplink?",
             "options": [
-                  "0",
-                  "1",
-                  "2",
-                  "10"
+                  "It is the application port that helps distinguish how payloads should be interpreted above the MAC layer",
+                  "It is the radio frequency channel index",
+                  "It is the SPI chip-select pin number",
+                  "It is the number of gateways that heard the packet"
             ],
-            "correct": 1,
-            "why": "The first argument to `LMIC_setTxData2` is `1`, so the uplink uses port 1.",
+            "correct": 0,
+            "why": "In LoRaWAN, FPort is part of the uplink metadata and is commonly used by the application layer to decide how to decode the payload.",
             "level": "lab 5"
       },
       {
@@ -571,51 +571,51 @@
             "level": "lab 5"
       },
       {
-            "q": "Which event intentionally avoids printing because it would interfere with timing?",
+            "q": "Why can heavy serial printing during a receive-start event be risky in radio code?",
             "options": [
-                  "EV_JOINING",
-                  "EV_TXSTART",
-                  "EV_RXSTART",
-                  "EV_RESET"
+                  "Because time-sensitive radio handling can be disturbed by slow debug output",
+                  "Because printing automatically changes the AppKey",
+                  "Because TTN rejects packets that generate logs",
+                  "Because serial output disables the gateway"
             ],
-            "correct": 2,
-            "why": "The sketch comment in `EV_RXSTART` says not to print anything because it wrecks timing.",
+            "correct": 0,
+            "why": "Radio receive windows are timing-sensitive, so extra debug output in that path can interfere with correct protocol handling.",
             "level": "lab 5"
       },
       {
-            "q": "At what serial baud rate does the sketch start?",
+            "q": "Why must the serial monitor use the same baud rate as the sketch?",
             "options": [
-                  "4800",
-                  "9600",
-                  "115200",
-                  "230400"
+                  "Otherwise the debug output may appear garbled or unreadable",
+                  "Otherwise OTAA join is disabled",
+                  "Otherwise TTN changes the frequency plan",
+                  "Otherwise the payload becomes encrypted twice"
             ],
-            "correct": 1,
-            "why": "The sketch calls `Serial.begin(9600);` in `setup()`.",
+            "correct": 0,
+            "why": "Serial communication depends on both sides using the same baud setting, or the monitor output will not decode correctly.",
             "level": "lab 5"
       },
       {
-            "q": "Which statement best describes the credentials already present in the committed sketch?",
+            "q": "Why must the OTAA credentials in the sketch match the student's own TTN registration?",
             "options": [
-                  "The sketch contains no OTAA values at all",
-                  "The sketch still uses `FILLMEIN` placeholders for all OTAA fields",
-                  "The sketch already contains fixed OTAA arrays, so students still need to replace them with their own TTN values",
-                  "The sketch uses ABP session keys only"
+                  "Because OTAA join succeeds only when the device identifiers and keys match the registered end device",
+                  "Because any valid DevEUI can join any TTN application",
+                  "Because only the gateway credentials matter for OTAA",
+                  "Because TTN ignores AppKey values during join"
             ],
-            "correct": 2,
-            "why": "Although the original LMIC example includes a `FILLMEIN` warning macro, this committed sketch already has concrete APPEUI/DEVEUI/APPKEY arrays. For actual use, those values still need to match the student's own registered TTN end device.",
+            "correct": 0,
+            "why": "OTAA is tied to the registered device identity and keys, so example values from a repo are not enough for a student's own node to join correctly.",
             "level": "lab 5"
       },
       {
-            "q": "The README says compilation should produce what outcome for `ttn_otaa_helloworld`?",
+            "q": "Why is a successful compile not the same as a successful Lab 5 outcome?",
             "options": [
-                  "No errors and no warnings at all",
-                  "Errors are expected until BLE is disabled",
-                  "No errors, but warnings may appear",
-                  "Only linker errors are expected"
+                  "The node can still fail later at runtime because registration values, radio settings, or network configuration may be wrong",
+                  "Compilation automatically proves the gateway path is correct",
+                  "A compiled sketch skips the OTAA join process",
+                  "TTN treats any compiled sketch as already registered"
             ],
-            "correct": 2,
-            "why": "The README says you should not see errors, but there are warnings.",
+            "why": "Build success only means the code compiled; the actual lab still depends on correct credentials, frequency plan, gateway reachability, and runtime radio behavior.",
+            "correct": 0,
             "level": "lab 5"
       },
       {

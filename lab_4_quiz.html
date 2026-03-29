@@ -225,61 +225,61 @@
       {
             "q": "Why must the transmitter and receiver frequencies match?",
             "options": [
-                  "Because the README says different frequencies improve security",
-                  "Because the comments in the code say RX and TX must use the same frequency",
-                  "Because the OLED library requires it",
-                  "Because the USB serial driver depends on it"
-            ],
-            "correct": 1,
-            "why": "The code comment next to `RF95_FREQ` says it must match the other side.",
-            "level": "lab 4"
-      },
-      {
-            "q": "Which pin is used as the LoRa chip select (`RFM95_CS`) in both sketches?",
-            "options": [
-                  "2",
-                  "9",
-                  "10",
-                  "13"
-            ],
-            "correct": 2,
-            "why": "Both sketches define `RFM95_CS 10`.",
-            "level": "lab 4"
-      },
-      {
-            "q": "Which pin is used as the reset pin (`RFM95_RST`) in both sketches?",
-            "options": [
-                  "2",
-                  "7",
-                  "9",
-                  "10"
-            ],
-            "correct": 2,
-            "why": "Both sketches define `RFM95_RST 9`.",
-            "level": "lab 4"
-      },
-      {
-            "q": "Which interrupt pin is used as `RFM95_INT` in both sketches?",
-            "options": [
-                  "2",
-                  "3",
-                  "8",
-                  "11"
+                  "Because radios must be tuned to the same channel to demodulate each other's packets",
+                  "Because matching frequencies only affects OLED brightness",
+                  "Because different frequencies are used only for acknowledgements",
+                  "Because USB serial requires it"
             ],
             "correct": 0,
-            "why": "Both sketches define `RFM95_INT 2`.",
+            "why": "If the transmitter and receiver are listening on different RF channels, they will not hear the same LoRa packets.",
             "level": "lab 4"
       },
       {
-            "q": "What serial baud rate do both LoRa sketches start with?",
+            "q": "What is the job of the LoRa chip-select line in an SPI-based design?",
             "options": [
-                  "4800",
-                  "9600",
-                  "57600",
-                  "115200"
+                  "It selects the radio as the active SPI device during a transfer",
+                  "It measures received signal strength",
+                  "It sets the RF frequency automatically",
+                  "It powers the OLED display"
             ],
-            "correct": 1,
-            "why": "Both `setup()` functions call `Serial.begin(9600);`.",
+            "correct": 0,
+            "why": "Chip select is used by SPI hardware to choose which peripheral should respond on the bus.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Why might a microcontroller drive the radio reset pin during setup?",
+            "options": [
+                  "To force the transceiver into a known starting state before initialization",
+                  "To increase packet payload size",
+                  "To encode the node address in hardware",
+                  "To acknowledge received packets"
+            ],
+            "correct": 0,
+            "why": "Resetting the radio during startup is a common way to make sure the transceiver begins initialization from a known state.",
+            "level": "lab 4"
+      },
+      {
+            "q": "What is the role of the radio interrupt line in this kind of sketch?",
+            "options": [
+                  "It lets the radio signal events such as packet sent or packet received to the MCU",
+                  "It supplies operating voltage to the antenna",
+                  "It stores the packet counter",
+                  "It replaces the SPI clock"
+            ],
+            "correct": 0,
+            "why": "An interrupt line is used so the transceiver can notify the microcontroller about important radio events without constant polling.",
+            "level": "lab 4"
+      },
+      {
+            "q": "Why must the serial monitor and sketch use matching baud settings during this lab?",
+            "options": [
+                  "Otherwise the debug output can appear garbled and make bring-up harder",
+                  "Otherwise the radio frequency changes automatically",
+                  "Otherwise acknowledgements are disabled",
+                  "Otherwise the packet counter resets every loop"
+            ],
+            "correct": 0,
+            "why": "Serial debugging only works cleanly when the monitor and the sketch are configured to communicate at the same rate.",
             "level": "lab 4"
       },
       {
@@ -307,15 +307,15 @@
             "level": "lab 4"
       },
       {
-            "q": "Which statement best matches the code comments about `RH_RF95`?",
+            "q": "If `RH_RF95` does not provide addressing or reliability by itself, what must the application add for a more robust link?",
             "options": [
-                  "It provides full addressing and reliability by default",
-                  "It does not provide addressing or reliability by itself",
-                  "It only works over I2C",
-                  "It is only for OLED displays"
+                  "Its own rules for device identity, acknowledgements, and retries",
+                  "A second USB serial cable",
+                  "A higher OLED refresh rate",
+                  "A different Arduino IDE theme"
             ],
-            "correct": 1,
-            "why": "The comments state that `RH_RF95` does not provide addressing or reliability.",
+            "correct": 0,
+            "why": "A raw radio driver moves packets, but application-level reliability still needs logic such as addressing, acknowledgements, and retransmission policy.",
             "level": "lab 4"
       },
       {
@@ -355,15 +355,15 @@
             "level": "lab 4"
       },
       {
-            "q": "What message does the transmitter print before sending a packet?",
+            "q": "Why is a recognizable serial message useful before sending a packet?",
             "options": [
-                  "`Waiting for Reply`",
-                  "`Sending to rf95_rx`",
-                  "`Setup Successful`",
-                  "`Receive failed`"
+                  "It gives a visible trace that a transmit attempt happened, which helps students debug the request/reply flow",
+                  "It is required to unlock the receiver",
+                  "It changes the spreading factor automatically",
+                  "It disables timeouts"
             ],
-            "correct": 1,
-            "why": "The start of the transmitter loop prints `Sending to rf95_rx`.",
+            "correct": 0,
+            "why": "Readable serial output makes it easier to correlate what the transmitter tried to do with what the receiver reported.",
             "level": "lab 4"
       },
       {
@@ -379,39 +379,39 @@
             "level": "lab 4"
       },
       {
-            "q": "How long does the transmitter wait for a reply before timing out?",
+            "q": "Why does the transmitter use a timeout while waiting for a reply?",
             "options": [
-                  "100 ms",
-                  "500 ms",
-                  "1000 ms",
-                  "5000 ms"
+                  "So it does not block forever if the response is lost or the receiver is unavailable",
+                  "So the packet automatically retransmits at a different frequency",
+                  "So the receiver can change baud rate",
+                  "So RSSI is forced to zero"
             ],
-            "correct": 2,
-            "why": "The transmitter calls `rf95.waitAvailableTimeout(1000)`.",
+            "correct": 0,
+            "why": "Timeouts keep a request/reply loop responsive even when the return packet never arrives.",
             "level": "lab 4"
       },
       {
-            "q": "What does the transmitter print if no reply arrives in time?",
+            "q": "What is the most likely interpretation if no reply arrives before the timeout?",
             "options": [
-                  "`Receive failed`",
-                  "`No reply received`",
-                  "`Setup Failed`",
-                  "`Packet dropped`"
+                  "The return packet was missed or the link configuration is not working as expected",
+                  "The OLED library is disabled",
+                  "The transmitter switched to LoRaWAN mode",
+                  "The radio has already guaranteed delivery"
             ],
-            "correct": 1,
-            "why": "The timeout branch prints `No reply received`.",
+            "correct": 0,
+            "why": "A missing reply usually points to a link problem such as coverage, timing, or mismatched radio configuration rather than guaranteed success.",
             "level": "lab 4"
       },
       {
-            "q": "How long does the transmitter wait between loop iterations?",
+            "q": "Why include a noticeable delay between transmit attempts in a teaching lab?",
             "options": [
-                  "1 second",
-                  "2 seconds",
-                  "5 seconds",
-                  "10 seconds"
+                  "To avoid spamming the channel and to make the request/reply behavior easier to observe",
+                  "To increase antenna gain",
+                  "To make SPI transfers much faster",
+                  "To force the packet counter back to zero"
             ],
-            "correct": 3,
-            "why": "The transmitter ends the loop with `delay(10000);`.",
+            "correct": 0,
+            "why": "Spacing out attempts reduces radio clutter and gives students time to interpret the serial output between transactions.",
             "level": "lab 4"
       },
       {
@@ -427,15 +427,15 @@
             "level": "lab 4"
       },
       {
-            "q": "What reply payload does the receiver send back after a successful receive?",
+            "q": "Why have the receiver send a reply after a successful receive?",
             "options": [
-                  "`ACK`",
-                  "`Hello from receiver`",
-                  "`And hello back to you`",
-                  "`RSSI OK`"
+                  "It demonstrates two-way communication and gives the transmitter confirmation that the link worked",
+                  "It is required for all LoRa packets",
+                  "It increases OLED resolution",
+                  "It resets the packet counter"
             ],
-            "correct": 2,
-            "why": "The receiver defines `uint8_t data[] = \"And hello back to you\";` and sends it.",
+            "correct": 0,
+            "why": "A return packet is a simple way to show that the receiver not only heard the transmission but could answer it as well.",
             "level": "lab 4"
       },
       {
@@ -451,15 +451,15 @@
             "level": "lab 4"
       },
       {
-            "q": "Which function is used to display the raw received buffer in the receiver sketch?",
+            "q": "Why is printing the raw received buffer useful when debugging a radio lab?",
             "options": [
-                  "`Serial.println(buf)`",
-                  "`RH_RF95::printBuffer(...)`",
-                  "`display.println(...)`",
-                  "`Wire.write(...)`"
+                  "It helps confirm that bytes really arrived and lets students inspect the payload content directly",
+                  "It improves receive sensitivity",
+                  "It encrypts the packet for storage",
+                  "It forces the next packet to be acknowledged"
             ],
-            "correct": 1,
-            "why": "The receiver calls `RH_RF95::printBuffer(\"Received: \", buf, len);`.",
+            "correct": 0,
+            "why": "Seeing the raw payload bytes is useful during bring-up because it confirms that the radio path is delivering actual packet content.",
             "level": "lab 4"
       },
       {
