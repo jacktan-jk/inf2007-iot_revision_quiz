@@ -65,7 +65,7 @@
   <header>
     <div class="wrap">
       <h1>CSC2106 — Quizzes & Revision Notes</h1>
-      <div class="sub">IoT Protocols & Networks • Tabbed quiz index for lectures and labs</div>
+      <div class="sub">IoT Protocols & Networks • Tabbed quiz index for lectures, exams, and labs</div>
     </div>
   </header>
 
@@ -73,6 +73,7 @@
     <section class="card">
       <div class="tabbar" role="tablist" aria-label="Quiz categories">
         <button class="tabbtn active" id="tabBtnLectures" type="button" role="tab" aria-selected="true" aria-controls="panelLectures">Lecture Quizzes</button>
+        <button class="tabbtn" id="tabBtnExams" type="button" role="tab" aria-selected="false" aria-controls="panelExams">Extra Exam Quizzes</button>
         <button class="tabbtn" id="tabBtnLabs" type="button" role="tab" aria-selected="false" aria-controls="panelLabs">Lab Quizzes</button>
       </div>
 
@@ -126,6 +127,32 @@
           </section>
         </div>
       </section>
+
+      <section class="tabpanel" id="panelExams" role="tabpanel" aria-labelledby="tabBtnExams" hidden>
+        <div class="layout">
+          <section class="stack">
+            <section class="card listcard">
+              <h2>Extra Exam Quizzes</h2>
+              <p class="helper">Three additional exam-style practice sets, each with 50 questions and mixed MCQ or multi-select formats.</p>
+              <div class="grid" id="examGrid"></div>
+            </section>
+          </section>
+
+          <section class="card infocard">
+            <h2>Exam Quiz Notes</h2>
+            <p>These pages are separate from the lecture and lab quiz sets.</p>
+            <div class="btns">
+              <a href="extra_exam_quizzes.html" target="_blank" class="btn primary">Open Exam Quiz Hub</a>
+            </div>
+            <ul>
+              <li>Exam quiz files: <code>extra_exam_quiz_1.html</code> to <code>extra_exam_quiz_3.html</code></li>
+              <li>Combined exam index: <code>extra_exam_quizzes.html</code></li>
+              <li>Format: exam-style MCQ and multi-select only</li>
+            </ul>
+            <p>Keep this <code>index.html</code> in the same folder as the generated exam quiz files.</p>
+          </section>
+        </div>
+      </section>
     </section>
   </main>
 
@@ -142,7 +169,6 @@
       { num: 9, title: "Cellular IoT", desc: "CSC2106 – IoT Protocols & Networks • Lecture 9", file: "lecture_9_quiz.html", notes: "notes/lec9.md" },
       { num: 10, title: "802.15.4 & Thread", desc: "CSC2106 – IoT Protocols & Networks • Lecture 10", file: "lecture_10_quiz.html", notes: "notes/lec10.md" },
       { num: 11, title: "ZigBee & Z-Wave", desc: "CSC2106 – IoT Protocols & Networks • Lecture 11", file: "lecture_11_quiz.html", notes: "notes/lec11.md" },
-      { num: 12, title: "XSITE", desc: "CSC2106 – IoT Protocols & Networks • XSITE Quiz", file: "xsite_quiz_all.html" }
     ];
 
     const LABS = [
@@ -154,11 +180,21 @@
       { num: 6, title: "BLE on Pico W", desc: "CSC2106 – Lab 6 • BLE GATT server/client on MicroPython", file: "lab_6_quiz.html" }
     ];
 
+    const EXTRA_EXAMS = [
+      { num: 1, title: "Extra Exam Quiz 1", desc: "CSC2106 – Exam-style practice set • 50 questions", file: "extra_exam_quiz_1.html" },
+      { num: 2, title: "Extra Exam Quiz 2", desc: "CSC2106 – Exam-style practice set • 50 questions", file: "extra_exam_quiz_2.html" },
+      { num: 3, title: "Extra Exam Quiz 3", desc: "CSC2106 – Exam-style practice set • 50 questions", file: "extra_exam_quiz_3.html" },
+      { num: 4, title: "XSITE", desc: "CSC2106 – IoT Protocols & Networks • XSITE Quiz", file: "xsite_quiz_all.html" }
+    ];
+
     function renderLectureQuizzes() {
       const grid = document.getElementById('lectureGrid');
       grid.innerHTML = '';
 
       LECTURES.forEach(quiz => {
+        const notesButton = quiz.notes
+          ? `<button class="btn" onclick="loadNotes('${quiz.notes}')">View Notes</button>`
+          : '';
         const card = document.createElement('div');
         card.className = 'lec';
         card.innerHTML = `
@@ -169,7 +205,7 @@
           <p style="margin:0;color:#9ca3af;font-size:14px">${quiz.desc}</p>
           <div class="btns">
             <a href="${quiz.file}" target="_blank" class="btn primary">Start Quiz</a>
-            <button class="btn" onclick="loadNotes('${quiz.notes}')">View Notes</button>
+            ${notesButton}
           </div>
         `;
         grid.appendChild(card);
@@ -197,25 +233,55 @@
       });
     }
 
+    function renderExtraExamQuizzes() {
+      const grid = document.getElementById('examGrid');
+      grid.innerHTML = '';
+
+      EXTRA_EXAMS.forEach(quiz => {
+        const card = document.createElement('div');
+        card.className = 'lec';
+        card.innerHTML = `
+          <div>
+            <h3>${quiz.title}</h3>
+            <div class="tag">Exam Set ${quiz.num}</div>
+          </div>
+          <p style="margin:0;color:#9ca3af;font-size:14px">${quiz.desc}</p>
+          <div class="btns">
+            <a href="${quiz.file}" target="_blank" class="btn primary">Start Quiz</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
     const tabBtnLectures = document.getElementById('tabBtnLectures');
+    const tabBtnExams = document.getElementById('tabBtnExams');
     const tabBtnLabs = document.getElementById('tabBtnLabs');
     const panelLectures = document.getElementById('panelLectures');
+    const panelExams = document.getElementById('panelExams');
     const panelLabs = document.getElementById('panelLabs');
 
     function setActiveTab(name) {
       const showLectures = name === 'lectures';
+      const showExams = name === 'exams';
+      const showLabs = name === 'labs';
       tabBtnLectures.classList.toggle('active', showLectures);
-      tabBtnLabs.classList.toggle('active', !showLectures);
+      tabBtnExams.classList.toggle('active', showExams);
+      tabBtnLabs.classList.toggle('active', showLabs);
       tabBtnLectures.setAttribute('aria-selected', String(showLectures));
-      tabBtnLabs.setAttribute('aria-selected', String(!showLectures));
+      tabBtnExams.setAttribute('aria-selected', String(showExams));
+      tabBtnLabs.setAttribute('aria-selected', String(showLabs));
       panelLectures.hidden = !showLectures;
-      panelLabs.hidden = showLectures;
+      panelExams.hidden = !showExams;
+      panelLabs.hidden = !showLabs;
     }
 
     tabBtnLectures.addEventListener('click', () => setActiveTab('lectures'));
+    tabBtnExams.addEventListener('click', () => setActiveTab('exams'));
     tabBtnLabs.addEventListener('click', () => setActiveTab('labs'));
 
     renderLectureQuizzes();
+    renderExtraExamQuizzes();
     renderLabQuizzes();
 
     const mdPath = document.getElementById('mdPath');

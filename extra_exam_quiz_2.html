@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 - Extra Exam Quiz 2</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; --border:#e5e7eb; --good:#16a34a; --goodBg:#f0fdf4; --bad:#dc2626; --badBg:#fef2f2; --pick:#2563eb; --pickBg:#eff6ff; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8; color:#111827; }
+    header { background: white; border-bottom: 1px solid var(--border); }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid var(--border); background:white; padding:8px 12px; border-radius:10px; font-weight:600; font:inherit; }
+    button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    button.secondary { background:#111827; color:white; border-color:#111827; }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; flex-wrap:wrap; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px 10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid var(--border); border-radius:14px; padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .qtitle { font-weight:700; margin:0 0 8px; }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px solid var(--border); padding:2px 8px; border-radius:999px; white-space:nowrap; }
+    .badge.multi { color:#1d4ed8; background:#dbeafe; border-color:#bfdbfe; }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px; border:1px solid var(--border); border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.selected { border-color: var(--pick); background: var(--pickBg); }
+    .opt.correct { border-color: var(--good); background: var(--goodBg); }
+    .opt.wrong { border-color: var(--bad); background: var(--badBg); }
+    .opt.disabled { pointer-events:none; opacity:.85 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px solid var(--border); display:grid; place-items:center; font-weight:700; flex:0 0 auto; }
+    .opt.selected .letter { border-color: var(--pick); color: var(--pick); }
+    .opt.correct .letter { border-color: var(--good); color: var(--good); }
+    .opt.wrong .letter { border-color: var(--bad); color: var(--bad); }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .exp { margin-top:10px; border-top:1px dashed var(--border); padding-top:10px; color:#111827; }
+    .exp strong { color:#065f46 }
+    .exp[hidden] { display:none; }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 - Extra Exam Quiz 2</h1>
+      <div class="sub">50 exam-style questions - MCQ and multi-select only</div>
+      <div class="stats">
+        <span class="pill" id="score">Score: 0 / 50</span>
+        <span class="pill" id="progress">Answered: 0 / 50</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" type="button">Reset quiz</button>
+        <button id="revealBtn" type="button">Reveal all answers</button>
+        <button id="shuffleBtn" type="button">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Exam-style practice generated from the provided lecture PDFs only.
+  </footer>
+  <script>
+    const QUESTIONS = [
+  {
+    "q": "LoRa refers primarily to which part of the stack?",
+    "options": [
+      "A physical-layer modulation scheme",
+      "A transport protocol above UDP",
+      "A database replication mechanism",
+      "A cloud-only API for telemetry upload"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "LoRa describes the radio modulation itself, not the full network behavior that sits on top of it."
+  },
+  {
+    "q": "What does LoRaWAN add on top of LoRa?",
+    "options": [
+      "A standardized MAC behavior and network architecture",
+      "A new web browser for constrained end devices",
+      "A direct replacement for IPv6 routing on Wi-Fi",
+      "A higher symbol rate by removing spreading factors"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "LoRaWAN turns the radio into a managed wide-area system by defining how devices, gateways, and the server cooperate."
+  },
+  {
+    "q": "LoRa modulation is based on which spread-spectrum idea?",
+    "options": [
+      "Chirp spread spectrum",
+      "Frequency-division multiplexing only",
+      "Time-slot reservation only",
+      "Pulse-code modulation only"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "LoRa encodes information using chirps whose frequency sweeps over time, which is the hallmark of chirp spread spectrum."
+  },
+  {
+    "q": "What is an up-chirp in the LoRa context?",
+    "options": [
+      "A tone whose frequency increases over time",
+      "A tone whose amplitude decreases over time",
+      "A symbol whose bandwidth shrinks to zero",
+      "A packet whose payload is repeated exactly twice"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "An up-chirp sweeps from lower to higher frequency as time passes, while a down-chirp moves in the opposite direction."
+  },
+  {
+    "q": "Why can different spreading factors help multiple LoRa transmissions coexist?",
+    "options": [
+      "Orthogonality lets several signals share one frequency",
+      "Each device uses a separate wired backbone segment",
+      "The server forces every node onto one fixed time slot",
+      "The gateway stores only one packet at a time"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Different spreading factors can be separated at the receiver, which allows concurrent transmissions without assigning each one a unique frequency."
+  },
+  {
+    "q": "Which region was paired with 868 MHz and duty-cycle limits?",
+    "options": [
+      "Europe",
+      "United States",
+      "Japan only",
+      "South America only"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The lecture contrasted Europe at 868 MHz with duty-cycle limits against the U.S. case at 915 MHz with different regulatory constraints."
+  },
+  {
+    "q": "Which region was paired with 915 MHz and no duty-cycle limit?",
+    "options": [
+      "United States",
+      "Europe",
+      "Australia only",
+      "China only"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The U.S. example used the 915 MHz band and did not impose the same duty-cycle limit described for Europe."
+  },
+  {
+    "q": "In a LoRaWAN system, which component acts as the network brain?",
+    "options": [
+      "The centralized network server",
+      "A random end device near the gateway",
+      "The transport-layer checksum field",
+      "The battery-management circuit in the sensor"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Gateways mainly forward traffic, while the network server coordinates control decisions across the whole LoRaWAN deployment."
+  },
+  {
+    "q": "Select all tasks that match the LoRaWAN server rather than the radio modulator.",
+    "options": [
+      "Choosing a suitable data rate per device",
+      "Removing duplicate packets from gateways",
+      "Assigning radio parameters for a device link",
+      "Generating the analog chirp waveform directly"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "The server handles network coordination such as rate and radio-parameter selection, while chirp generation belongs to the physical radio itself."
+  },
+  {
+    "q": "What does Adaptive Data Rate optimize in LoRaWAN?",
+    "options": [
+      "The tradeoff among rate, range, and energy use",
+      "The color of the dashboard widget per gateway",
+      "The number of REST verbs allowed in the payload",
+      "The need for all acknowledgements to become multicast"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "ADR uses link conditions to choose an efficient data rate, balancing capacity, reliability, and battery life."
+  },
+  {
+    "q": "Which LoRaWAN class relies on synchronized clocks and scheduled receive windows?",
+    "options": [
+      "Class B",
+      "Class A",
+      "Class D",
+      "Class Z"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Class B adds synchronized receive opportunities, which is why clock alignment matters there more than in the always-basic Class A case."
+  },
+  {
+    "q": "Which comparison between LoRa and LoRaWAN is correct?",
+    "options": [
+      "LoRa is PHY; LoRaWAN is MAC-oriented network behavior",
+      "LoRa is application; LoRaWAN is link encryption only",
+      "LoRa is transport; LoRaWAN is browser-based control",
+      "LoRa is brokered messaging; LoRaWAN is IPv6 routing"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "LoRa defines how the signal is modulated on the air, while LoRaWAN defines how devices use that radio in a managed wide-area system."
+  },
+  {
+    "q": "AIoT combines which two ideas?",
+    "options": [
+      "Artificial intelligence and the Internet of Things",
+      "Access control and Internet transport tunnels",
+      "Automated indexing and optical telemetry",
+      "Adaptive isolation and operating timers"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "AIoT merges connected sensing or control with machine-learning capability so devices can do more than merely forward raw data."
+  },
+  {
+    "q": "Why is edge computing central to many AIoT systems?",
+    "options": [
+      "It cuts latency and reduces cloud traffic",
+      "It guarantees unlimited storage beside the sensor",
+      "It removes the need for any network connection",
+      "It replaces all local hardware with a browser tab"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Running time-sensitive inference near the device avoids round trips to distant clouds and reduces the amount of raw data that must be transmitted."
+  },
+  {
+    "q": "Which 2025 estimate pair was cited for connected IoT devices and generated data?",
+    "options": [
+      "41.6 billion devices and 79.4 zettabytes",
+      "4.16 billion devices and 79.4 terabytes",
+      "79.4 billion devices and 41.6 petabytes",
+      "416 billion devices and 7.94 zettabytes"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The cited forecast emphasized both scale and data explosion: tens of billions of devices and tens of zettabytes of data."
+  },
+  {
+    "q": "What does transmission delay measure in a networking breakdown?",
+    "options": [
+      "The time needed to push the packet bits onto the link",
+      "The time a battery needs to recharge after one uplink",
+      "The time needed for a DNS cache to expire globally",
+      "The time a model takes to finish offline training"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Transmission delay concerns serialization onto the link itself, not cloud training time or battery recharge."
+  },
+  {
+    "q": "Which platform pairing matches the edge-compute examples?",
+    "options": [
+      "Jetson for GPU-heavy inference, Raspberry Pi for SBC-centric use",
+      "Jetson for optical fiber routing, Raspberry Pi for LTE towers",
+      "Jetson for REST caching, Raspberry Pi for LoRa chirps",
+      "Jetson for cloud storage, Raspberry Pi for satellite links"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Jetson boards were used as GPU-oriented edge AI examples, while Raspberry Pi represented simpler single-board edge computing."
+  },
+  {
+    "q": "Which cloud service model delivers finished software over the Internet?",
+    "options": [
+      "SaaS",
+      "IaaS",
+      "PaaS",
+      "PHYaaS"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Software as a Service gives the user the application itself rather than a runtime platform or raw infrastructure."
+  },
+  {
+    "q": "Which service model offers virtualized compute, storage, and networking resources?",
+    "options": [
+      "IaaS",
+      "SaaS",
+      "PaaS",
+      "MACaaS"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Infrastructure as a Service exposes the building blocks of computing so the user can install and manage higher layers on top."
+  },
+  {
+    "q": "Which service model sits between raw infrastructure and finished software by providing the runtime platform?",
+    "options": [
+      "PaaS",
+      "SaaS",
+      "IaaS",
+      "QoS"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Platform as a Service supplies the environment for deploying software without forcing the user to manage the full underlying infrastructure."
+  },
+  {
+    "q": "What is fog computing best viewed as?",
+    "options": [
+      "A distributed layer between edge devices and the cloud",
+      "A replacement for all cloud systems in every design",
+      "A radio protocol that competes with Wi-Fi HaLow",
+      "A file format for model checkpoints at the edge"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Fog brings compute closer to data sources but still sits between the far edge and the centralized cloud rather than replacing every cloud role."
+  },
+  {
+    "q": "Which option is NOT a direct advantage of moving latency-sensitive inference toward the edge?",
+    "options": [
+      "Guaranteed unlimited storage on the device",
+      "Lower end-to-end response time",
+      "Less raw data sent back to the cloud",
+      "Lower dependence on distant connectivity"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Edge placement can cut latency and bandwidth use, but it does not magically create unlimited local storage capacity."
+  },
+  {
+    "q": "Select all concerns that matter when partitioning work between edge and cloud.",
+    "options": [
+      "Network latency",
+      "Bandwidth usage",
+      "Energy budget",
+      "Hardware limits"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "why": "Partitioning has to respect communication delay, bandwidth cost, energy use, and the actual compute or memory capacity of the hardware."
+  },
+  {
+    "q": "Which statement about hypervisors is correct?",
+    "options": [
+      "Type 1 is bare metal, while Type 2 uses a host OS",
+      "Type 1 and Type 2 both require the same host OS",
+      "Type 2 removes the need for any hardware support",
+      "Type 1 is the standard term for a browser sandbox"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Type 1 runs directly on hardware, whereas Type 2 sits on top of an existing operating system."
+  },
+  {
+    "q": "Which company started the original Bluetooth project?",
+    "options": [
+      "Ericsson",
+      "Oracle",
+      "Semtech",
+      "Cisco"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Bluetooth began as Ericsson's short-range radio-communication effort before the standard evolved through broader industry coordination."
+  },
+  {
+    "q": "Compared with classic Bluetooth, BLE is optimized mainly for what tradeoff?",
+    "options": [
+      "Lower energy use for shorter data exchanges",
+      "Higher fiber reach for backbone aggregation",
+      "Guaranteed higher range than all sub-GHz links",
+      "Continuous video streaming at multi-gigabit rates"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE reduces power draw and protocol overhead so short, intermittent exchanges become more practical for sensors and wearables."
+  },
+  {
+    "q": "Which device-role pair was emphasized for BLE?",
+    "options": [
+      "Central and peripheral",
+      "Router and coordinator",
+      "Publisher and broker",
+      "Gateway and network server"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE commonly frames interaction around central and peripheral roles instead of mesh-router or broker terminology."
+  },
+  {
+    "q": "What maximum BLE data rate was highlighted for BLE 5 and BLE 6?",
+    "options": [
+      "2 Mbps",
+      "20 Mbps",
+      "200 kbps",
+      "20 kbps"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The lecture highlighted the jump to a 2 Mbps BLE PHY rate for later BLE versions."
+  },
+  {
+    "q": "How many BLE channels are reserved for advertising?",
+    "options": [
+      "3",
+      "37",
+      "40",
+      "79"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE uses a small dedicated set of advertising channels so discovery and broadcast do not consume the whole channel set."
+  },
+  {
+    "q": "How many BLE channels remain for data after the advertising channels are excluded?",
+    "options": [
+      "37",
+      "3",
+      "40",
+      "79"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE defines 40 total channels, three of which are reserved for advertising, leaving the remainder for data exchange."
+  },
+  {
+    "q": "What does GATT define in BLE?",
+    "options": [
+      "How services and attributes are discovered and accessed",
+      "How radio clocks are synthesized in the baseband",
+      "How IP packets are fragmented across subcarriers",
+      "How LoRa gateways select the best downlink path"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "GATT organizes the attribute database and the procedures used to discover services and read or write values."
+  },
+  {
+    "q": "What is a piconet in classic Bluetooth terms?",
+    "options": [
+      "A small Bluetooth network sharing one hopping sequence",
+      "A cloud region with three replicated brokers",
+      "A set of VLANs carrying only sensor telemetry",
+      "A ZigBee profile for remote-control appliances"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "A piconet is the basic Bluetooth network unit in which connected devices follow the same coordinated hopping behavior."
+  },
+  {
+    "q": "What creates a scatternet?",
+    "options": [
+      "Multiple piconets linked together",
+      "One access point serving several Wi-Fi stations",
+      "A LoRa device heard by many gateways",
+      "Several REST clients sharing one URI"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "A scatternet appears when separate piconets become interconnected rather than remaining isolated Bluetooth islands."
+  },
+  {
+    "q": "What does FHSS mean in the Bluetooth context?",
+    "options": [
+      "The carrier hops among frequencies over time",
+      "The payload is repeated at the same frequency forever",
+      "The MAC allocates one fixed slot to every device",
+      "The network uses wired Ethernet for all uplinks"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Frequency hopping spread spectrum changes carrier frequency over time, which helps Bluetooth share spectrum and reduce persistent interference."
+  },
+  {
+    "q": "Select all statements that remain consistent with Bluetooth or BLE behavior.",
+    "options": [
+      "Classic Bluetooth uses 79 one-megahertz channels",
+      "BLE uses 40 two-megahertz channels",
+      "BLE reserves 3 channels for advertising",
+      "BLE reserves all 40 channels for advertising"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "Classic Bluetooth and BLE use different channel plans, and only a small subset of BLE channels is reserved for advertising rather than all of them."
+  },
+  {
+    "q": "Why does BLE fit beacon-style sensing use cases well?",
+    "options": [
+      "It supports short broadcasts with low energy overhead",
+      "It requires large continuous payloads for efficiency",
+      "It depends on a licensed operator spectrum block",
+      "It assumes every node is mains powered all day"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE is well suited to short, periodic transmissions where the radio can stay quiet most of the time."
+  },
+  {
+    "q": "Which option is NOT inconsistent with BLE design goals?",
+    "options": [
+      "Lower-power radio with adjustable advertising behavior",
+      "Persistent gigabit streaming over long-haul links",
+      "Mandatory broker-based delivery for every packet",
+      "Continuous wide-area coverage through cell handoff"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE was designed around efficient, short-range exchanges with flexible advertising or discovery behavior, not wide-area gigabit streaming."
+  },
+  {
+    "q": "What is the correct distinction between IEEE 802.11 and Wi-Fi?",
+    "options": [
+      "802.11 is the standard, while Wi-Fi is the interoperability trademark",
+      "802.11 is the trademark, while Wi-Fi is the modulation family",
+      "Both names refer only to the same encryption algorithm",
+      "Both names refer only to the same application protocol"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The standard defines technology options, whereas the Wi-Fi label signals tested interoperability across selected options."
+  },
+  {
+    "q": "Why can two devices be 802.11 compliant yet still fail to interoperate?",
+    "options": [
+      "The standard includes many optional features and combinations",
+      "802.11 forbids any use of MAC addresses on stations",
+      "802.11 devices must always belong to different frequencies",
+      "The standard requires one device to act as a broker"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Compliance with a broad standard does not guarantee that two implementations chose the same optional feature set."
+  },
+  {
+    "q": "What does the Wi-Fi logo imply about a device pair more reliably than plain 802.11 compliance?",
+    "options": [
+      "They should interoperate using selected compatible options",
+      "They both support only the 2.4 GHz band",
+      "They both implement every optional amendment ever written",
+      "They both avoid access points in all deployments"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Wi-Fi certification is about interoperability across tested option sets, not about guaranteeing every band or every optional feature."
+  },
+  {
+    "q": "Which frame does a station send first during active scanning?",
+    "options": [
+      "Probe Request",
+      "Beacon",
+      "Association Response",
+      "CTS"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "In active scanning the station initiates discovery by broadcasting a probe request rather than waiting passively for beacons."
+  },
+  {
+    "q": "Select all frames that an access point can send to a station during active scanning and association.",
+    "options": [
+      "Probe Response",
+      "Association Response",
+      "Probe Request",
+      "Association Request"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "why": "During active scanning the station sends the requests, while the access point answers with a probe response and later an association response."
+  },
+  {
+    "q": "In passive scanning, what does the station wait to hear before choosing an access point?",
+    "options": [
+      "Beacon frames",
+      "Probe Request frames",
+      "RTS frames",
+      "PS-Poll frames"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Passive scanning listens for periodic beacons instead of actively transmitting a probe request first."
+  },
+  {
+    "q": "What problem is the RTS/CTS exchange intended to reduce?",
+    "options": [
+      "Hidden-node collisions",
+      "TCP checksum mismatches",
+      "Clock drift inside Bluetooth beacons",
+      "IPv6 fragmentation at the network layer"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "RTS and CTS warn nearby stations about an upcoming exchange so hidden nodes are less likely to transmit at the same time."
+  },
+  {
+    "q": "Select all frames that belong to the classic hidden-node protection exchange.",
+    "options": [
+      "RTS",
+      "CTS",
+      "ACK",
+      "Beacon"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "why": "The protection handshake is built around Request To Send and Clear To Send; ACK may follow data delivery, but it is not the hidden-node reservation step itself."
+  },
+  {
+    "q": "What tells power-save stations that buffered packets are waiting at the access point?",
+    "options": [
+      "The Traffic Indication Map in the beacon",
+      "The ARP cache in the distribution system",
+      "The TCP urgent pointer in every response",
+      "The DNS answer section of the SSID record"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The TIM inside the beacon indicates whether the AP is holding traffic for sleeping stations, which lets them wake only when needed."
+  },
+  {
+    "q": "Wi-Fi HaLow corresponds to which IEEE amendment?",
+    "options": [
+      "802.11ah",
+      "802.11ac",
+      "802.15.4",
+      "802.11be"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Wi-Fi HaLow is the Wi-Fi Alliance name associated with IEEE 802.11ah."
+  },
+  {
+    "q": "Which spectrum region is central to Wi-Fi HaLow deployments?",
+    "options": [
+      "Sub-1 GHz",
+      "Only 6 GHz",
+      "Only 60 GHz",
+      "Only infrared"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "HaLow shifts Wi-Fi-style operation into sub-1 GHz spectrum to improve reach and support many low-power devices."
+  },
+  {
+    "q": "What scaling change greatly expands station support in 802.11ah compared with legacy Wi-Fi?",
+    "options": [
+      "The Association ID range grows from 2007 to 8191",
+      "The beacon interval is fixed to one microsecond",
+      "The SSID field is expanded to 8191 bytes",
+      "The ACK timer is removed from the MAC layer"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "By increasing the AID range, 802.11ah can support far more stations than the legacy association limit allowed."
+  },
+  {
+    "q": "Select all mechanisms introduced in 802.11ah to improve scaling or efficiency for many devices.",
+    "options": [
+      "Restricted Access Window",
+      "TIM segmentation",
+      "Relays",
+      "Infrared PHY fallback"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "RAW limits contention groups, TIM segmentation reduces beacon burden, and relays help reach or efficiency; infrared fallback is unrelated to HaLow scaling."
+  }
+];
+    const quizEl = document.getElementById("quiz");
+    const scoreEl = document.getElementById("score");
+    const progressEl = document.getElementById("progress");
+    const percentEl = document.getElementById("percent");
+    const resetBtn = document.getElementById("resetBtn");
+    const revealBtn = document.getElementById("revealBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+
+    let state = { score: 0, answered: 0 };
+    let currentQuestions = [];
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+      }
+      return copy;
+    }
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function escapeHtmlClient(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map((question) => {
+        const item = clone(question);
+        item.kind = item.correct.length > 1 ? "multi" : "single";
+        item.__answered = false;
+        item.__selected = [];
+        const shuffledOptions = shuffle(
+          item.options.map((text, index) => ({
+            text,
+            isCorrect: item.correct.includes(index),
+          })),
+        );
+        item.options = shuffledOptions.map((entry) => entry.text);
+        item.correct = shuffledOptions
+          .map((entry, index) => entry.isCorrect ? index : -1)
+          .filter((index) => index >= 0);
+        return item;
+      });
+    }
+
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score} / ${currentQuestions.length}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score / currentQuestions.length) * 100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+
+    function revealExplanation(card, item) {
+      const exp = card.querySelector(".exp");
+      exp.hidden = false;
+      exp.innerHTML = `<strong>Explanation:</strong> ${escapeHtmlClient(item.why)}`;
+    }
+
+    function markAnswered(item) {
+      if (!item.__answered) {
+        item.__answered = true;
+        state.answered += 1;
+      }
+    }
+
+    function onChooseSingle(card, item, pickedIndex) {
+      if (item.__answered) return;
+      const nodes = card.querySelectorAll(".opt");
+      nodes.forEach((node) => node.classList.add("disabled"));
+      markAnswered(item);
+      if (item.correct.includes(pickedIndex)) {
+        nodes[pickedIndex].classList.add("correct");
+        state.score += 1;
+      } else {
+        nodes[pickedIndex].classList.add("wrong");
+        item.correct.forEach((index) => nodes[index].classList.add("correct"));
+      }
+      revealExplanation(card, item);
+      updateStats();
+    }
+
+    function toggleMulti(card, item, optionIndex) {
+      if (item.__answered) return;
+      const picked = new Set(item.__selected);
+      if (picked.has(optionIndex)) picked.delete(optionIndex);
+      else picked.add(optionIndex);
+      item.__selected = [...picked].sort((left, right) => left - right);
+      const nodes = card.querySelectorAll(".opt");
+      nodes.forEach((node, index) => node.classList.toggle("selected", picked.has(index)));
+      card.querySelector("[data-role='submit-multi']").disabled = item.__selected.length === 0;
+    }
+
+    function onSubmitMulti(card, item) {
+      if (item.__answered || item.__selected.length === 0) return;
+      const nodes = card.querySelectorAll(".opt");
+      const selected = new Set(item.__selected);
+      const correct = new Set(item.correct);
+      nodes.forEach((node, index) => {
+        node.classList.add("disabled");
+        if (correct.has(index)) node.classList.add("correct");
+        if (selected.has(index) && !correct.has(index)) node.classList.add("wrong");
+      });
+      const exactMatch =
+        item.__selected.length === item.correct.length &&
+        item.__selected.every((value, index) => value === item.correct[index]);
+      markAnswered(item);
+      if (exactMatch) state.score += 1;
+      revealExplanation(card, item);
+      updateStats();
+    }
+
+    function render() {
+      quizEl.innerHTML = "";
+      currentQuestions.forEach((item, qIndex) => {
+        const card = document.createElement("section");
+        card.className = "qcard";
+
+        const head = document.createElement("div");
+        head.className = "qhead";
+
+        const title = document.createElement("p");
+        title.className = "qtitle";
+        title.textContent = `${qIndex + 1}. ${item.q}`;
+
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        if (item.kind === "multi") {
+          badge.classList.add("multi");
+          badge.textContent = "Multi-select";
+        } else {
+          badge.textContent = "Single answer";
+        }
+
+        head.appendChild(title);
+        head.appendChild(badge);
+        card.appendChild(head);
+
+        const opts = document.createElement("div");
+        opts.className = "opts";
+        item.options.forEach((option, optionIndex) => {
+          const row = document.createElement("div");
+          row.className = "opt";
+          const letter = document.createElement("div");
+          letter.className = "letter";
+          letter.textContent = String.fromCharCode(65 + optionIndex);
+          const text = document.createElement("span");
+          text.textContent = option;
+          row.appendChild(letter);
+          row.appendChild(text);
+          if (item.kind === "multi") row.addEventListener("click", () => toggleMulti(card, item, optionIndex));
+          else row.addEventListener("click", () => onChooseSingle(card, item, optionIndex));
+          opts.appendChild(row);
+        });
+        card.appendChild(opts);
+
+        if (item.kind === "multi") {
+          const actions = document.createElement("div");
+          actions.className = "actions";
+          const submit = document.createElement("button");
+          submit.type = "button";
+          submit.className = "secondary";
+          submit.textContent = "Check answer";
+          submit.disabled = true;
+          submit.setAttribute("data-role", "submit-multi");
+          submit.addEventListener("click", () => onSubmitMulti(card, item));
+          actions.appendChild(submit);
+          card.appendChild(actions);
+        }
+
+        const exp = document.createElement("div");
+        exp.className = "exp";
+        exp.hidden = true;
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+
+    function revealAll() {
+      document.querySelectorAll(".qcard").forEach((card, index) => {
+        const item = currentQuestions[index];
+        const nodes = card.querySelectorAll(".opt");
+        nodes.forEach((node, optionIndex) => {
+          node.classList.add("disabled");
+          if (item.correct.includes(optionIndex)) node.classList.add("correct");
+        });
+        markAnswered(item);
+        const submit = card.querySelector("[data-role='submit-multi']");
+        if (submit) submit.disabled = true;
+        revealExplanation(card, item);
+      });
+      updateStats();
+    }
+
+    function resetQuiz() {
+      state = { score: 0, answered: 0 };
+      render();
+    }
+
+    function shuffleQuiz() {
+      state = { score: 0, answered: 0 };
+      currentQuestions = buildQuestions();
+      render();
+    }
+
+    resetBtn.addEventListener("click", resetQuiz);
+    revealBtn.addEventListener("click", revealAll);
+    shuffleBtn.addEventListener("click", shuffleQuiz);
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>

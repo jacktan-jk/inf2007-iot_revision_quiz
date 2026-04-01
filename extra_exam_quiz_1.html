@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 - Extra Exam Quiz 1</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted:#6b7280; --border:#e5e7eb; --good:#16a34a; --goodBg:#f0fdf4; --bad:#dc2626; --badBg:#fef2f2; --pick:#2563eb; --pickBg:#eff6ff; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: #f7f7f8; color:#111827; }
+    header { background: white; border-bottom: 1px solid var(--border); }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
+    button { cursor:pointer; border:1px solid var(--border); background:white; padding:8px 12px; border-radius:10px; font-weight:600; font:inherit; }
+    button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    button.secondary { background:#111827; color:white; border-color:#111827; }
+    button:disabled { opacity:.6; cursor:not-allowed }
+    .stats { display:flex; gap:18px; align-items:center; margin-top:10px; flex-wrap:wrap; }
+    .pill { background:#eef2ff; color:#3730a3; font-weight:700; padding:6px 10px; border-radius:999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background:white; border:1px solid var(--border); border-radius:14px; padding:14px; margin:14px 0; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .qhead { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .qtitle { font-weight:700; margin:0 0 8px; }
+    .badge { font-size:12px; color:#374151; background:#f3f4f6; border:1px solid var(--border); padding:2px 8px; border-radius:999px; white-space:nowrap; }
+    .badge.multi { color:#1d4ed8; background:#dbeafe; border-color:#bfdbfe; }
+    .opts { display:grid; gap:8px; margin-top:8px }
+    .opt { display:flex; gap:10px; align-items:flex-start; padding:10px; border:1px solid var(--border); border-radius:12px; background:white; cursor:pointer; }
+    .opt:hover { border-color:#c7d2fe; }
+    .opt.selected { border-color: var(--pick); background: var(--pickBg); }
+    .opt.correct { border-color: var(--good); background: var(--goodBg); }
+    .opt.wrong { border-color: var(--bad); background: var(--badBg); }
+    .opt.disabled { pointer-events:none; opacity:.85 }
+    .letter { width:28px; height:28px; border-radius:999px; border:1px solid var(--border); display:grid; place-items:center; font-weight:700; flex:0 0 auto; }
+    .opt.selected .letter { border-color: var(--pick); color: var(--pick); }
+    .opt.correct .letter { border-color: var(--good); color: var(--good); }
+    .opt.wrong .letter { border-color: var(--bad); color: var(--bad); }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .exp { margin-top:10px; border-top:1px dashed var(--border); padding-top:10px; color:#111827; }
+    .exp strong { color:#065f46 }
+    .exp[hidden] { display:none; }
+    footer { text-align:center; color:#6b7280; padding:30px 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 - Extra Exam Quiz 1</h1>
+      <div class="sub">50 exam-style questions - MCQ and multi-select only</div>
+      <div class="stats">
+        <span class="pill" id="score">Score: 0 / 50</span>
+        <span class="pill" id="progress">Answered: 0 / 50</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" type="button">Reset quiz</button>
+        <button id="revealBtn" type="button">Reveal all answers</button>
+        <button id="shuffleBtn" type="button">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Exam-style practice generated from the provided lecture PDFs only.
+  </footer>
+  <script>
+    const QUESTIONS = [
+  {
+    "q": "Which option best describes an IoT system?",
+    "options": [
+      "Connected objects that sense, exchange, and act on data",
+      "Standalone devices that avoid networked coordination",
+      "Browser tools that replace embedded control logic",
+      "Databases that store only historical measurements"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "IoT connects physical objects through communication and data handling so sensing or control can influence the real world instead of remaining isolated."
+  },
+  {
+    "q": "What turns many connected devices into an IoT system rather than a loose collection of gadgets?",
+    "options": [
+      "They form a network of networks with data processing",
+      "They all use the same battery chemistry in deployment",
+      "They all connect through one local serial cable",
+      "They all display data on the same mobile screen"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The key idea is coordinated connectivity plus information processing across many devices and networks, not merely physical proximity or one shared display."
+  },
+  {
+    "q": "Which set best matches the functional view of an IoT thing?",
+    "options": [
+      "Controller, sensors or actuators, and communication",
+      "Keyboard, monitor, browser, and spreadsheet macros",
+      "Database, compiler, debugger, and access switch",
+      "Hypervisor, virtual machine, cache, and GPU fan"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "An IoT thing needs a control element, a way to sense or affect its environment, and connectivity so its state can be communicated or coordinated."
+  },
+  {
+    "q": "In the phrase \"collect, connect, comprehend,\" what does the last term emphasize?",
+    "options": [
+      "Turning raw data into useful meaning or action",
+      "Adding more radios to increase peak throughput",
+      "Keeping all sensing local to reduce integration",
+      "Replacing analytics with manual rule lookup"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Comprehend is about interpretation and decision-making; the value of IoT appears when collected data leads to insight or action."
+  },
+  {
+    "q": "Which design choice most directly supports very long battery life for many IoT endpoints?",
+    "options": [
+      "Keeping devices idle or asleep for most of the time",
+      "Running all radios continuously at full power",
+      "Uploading every sample as soon as it is measured",
+      "Using larger packets regardless of application need"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Battery life improves when endpoints remain in low-power states and wake mainly when sensing or transmission is actually required."
+  },
+  {
+    "q": "Select all traits that fit typical IoT communication links.",
+    "options": [
+      "Wireless access is common in deployments",
+      "Processing and storage are often constrained",
+      "Range and bit-rate needs can vary widely",
+      "Every application requires the same high throughput"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "IoT links are often wireless and resource-constrained, and they are designed for very different ranges or rates depending on the application rather than one universal high-throughput profile."
+  },
+  {
+    "q": "Which metric captures variation in delay rather than average delay itself?",
+    "options": [
+      "Jitter",
+      "Throughput",
+      "Packet loss",
+      "Duty cycle"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Jitter measures how much latency changes from packet to packet, which matters when timing consistency is important."
+  },
+  {
+    "q": "Which metric is computed from the amount of transferred data over elapsed time?",
+    "options": [
+      "Throughput",
+      "Jitter",
+      "Packet loss",
+      "Sensitivity"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Throughput describes the effective rate at which useful data moves through the system, so it depends on transferred bits and total time."
+  },
+  {
+    "q": "If many transmitted packets never arrive or are never acknowledged, which metric increases?",
+    "options": [
+      "Packet loss",
+      "Sampling rate",
+      "Clock speed",
+      "Encoding depth"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Packet loss measures the share of sent packets that fail to arrive successfully, so missing deliveries make that value rise."
+  },
+  {
+    "q": "Select all technologies that were grouped in the 2.4 GHz band in the connectivity comparison.",
+    "options": [
+      "Bluetooth or BLE",
+      "ZigBee",
+      "Wi-Fi",
+      "WirelessHART"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "why": "These technologies were all placed in the 2.4 GHz range in the comparison, which is why coexistence and interference are recurring practical issues."
+  },
+  {
+    "q": "Which option was contrasted as a low-power, long-range choice with mile-scale reach?",
+    "options": [
+      "LoRa",
+      "BLE",
+      "ZigBee",
+      "Wi-Fi"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "LoRa trades data rate for range and energy efficiency, making it suitable when messages are small but distance matters."
+  },
+  {
+    "q": "Select all protocol-layer pairings that remain consistent with the IoT stack overview.",
+    "options": [
+      "HTTP belongs at the application layer",
+      "UDP belongs at the transport layer",
+      "IEEE 802.15.4 belongs at the data-link layer",
+      "LoRa belongs at the physical layer"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "why": "Each pairing matches the role of the protocol: HTTP handles application exchange, UDP transports messages, 802.15.4 organizes link access, and LoRa describes radio modulation."
+  },
+  {
+    "q": "What does REST stand for?",
+    "options": [
+      "Representational State Transfer",
+      "Resource Encoding Session Tunneling",
+      "Remote Execution Signaling Transport",
+      "Reliable Event Streaming Topology"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "REST describes how resources are represented and manipulated through a uniform interface rather than defining a new transport protocol."
+  },
+  {
+    "q": "In a RESTful API, what most directly identifies a resource?",
+    "options": [
+      "A URI",
+      "A session cookie",
+      "A broker topic",
+      "A link-layer address"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "REST treats resources as addressable entities, and the URI is the identifier used to locate or reference one of those entities."
+  },
+  {
+    "q": "Which architectural separation is fundamental to REST?",
+    "options": [
+      "Client and server are separated by interface",
+      "Application and battery share one power budget",
+      "Transport and link use the same header layout",
+      "Sensor and actuator always run in one process"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Client-server separation lets each side evolve independently as long as the shared interface remains stable."
+  },
+  {
+    "q": "What does statelessness mean in a REST interaction?",
+    "options": [
+      "Each request carries the context needed to handle it",
+      "The server caches every response forever by default",
+      "The client cannot send repeated requests safely",
+      "The network keeps the same TCP payload in memory"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Statelessness means the server does not depend on hidden session context from earlier requests; the current request supplies what is needed."
+  },
+  {
+    "q": "Which HTTP method is both safe and idempotent when used for retrieval?",
+    "options": [
+      "GET",
+      "POST",
+      "PATCH",
+      "CONNECT"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "GET reads a resource representation without changing the resource, so repeating it should not change server state."
+  },
+  {
+    "q": "Which method is normally used to create a new resource in a RESTful workflow?",
+    "options": [
+      "POST",
+      "HEAD",
+      "DELETE",
+      "TRACE"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "POST commonly submits data to create a new server-side resource, so repeated identical POST requests can create multiple entries."
+  },
+  {
+    "q": "Which method is normally used to replace or fully update a known resource?",
+    "options": [
+      "PUT",
+      "OPTIONS",
+      "TRACE",
+      "HEAD"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "PUT targets a known resource URI and updates the full representation, which is why repeating the same PUT should converge to the same state."
+  },
+  {
+    "q": "If repeating the same request leaves the final resource state unchanged, which property is being described?",
+    "options": [
+      "Idempotence",
+      "Multicast",
+      "Sharding",
+      "Backoff"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Idempotence is about the final effect of repeated identical requests, not about whether the underlying network path is the same."
+  },
+  {
+    "q": "Which response code most naturally matches a successful GET request?",
+    "options": [
+      "200 OK",
+      "201 Created",
+      "404 Not Found",
+      "500 Server Error"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "A successful retrieval returns an ordinary success status, and 200 OK is the standard signal for that outcome."
+  },
+  {
+    "q": "Which response code most naturally matches successful creation from a POST request?",
+    "options": [
+      "201 Created",
+      "204 No Content",
+      "301 Moved Permanently",
+      "409 Conflict"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "When a new resource is created successfully, 201 Created indicates that the server accepted the request and created the target object."
+  },
+  {
+    "q": "Which status-code family signals that the failure is on the server side?",
+    "options": [
+      "5xx",
+      "1xx",
+      "2xx",
+      "3xx"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The 5xx family is reserved for server-side errors, meaning the request reached the server but the server could not complete it properly."
+  },
+  {
+    "q": "Select all statements that align with REST constraints.",
+    "options": [
+      "Responses may be marked as cacheable",
+      "A uniform interface standardizes interactions",
+      "A layered system can hide intermediaries",
+      "The server must remember prior request bodies"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "REST allows cacheable responses, a uniform interface, and layered systems; hidden session dependence runs against stateless interaction rather than supporting it."
+  },
+  {
+    "q": "Which method is designed to return headers without a response body?",
+    "options": [
+      "HEAD",
+      "POST",
+      "PATCH",
+      "DELETE"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "HEAD behaves like GET for metadata checks but omits the response body, which is useful when only headers are needed."
+  },
+  {
+    "q": "CoAP was designed to offer web-style interactions over which transport?",
+    "options": [
+      "UDP",
+      "TCP",
+      "SCTP",
+      "RTP"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "CoAP keeps the web-style request model but uses UDP to reduce overhead on constrained nodes and networks."
+  },
+  {
+    "q": "Which CoAP message type expects an acknowledgement when sent?",
+    "options": [
+      "Confirmable",
+      "Reset",
+      "Observe",
+      "Retained"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "A confirmable message asks the peer to acknowledge receipt, which is how CoAP adds lightweight reliability over UDP."
+  },
+  {
+    "q": "What is the purpose of an ACK in CoAP?",
+    "options": [
+      "To confirm receipt of a confirmable message",
+      "To request a larger payload block size",
+      "To advertise a broker topic alias",
+      "To reserve a time slot at the MAC layer"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "An ACK lets the sender know that a confirmable message arrived, so retransmission is not needed for that exchange."
+  },
+  {
+    "q": "Select all methods that remain valid request methods in CoAP.",
+    "options": [
+      "GET",
+      "PUT",
+      "DELETE",
+      "TRACE"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "CoAP mirrors key web operations such as GET, PUT, POST, and DELETE; TRACE is not part of the core method set discussed here."
+  },
+  {
+    "q": "What does observation enable in CoAP after a client registers interest?",
+    "options": [
+      "The server can push updates when state changes",
+      "The client can bypass tokens and message IDs",
+      "The proxy can replace UDP with Ethernet frames",
+      "The broker can retain payloads for future clients"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Observation avoids repeated polling by letting the server send notifications when the observed resource changes."
+  },
+  {
+    "q": "Which feature makes CoAP attractive for one-to-many control on constrained networks?",
+    "options": [
+      "Native multicast support",
+      "Mandatory connection pooling",
+      "Built-in broker clustering",
+      "Permanent TCP sessions"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Because CoAP runs over UDP and supports multicast, one request can efficiently reach many constrained nodes at once."
+  },
+  {
+    "q": "MQTT primarily uses which communication pattern?",
+    "options": [
+      "Publish and subscribe through a broker",
+      "Peer-to-peer flooding without a broker",
+      "Strict request and response over UDP",
+      "Circuit switching with reserved channels"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "MQTT decouples senders from receivers by routing published messages through a broker that matches topics and subscriptions."
+  },
+  {
+    "q": "What is the main function of a topic in MQTT?",
+    "options": [
+      "It labels and filters published messages",
+      "It replaces packet acknowledgements at QoS 1",
+      "It authenticates the server certificate chain",
+      "It assigns a physical radio frequency to clients"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Topics organize the message namespace so subscribers receive only the publications that match the topic filter they requested."
+  },
+  {
+    "q": "Which MQTT QoS level corresponds to \"at least once\" delivery?",
+    "options": [
+      "QoS 1",
+      "QoS 0",
+      "QoS 3",
+      "QoS -1"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "QoS 1 may produce duplicates, but it aims to ensure the subscriber receives the message at least once."
+  },
+  {
+    "q": "Which MQTT QoS level is intended to provide exactly-once delivery?",
+    "options": [
+      "QoS 2",
+      "QoS 0",
+      "QoS 1",
+      "QoS 255"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "QoS 2 uses a more elaborate handshake so the receiver processes the message exactly once instead of tolerating duplicates."
+  },
+  {
+    "q": "What is the practical benefit of a retained message in MQTT?",
+    "options": [
+      "A new subscriber can receive the last stored state",
+      "The broker can skip all topic matching for that client",
+      "Every retained payload becomes permanently immutable",
+      "QoS 0 becomes identical to QoS 2 for that topic"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Retain keeps the most recent value on a topic so a later subscriber can learn the current state immediately instead of waiting for the next publish."
+  },
+  {
+    "q": "What problem does the Last Will and Testament feature address in MQTT?",
+    "options": [
+      "It notifies others when a client disconnects unexpectedly",
+      "It makes TLS optional on public broker connections",
+      "It forces every subscriber to use wildcard topics",
+      "It upgrades an unreliable link to a reserved circuit"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "A last-will message lets the broker publish a prearranged notice if a client disappears abruptly instead of shutting down cleanly."
+  },
+  {
+    "q": "Select all topic-naming practices that align with MQTT guidance.",
+    "options": [
+      "Keep topic names concise",
+      "Avoid spaces in topic names",
+      "Prefer specific topic paths",
+      "Use one generic topic for every sensor"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "Good topic design stays concise and specific so filtering remains readable and scalable; collapsing everything into one generic topic defeats that structure."
+  },
+  {
+    "q": "What feature makes a mesh network more reliable than a single-router design?",
+    "options": [
+      "Traffic can be rerouted along alternate paths",
+      "Every node depends on one root controller only",
+      "Only one device is allowed to forward frames",
+      "The topology forbids multi-hop forwarding"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Reliability improves because multiple potential paths exist, so one failed node or path does not necessarily isolate the destination."
+  },
+  {
+    "q": "Which description best fits a decentralized mesh network?",
+    "options": [
+      "Nodes make local routing decisions without one central server",
+      "A single coordinator forwards every packet end to end",
+      "Clients are forbidden from relaying for each other",
+      "Routes are fixed permanently during device manufacturing"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "A decentralized mesh relies on distributed decisions among nodes rather than one permanent central forwarding point."
+  },
+  {
+    "q": "Which mesh property refers to automatic rerouting after a node or path fails?",
+    "options": [
+      "Self-healing",
+      "Circuit reservation",
+      "Frequency hopping",
+      "Payload segmentation"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Self-healing means the network can recover from broken paths by finding alternatives instead of requiring manual rewiring."
+  },
+  {
+    "q": "In a distributed mesh, routes are maintained mainly by what mechanism?",
+    "options": [
+      "Nodes exchange control information and select paths themselves",
+      "A central gateway writes every path into the radios",
+      "Each device sends only to one fixed parent forever",
+      "A cloud dashboard manually assigns each next hop"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Distributed mesh relies on the nodes themselves to discover adjacencies, maintain routes, and react when topology changes."
+  },
+  {
+    "q": "What is the main tradeoff in a centralized mesh design?",
+    "options": [
+      "Less node burden but more dependence on central control",
+      "More local autonomy but no global route coordination",
+      "No need for role assignment but more routing churn",
+      "Guaranteed zero control traffic at all times"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Centralized mesh can simplify node behavior, but it creates dependence on the central authority that assigns roles or paths."
+  },
+  {
+    "q": "What makes a hybrid mesh hybrid rather than purely centralized or distributed?",
+    "options": [
+      "Topology can be guided centrally while route maintenance stays local",
+      "Every path is computed twice using identical algorithms",
+      "Nodes never discover neighbors on their own",
+      "Only flooding is allowed after the first packet"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Hybrid mesh keeps some central guidance for topology or roles while leaving ongoing path maintenance or repair to the nodes."
+  },
+  {
+    "q": "Which routing family keeps routes ready before data is requested?",
+    "options": [
+      "Proactive routing",
+      "Reactive routing",
+      "Selective flooding",
+      "Probabilistic flooding"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Proactive routing continuously maintains route tables, so forwarding can begin with low delay when data arrives."
+  },
+  {
+    "q": "Which routing family usually lowers control overhead by discovering routes only when needed?",
+    "options": [
+      "Reactive routing",
+      "Proactive routing",
+      "Static routing",
+      "Beacon flooding"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Reactive routing avoids maintaining every path all the time, so it saves control traffic until a route is actually required."
+  },
+  {
+    "q": "Select all protocols that were grouped as proactive routing approaches.",
+    "options": [
+      "OLSR",
+      "DSDV",
+      "WRP",
+      "AODV"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "OLSR, DSDV, and WRP maintain routing state proactively, whereas AODV discovers routes on demand."
+  },
+  {
+    "q": "Select all protocols that were grouped as reactive routing approaches.",
+    "options": [
+      "AODV",
+      "DSR",
+      "TORA",
+      "OLSR"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "why": "AODV, DSR, and TORA discover or refresh routes when needed, while OLSR belongs to the proactive family."
+  },
+  {
+    "q": "What is a direct defense against rogue devices joining a mesh network?",
+    "options": [
+      "Authentication before admission",
+      "Higher packet jitter at the access layer",
+      "Permanent flooding of control traffic",
+      "Longer payload headers on every message"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Authentication blocks unauthorized nodes from participating, which directly addresses the risk of malicious or fake join attempts."
+  },
+  {
+    "q": "Which option is NOT inconsistent with good mesh-routing design?",
+    "options": [
+      "It should respect bandwidth limits and exploit multi-hop paths",
+      "It should depend on one fixed route for all failures",
+      "It should avoid adaptation when the topology changes",
+      "It should forbid load balancing across available paths"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "A sound mesh design adapts to wireless limits and uses multi-hop choices intelligently; the other options would make the network less robust rather than more robust."
+  }
+];
+    const quizEl = document.getElementById("quiz");
+    const scoreEl = document.getElementById("score");
+    const progressEl = document.getElementById("progress");
+    const percentEl = document.getElementById("percent");
+    const resetBtn = document.getElementById("resetBtn");
+    const revealBtn = document.getElementById("revealBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+
+    let state = { score: 0, answered: 0 };
+    let currentQuestions = [];
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+      }
+      return copy;
+    }
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function escapeHtmlClient(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function buildQuestions() {
+      return shuffle(QUESTIONS).map((question) => {
+        const item = clone(question);
+        item.kind = item.correct.length > 1 ? "multi" : "single";
+        item.__answered = false;
+        item.__selected = [];
+        const shuffledOptions = shuffle(
+          item.options.map((text, index) => ({
+            text,
+            isCorrect: item.correct.includes(index),
+          })),
+        );
+        item.options = shuffledOptions.map((entry) => entry.text);
+        item.correct = shuffledOptions
+          .map((entry, index) => entry.isCorrect ? index : -1)
+          .filter((index) => index >= 0);
+        return item;
+      });
+    }
+
+    function updateStats() {
+      scoreEl.textContent = `Score: ${state.score} / ${currentQuestions.length}`;
+      progressEl.textContent = `Answered: ${state.answered} / ${currentQuestions.length}`;
+      const pct = currentQuestions.length ? Math.round((state.score / currentQuestions.length) * 100) : 0;
+      percentEl.textContent = `${pct}%`;
+    }
+
+    function revealExplanation(card, item) {
+      const exp = card.querySelector(".exp");
+      exp.hidden = false;
+      exp.innerHTML = `<strong>Explanation:</strong> ${escapeHtmlClient(item.why)}`;
+    }
+
+    function markAnswered(item) {
+      if (!item.__answered) {
+        item.__answered = true;
+        state.answered += 1;
+      }
+    }
+
+    function onChooseSingle(card, item, pickedIndex) {
+      if (item.__answered) return;
+      const nodes = card.querySelectorAll(".opt");
+      nodes.forEach((node) => node.classList.add("disabled"));
+      markAnswered(item);
+      if (item.correct.includes(pickedIndex)) {
+        nodes[pickedIndex].classList.add("correct");
+        state.score += 1;
+      } else {
+        nodes[pickedIndex].classList.add("wrong");
+        item.correct.forEach((index) => nodes[index].classList.add("correct"));
+      }
+      revealExplanation(card, item);
+      updateStats();
+    }
+
+    function toggleMulti(card, item, optionIndex) {
+      if (item.__answered) return;
+      const picked = new Set(item.__selected);
+      if (picked.has(optionIndex)) picked.delete(optionIndex);
+      else picked.add(optionIndex);
+      item.__selected = [...picked].sort((left, right) => left - right);
+      const nodes = card.querySelectorAll(".opt");
+      nodes.forEach((node, index) => node.classList.toggle("selected", picked.has(index)));
+      card.querySelector("[data-role='submit-multi']").disabled = item.__selected.length === 0;
+    }
+
+    function onSubmitMulti(card, item) {
+      if (item.__answered || item.__selected.length === 0) return;
+      const nodes = card.querySelectorAll(".opt");
+      const selected = new Set(item.__selected);
+      const correct = new Set(item.correct);
+      nodes.forEach((node, index) => {
+        node.classList.add("disabled");
+        if (correct.has(index)) node.classList.add("correct");
+        if (selected.has(index) && !correct.has(index)) node.classList.add("wrong");
+      });
+      const exactMatch =
+        item.__selected.length === item.correct.length &&
+        item.__selected.every((value, index) => value === item.correct[index]);
+      markAnswered(item);
+      if (exactMatch) state.score += 1;
+      revealExplanation(card, item);
+      updateStats();
+    }
+
+    function render() {
+      quizEl.innerHTML = "";
+      currentQuestions.forEach((item, qIndex) => {
+        const card = document.createElement("section");
+        card.className = "qcard";
+
+        const head = document.createElement("div");
+        head.className = "qhead";
+
+        const title = document.createElement("p");
+        title.className = "qtitle";
+        title.textContent = `${qIndex + 1}. ${item.q}`;
+
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        if (item.kind === "multi") {
+          badge.classList.add("multi");
+          badge.textContent = "Multi-select";
+        } else {
+          badge.textContent = "Single answer";
+        }
+
+        head.appendChild(title);
+        head.appendChild(badge);
+        card.appendChild(head);
+
+        const opts = document.createElement("div");
+        opts.className = "opts";
+        item.options.forEach((option, optionIndex) => {
+          const row = document.createElement("div");
+          row.className = "opt";
+          const letter = document.createElement("div");
+          letter.className = "letter";
+          letter.textContent = String.fromCharCode(65 + optionIndex);
+          const text = document.createElement("span");
+          text.textContent = option;
+          row.appendChild(letter);
+          row.appendChild(text);
+          if (item.kind === "multi") row.addEventListener("click", () => toggleMulti(card, item, optionIndex));
+          else row.addEventListener("click", () => onChooseSingle(card, item, optionIndex));
+          opts.appendChild(row);
+        });
+        card.appendChild(opts);
+
+        if (item.kind === "multi") {
+          const actions = document.createElement("div");
+          actions.className = "actions";
+          const submit = document.createElement("button");
+          submit.type = "button";
+          submit.className = "secondary";
+          submit.textContent = "Check answer";
+          submit.disabled = true;
+          submit.setAttribute("data-role", "submit-multi");
+          submit.addEventListener("click", () => onSubmitMulti(card, item));
+          actions.appendChild(submit);
+          card.appendChild(actions);
+        }
+
+        const exp = document.createElement("div");
+        exp.className = "exp";
+        exp.hidden = true;
+        card.appendChild(exp);
+        quizEl.appendChild(card);
+      });
+      updateStats();
+    }
+
+    function revealAll() {
+      document.querySelectorAll(".qcard").forEach((card, index) => {
+        const item = currentQuestions[index];
+        const nodes = card.querySelectorAll(".opt");
+        nodes.forEach((node, optionIndex) => {
+          node.classList.add("disabled");
+          if (item.correct.includes(optionIndex)) node.classList.add("correct");
+        });
+        markAnswered(item);
+        const submit = card.querySelector("[data-role='submit-multi']");
+        if (submit) submit.disabled = true;
+        revealExplanation(card, item);
+      });
+      updateStats();
+    }
+
+    function resetQuiz() {
+      state = { score: 0, answered: 0 };
+      render();
+    }
+
+    function shuffleQuiz() {
+      state = { score: 0, answered: 0 };
+      currentQuestions = buildQuestions();
+      render();
+    }
+
+    resetBtn.addEventListener("click", resetQuiz);
+    revealBtn.addEventListener("click", revealAll);
+    shuffleBtn.addEventListener("click", shuffleQuiz);
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>
