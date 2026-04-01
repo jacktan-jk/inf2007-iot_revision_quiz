@@ -45,7 +45,7 @@
     .answer { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px; color: #111827; }
     .answer[hidden] { display: none; }
     .answer strong { color: #065f46; }
-    .answer pre { margin: 8px 0 0; padding: 12px; border-radius: 10px; background: #0f172a; color: #f8fafc; overflow-x: auto; white-space: pre-wrap; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .answer p { margin: 8px 0 0; color: #1f2937; }
     footer { text-align: center; color: var(--muted); padding: 30px 12px; }
     @media (max-width: 640px) {
       .qhead { flex-direction: column; }
@@ -5323,6 +5323,538 @@
       return escapeHtmlClient(text).replace(/\n/g, '<br>');
     }
 
+    function cleanDisplayText(text) {
+      return String(text || '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function extractAnswerNote(answer) {
+      const text = String(answer || '').trim();
+      if (!text) {
+        return { main: '', note: '' };
+      }
+
+      const match = text.match(/^(.*?)(?:\s*\((?:Note:\s*)?(.*)\))\s*$/);
+      if (!match) {
+        return { main: cleanDisplayText(text), note: '' };
+      }
+
+      return {
+        main: cleanDisplayText(match[1]),
+        note: cleanDisplayText(match[2]),
+      };
+    }
+
+    function getCorrectTexts(item) {
+      if (Array.isArray(item.correct) && Array.isArray(item.options) && item.correct.length > 0 && item.options.length > 0) {
+        return item.correct
+          .map((index) => cleanDisplayText(item.options[index]))
+          .filter(Boolean);
+      }
+
+      const info = extractAnswerNote(item.answer);
+      if (!info.main) {
+        return [];
+      }
+
+      const lines = info.main.split(/\n+/).map(cleanDisplayText).filter(Boolean);
+      if (lines.length > 1) {
+        return lines;
+      }
+
+      return [info.main];
+    }
+
+    function formatQuotedList(values) {
+      const items = values.map((value) => `"${cleanDisplayText(value)}"`).filter(Boolean);
+      if (items.length === 0) {
+        return 'the correct option';
+      }
+      if (items.length === 1) {
+        return items[0];
+      }
+      if (items.length === 2) {
+        return `${items[0]} and ${items[1]}`;
+      }
+      return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+    }
+
+    function trimSentence(text) {
+      return cleanDisplayText(text).replace(/[.]+$/, '');
+    }
+
+    const EXPLANATION_STOPWORDS = new Set([
+      'a', 'an', 'and', 'are', 'as', 'at', 'be', 'because', 'best', 'by', 'can', 'choose',
+      'correct', 'does', 'do', 'following', 'for', 'from', 'given', 'how', 'if', 'in', 'into',
+      'is', 'it', 'kind', 'many', 'more', 'not', 'of', 'on', 'one', 'or', 'select', 'statement',
+      'statements', 'the', 'their', 'these', 'this', 'to', 'true', 'using', 'what', 'which',
+      'while', 'with', 'would', 'you', 'your',
+    ]);
+
+    const LECTURE_FACTS = {
+      1: [
+        'IoT communication is trade-off driven, so range, power, data rate, scalability, security, and cost do not all have the same importance in every deployment.',
+        'In the lecture, a Thing is built from a controller plus sensors or actuators plus network connectivity.',
+        'Embedded systems are not necessarily connected, pervasive computing means anytime-anywhere computing, cyber-physical systems couple physical and cyber behavior, and real-time systems are defined by timing constraints.',
+        'Bluetooth, ZigBee, Wi-Fi, and WirelessHART all operate in the 2.4 GHz ISM band.',
+        'Bluetooth and ZigBee are short-range technologies, while LoRaWAN belongs to the much longer-range LPWAN family.',
+        'The lecture\'s reference-model ordering places Physical Devices and Controllers below Connectivity, Edge Computing, Data Accumulation, and Data Abstraction.',
+        'IoT systems combine sensing, communication, computation, and often actuation rather than only a single function.',
+      ],
+      2: [
+        'REST stands for Representational State Transfer and is an architectural style rather than a transport protocol.',
+        'REST follows a client-server model and relies on a uniform interface so clients interact with resources in a standard way.',
+        'A REST resource is an addressable entity, and HTTP commonly identifies it with a URI.',
+        'GET retrieves a resource, POST creates one, PUT replaces an existing resource, and DELETE removes it.',
+        'REST returns representations of resources, and the response body plus HTTP status code tell the client what happened and what state is being represented.',
+        'A 5xx status code signals that the failure is on the server side rather than in the client request.',
+      ],
+      3: [
+        'CoAP stands for Constrained Application Protocol and is an application-layer protocol for constrained devices and constrained networks.',
+        'CoAP keeps the REST style of HTTP but runs over UDP with lower overhead and multicast support.',
+        'The CoAP stack in the lecture has a Request and Response sub-layer and a Message sub-layer.',
+        'CoAP uses methods such as GET, POST, PUT, and DELETE, and it distinguishes confirmable from non-confirmable messages.',
+        'MQTT stands for Message Queuing Telemetry Transport and is an application-layer protocol built around a broker-based publish and subscribe model.',
+        'MQTT is message-oriented and binary based, so it does not use a direct request and response interaction model between publisher and subscriber.',
+        'Publishers send to topics through the broker and do not need to know which clients are subscribing.',
+        'QoS 0 is at most once, QoS 1 is at least once, and QoS 2 is exactly once with the highest overhead.',
+        'A retained message stores the latest value for a topic at the broker so later subscribers can receive the current state immediately after subscribing.',
+        'MQTT separates ordinary broker traffic from the TLS-secured port, and the Last Will message is published by the broker when a client disappears unexpectedly.',
+      ],
+      4: [
+        'Wireless mesh networking is decentralized rather than centrally controlled.',
+        'Self-healing means the mesh can reroute traffic around failed nodes and preserve connectivity.',
+        'Simple flooding creates many redundant transmissions and wastes bandwidth.',
+        'Authentication is a common way to keep unauthorized or malicious nodes from joining a mesh.',
+        'The lecture classifies OLSR, DSDV, and WRP as proactive table-driven routing protocols.',
+        'The lecture classifies AODV, DSR, and TORA as reactive on-demand routing protocols.',
+        'ZRP and HWMP are hybrid approaches that mix proactive and reactive ideas.',
+        'In distributed mesh routing, nodes exchange neighbor information to determine adjacency and routes.',
+      ],
+      5: [
+        'LoRa belongs to the LPWAN family and is used for long-range, low-power communication with limited data rate.',
+        'LoRa uses Chirp Spread Spectrum as its physical-layer modulation method.',
+        'LoRa is the radio or PHY side, while LoRaWAN is the MAC and networking behavior built on top of the LoRa PHY.',
+        'Increasing the spreading factor improves range and robustness but lowers data rate.',
+        'The LoRaWAN network server is the brain of the network, handling duplication, scheduling acknowledgements, ADR behavior, and forwarding data toward applications.',
+        'Link budget is the total path loss a link can tolerate while still operating correctly.',
+        'Class A is the most energy-efficient class, Class B uses beacon-synchronized scheduled receive slots, and Class C keeps listening for the lowest downlink latency.',
+        'The Device EUI is for identity, not encryption, and uniquely identifies a device on the network.',
+        'The lecture\'s Singapore example uses the 923 MHz sub-GHz band family for LoRaWAN operation.',
+      ],
+      6: [
+        'AIoT combines artificial intelligence with IoT so that sensing and decision making can happen closer to where data is generated.',
+        'Edge computing is mainly motivated by latency, bandwidth, and reliability rather than by low up-front investment cost.',
+        'Cloud computing provides convenient on-demand access to a shared pool of configurable computing resources over the network.',
+        'Fog computing is a distributed layer between edge devices and large cloud data centers, unlike the cloud\'s centralized model.',
+        'As deployment moves from on-premises to SaaS, more of the stack is managed by the provider and less by the user.',
+        'Jetson platforms are positioned as GPU-centric edge AI hardware, while Raspberry Pi is treated as a CPU-centric platform.',
+        'Type 1 hypervisors are bare metal, while Type 2 hypervisors run on top of a host operating system.',
+        'Cloud computing can lower maintenance burden, but the lecture also flags barriers such as security, compliance, interoperability, and service-level management.',
+        'IIoT emphasizes accuracy, cyber security, reliability, and robustness in industrial settings.',
+      ],
+      7: [
+        'BLE stands for Bluetooth Low Energy and is optimized for short-range, low-power, short-burst communication.',
+        'In BLE, the central device scans for and connects to peripherals, while a peripheral advertises itself.',
+        'GATT stands for Generic Attribute Profile and defines how data is organized and accessed in a BLE server database.',
+        'BLE shares the 2.4 GHz band with classic Bluetooth and reaches up to 2 Mbps in the newer lecture versions.',
+        'BLE uses 40 channels of 2 MHz each, with 3 advertising channels and the rest used for data.',
+        'Bluetooth uses a time-division duplex arrangement together with frequency hopping.',
+        'A piconet is a one-master, multiple-slave arrangement, and a scatternet is formed by joining multiple piconets.',
+        'The lecture presents BLE as a simple star-style topology, with mesh added only in later Bluetooth generations.',
+        'Pairing exchanges security material so devices can communicate securely.',
+        'Advertising is used for discovery and connection establishment.',
+      ],
+      8: [
+        'Wi-Fi HaLow is IEEE 802.11ah and adapts Wi-Fi for IoT with sub-1 GHz operation, longer range, and lower power consumption.',
+        'Higher SNR generally supports a higher modulation and coding scheme with fewer errors.',
+        'The 2.4 GHz Wi-Fi band has only 3 non-overlapping channels.',
+        'RTS and CTS are control frames used to reduce the hidden-node problem by reserving the channel before data transmission.',
+        'Stations can use Power Save mode or Active mode, and beacons carry a Traffic Indication Map that tells a sleeping station whether buffered frames are waiting.',
+        'Passive scanning listens for beacons, while active scanning involves probe exchange and association responses from the access point.',
+        'IEEE 802.1 bridging and IEEE 802.2 LLC are common elements across multiple IEEE 802 families.',
+        '802.11ah uses Null Data Packet style control exchanges for short control traffic such as ACK, RTS, and CTS to reduce overhead.',
+        'Relays in 802.11ah extend distance, improve reliability around obstructions, and can let a station transmit at lower power or higher rate over a shorter hop.',
+        'Legacy Wi-Fi and HaLow both use CSMA/CA for contention-based medium access.',
+        'The short 802.11ah MAC header omits the legacy Duration/ID field, so HaLow adds Response Indication Deferral to estimate duration earlier.',
+        'Restricted Access Window reduces collisions in large populations by grouping stations and assigning transmission slots.',
+      ],
+      9: [
+        'Bit rate depends on how many bits are carried by each symbol and how many symbols are sent per second.',
+        'QPSK maps 2 bits onto each symbol.',
+        'In the lecture, one physical resource block consists of 12 subcarriers over one time slot.',
+        'NIDD means Non-IP Data Delivery and is useful for small NB-IoT payloads because it avoids carrying full IP overhead.',
+        'SCEF is the network function that exposes NB-IoT capabilities toward application servers and handles the non-IP data path described in the lecture.',
+        'NB-IoT is designed for small, infrequent data transfers, strong coverage, and mostly static assets such as smart meters.',
+        'The lecture emphasizes very good coverage, deeper penetration, low power use, and lower component cost as NB-IoT strengths.',
+        'Power Save Mode cuts energy consumption by letting a device sleep for extended periods before updating the network again.',
+        'The lecture gives three NB-IoT deployment modes: stand-alone, guard-band, and in-band.',
+        'NB-IoT is presented as a 3GPP initiative introduced in the LTE-Advanced Pro era.',
+        'NB-IoT devices cannot keep an active connection while moving, so the technology is better for static assets than for continuous mobility.',
+        'Compared with constrained IoT-friendly protocols, HTTP has higher header overhead and therefore costs more bandwidth and energy.',
+        'OFDMA can exploit multiple subcarriers at once, whereas TDMA, FDMA, and CDMA are introduced as letting a user send only one symbol at a point in time.',
+      ],
+      10: [
+        'IEEE 802.15.4 is the low-rate wireless personal area network foundation and defines the PHY and MAC layers.',
+        'The lecture associates IEEE 802.15.4 with DSSS, CSMA or CA, beacons, and a coordinator-based MAC.',
+        'Star and peer-to-peer are the direct 802.15.4 topologies, and mesh behavior is commonly built above that foundation by protocols such as Thread and ZigBee.',
+        '6LoWPAN stands for IPv6 over Low-Power Wireless Personal Area Networks and acts as an adaptation layer above 802.15.4 rather than being the same thing as 802.15.4.',
+        '6LoWPAN is needed because IPv6 headers and MTU expectations are far larger than the 127-byte 802.15.4 frame size.',
+        'The lecture says 6LoWPAN adds IPv6 address formation, address resolution, optional mesh addressing, and IPv6 and UDP header compression.',
+        'A 6LoWPAN link-local address starts with FE80, and with short addressing the lecture form is FE80::PAN ID:Short Address or FE80::0:Short Address if the PAN ID is unknown.',
+        'In beacon-enabled 802.15.4, the CAP uses slotted CSMA, GTS real-time traffic belongs to the CFP, and the inactive interval lets devices sleep.',
+        'Acknowledgements and beacons are sent without CSMA or CA, while data frames follow the normal access procedure.',
+        'Thread is a secure, low-power IPv6 mesh built on 6LoWPAN and IEEE 802.15.4.',
+        'Thread routing roles include Router and Leader, while a REED can become a router if elected.',
+        'A Border Router connects Thread to adjacent IP networks such as Wi-Fi or Ethernet, and the lecture allows several border routers in one Thread network.',
+      ],
+      11: [
+        'ZigBee builds on IEEE 802.15.4 PHY and MAC and adds its own higher networking and application layers.',
+        'A ZigBee compliant product in the lecture includes IEEE 802.15.4, the ZigBee stack, and an application profile.',
+        'The coordinator forms and controls the network, the router participates in multi-hop routing, and the end device does not perform routing.',
+        'ZigBee supports star, mesh, and cluster-tree topologies, while bus is not part of the lecture\'s ZigBee topology set.',
+        'ZigBee is aimed at low-power, small-data monitoring and control rather than high-bandwidth transfers.',
+        'Z-Wave is treated as a separate proprietary sub-GHz ecosystem, not as a ZigBee protocol.',
+        'The lecture gives Z-Wave operation in the 915 MHz band in the U.S. and 868 MHz in Europe.',
+        'ZigBee end devices can communicate as endpoints but rely on routing-capable nodes such as routers and the coordinator to relay traffic.',
+      ],
+    };
+
+    const EXPLANATION_OVERRIDES = {
+      '1-1': () => '"False" is correct because the lecture treats range, power, data rate, scalability, security, and cost as design trade-offs. Different IoT deployments weight those factors differently rather than assigning them equal importance every time.',
+      '1-3': ({ subject }) => `${subject} are correct because the lecture distinguishes the four ideas in different ways: embedded systems are not necessarily connected, pervasive computing is anytime-anywhere computing, cyber-physical systems couple the physical and cyber worlds, and real-time systems are defined by timing constraints.`,
+      '1-6': () => '"Power Supply" is marked correct here because the question is using the lecture\'s functional breakdown of an IoT node, which focused on sensing, control, and connectivity blocks rather than support circuitry.',
+      '1-8': ({ subject }) => `${subject} is correct because the lecture\'s reference-model ordering places Physical Devices and Controllers at the bottom, then Connectivity, then Edge Computing, then Data Accumulation, and then Data Abstraction above those layers.`,
+      '3-15': ({ subject }) => `${subject} is correct because CoAP observation starts with a GET-style request to a resource, after which the server can send later updates without turning the protocol into a broker-based subscription model like MQTT.`,
+      '4-1': ({ subject }) => `${subject} are correct because the lecture classifies DSR, TORA, and AODV as reactive on-demand routing protocols, while DSDV, OLSR, and WRP are proactive table-driven protocols.`,
+      '6-7': ({ subject }) => `${subject} are correct because the lecture\'s responsibility split moves more control to the user as you go from SaaS toward on-premises deployment. The selected options are the statements that match that management-boundary progression in this quiz bank.`,
+      '7-5': ({ subject }) => `${subject} are correct because Bluetooth 4.0 still centers on star-style connections around a central device, and the lecture also presents scatternets as multiple joined piconets. Ring is not a Bluetooth topology, and mesh is treated as a later addition rather than a Bluetooth 4.0 feature.`,
+      '7-20': ({ subject }) => `${subject} is correct because an individual BLE connection is formed between one central and one peripheral at a time. A central may manage several peripherals, but each active data link is still a point-to-point connection.`,
+      '8-10': ({ subject }) => `${subject} is correct because the lecture introduces Centralized Authentication Control and Distributed Authentication Control as scaling measures for large 802.11ah populations, while Restricted Access Window is the collision-reduction mechanism that groups stations into slots.`,
+      '8-21': ({ subject }) => `${subject} is correct because 802.11ah shortens the MAC header and omits the legacy Duration or ID field, so HaLow uses Response Indication Deferral to estimate the pending response duration immediately after the PHY header instead of waiting for the whole frame as NAV does.`,
+      '9-10': ({ subject }) => `${subject} is correct because this item is testing the lecture\'s headline NB-IoT selling points such as coverage, low power, and low data traffic. The chosen option is the one that does not appear as a named feature label in that summary framing.`,
+      '9-12': ({ subject }) => `${subject} is correct because QPSK defines 2 bits per symbol, but the number of bits an NB-IoT transmission carries at a given instant also depends on how many symbols or subcarriers are being sent. The fixed single-value options therefore do not capture the whole transmission case described here.`,
+      '10-3': ({ subject }) => `${subject} is correct because the lecture presents Thread as a secure, low-power IPv6 mesh built on top of 6LoWPAN and IEEE 802.15.4. In this question, every listed statement conflicts with at least one of those core properties.`,
+      '10-17': ({ subject }) => `${subject} are correct because the lecture gives star and peer-to-peer as the direct 802.15.4 topologies, and mesh networking is then built above that peer-to-peer foundation by protocols that use 802.15.4 underneath.`,
+      '10-20': ({ subject }) => `${subject} are correct because in beacon-enabled 802.15.4 the CFP is reserved for GTS real-time traffic, CAP uses slotted CSMA, and the inactive interval is the part that lets devices sleep. That is why the selected statements are the false ones in this set.`,
+    };
+
+    function normalizeExplanationText(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/802\.11ah/g, ' 80211ah halow ')
+        .replace(/802\.15\.4/g, ' 802154 ')
+        .replace(/6lo?wpan/g, ' 6lowpan ')
+        .replace(/wi-?fi/g, ' wifi ')
+        .replace(/bluetooth low energy/g, ' ble ')
+        .replace(/\bble\b/g, ' ble ')
+        .replace(/response indication deferral/g, ' rid ')
+        .replace(/traffic indication map/g, ' tim ')
+        .replace(/request to send/g, ' rts ')
+        .replace(/clear to send/g, ' cts ')
+        .replace(/non-?ip data delivery/g, ' nidd ')
+        .replace(/service capability exposure function/g, ' scef ')
+        .replace(/generic attribute profile/g, ' gatt ')
+        .replace(/chirp spread spectrum/g, ' css ')
+        .replace(/physical resource block/g, ' prb ')
+        .replace(/power save mode/g, ' powersave ')
+        .replace(/router eligible end device/g, ' reed ')
+        .replace(/scatter\s*net/g, ' scatternet ')
+        .replace(/2\.4\s*ghz/g, ' 24ghz ')
+        .replace(/5\s*ghz/g, ' 5ghz ')
+        .replace(/sub[- ]*1\s*ghz/g, ' sub1ghz ')
+        .replace(/923\s*mhz/g, ' 923mhz ')
+        .replace(/915\s*mhz/g, ' 915mhz ')
+        .replace(/868\s*mhz/g, ' 868mhz ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    }
+
+    function tokenizeExplanation(text) {
+      const normalized = normalizeExplanationText(text);
+      if (!normalized) {
+        return [];
+      }
+
+      return normalized
+        .split(/\s+/)
+        .filter((token) => token && !EXPLANATION_STOPWORDS.has(token))
+        .filter((token) => token.length > 1 || /\d/.test(token));
+    }
+
+    function joinExplanationFacts(facts) {
+      return facts
+        .map((fact) => cleanDisplayText(fact))
+        .filter(Boolean)
+        .map((fact) => fact.endsWith('.') ? fact : `${fact}.`)
+        .join(' ');
+    }
+
+    function pickExplanationFacts(item, correctTexts) {
+      const facts = LECTURE_FACTS[item.lectureNumber] || [];
+      if (facts.length === 0) {
+        return [];
+      }
+
+      const promptTokens = new Set(tokenizeExplanation(item.prompt));
+      const answerPhrases = correctTexts.map((text) => normalizeExplanationText(text)).filter(Boolean);
+      const answerTokens = new Set(answerPhrases.flatMap((phrase) => phrase.split(/\s+/).filter(Boolean)));
+
+      const ranked = facts
+        .map((fact) => {
+          const factNormalized = normalizeExplanationText(fact);
+          const factTokens = new Set(factNormalized.split(/\s+/).filter(Boolean));
+          let score = 0;
+          let promptHits = 0;
+          let answerHits = 0;
+
+          promptTokens.forEach((token) => {
+            if (factTokens.has(token)) {
+              score += 2;
+              promptHits += 1;
+            }
+          });
+
+          answerTokens.forEach((token) => {
+            if (factTokens.has(token)) {
+              score += 4;
+              answerHits += 1;
+            }
+          });
+
+          answerPhrases.forEach((phrase) => {
+            if (phrase.length > 2 && factNormalized.includes(phrase)) {
+              score += 6;
+              answerHits += 2;
+            }
+          });
+
+          return { fact, score, promptHits, answerHits };
+        })
+        .filter((entry) => entry.score >= 4)
+        .sort((left, right) => right.score - left.score || right.answerHits - left.answerHits || right.promptHits - left.promptHits);
+
+      if (ranked.length === 0) {
+        return [];
+      }
+
+      const chosen = [ranked[0].fact];
+      if (ranked[1] && ranked[1].score >= Math.max(4, ranked[0].score - 2)) {
+        chosen.push(ranked[1].fact);
+      }
+      return chosen;
+    }
+
+    function buildNoteBackedExplanation(item, answerInfo, subject, correctTexts) {
+      if (EXPLANATION_OVERRIDES[item.id]) {
+        return EXPLANATION_OVERRIDES[item.id]({ item, answerInfo, correctTexts, subject });
+      }
+
+      const facts = pickExplanationFacts(item, correctTexts);
+      const prompt = String(item.prompt || '').toLowerCase();
+      const factsText = joinExplanationFacts(facts);
+
+      if (!factsText) {
+        return '';
+      }
+
+      if (/all of the above/i.test(answerInfo.main)) {
+        return `"All of the above" is correct because ${factsText} Each listed option fits that description.`;
+      }
+
+      if (/none of the above/i.test(answerInfo.main)) {
+        return `"${answerInfo.main}" is correct because ${factsText} The listed options do not match that description.`;
+      }
+
+      if (/^true$/i.test(answerInfo.main)) {
+        return `"True" is correct because ${factsText}`;
+      }
+
+      if (/^false$/i.test(answerInfo.main)) {
+        return `"False" is correct because ${factsText} The statement in the prompt conflicts with that description.`;
+      }
+
+      if (item.kind === 'multi' && /\bnot\b|\bfalse\b/.test(prompt)) {
+        return `${subject} are correct because ${factsText} Those are the choices that fall outside the category named in the prompt.`;
+      }
+
+      if (item.kind !== 'multi' && /\bnot\b|\bfalse\b/.test(prompt)) {
+        return `${subject} is correct because ${factsText} That makes it the choice that does not fit the category named in the question.`;
+      }
+
+      if (item.kind === 'multi') {
+        return `${subject} are correct because ${factsText}`;
+      }
+
+      return `${subject} is correct because ${factsText}`;
+    }
+
+    function buildCalculationExplanation(item, correctTexts) {
+      const prompt = String(item.prompt || '');
+      const answerInfo = extractAnswerNote(item.answer);
+      const answerValue = correctTexts.length > 0 ? correctTexts[0] : answerInfo.main;
+
+      let match = prompt.match(/hopping time.*?equal to\s+(\d+)\s*[mu]?s.*?one second/i);
+      if (match) {
+        const hopTimeMicros = Number(match[1]);
+        const hops = hopTimeMicros > 0 ? 1000000 / hopTimeMicros : null;
+        return `"${answerValue}" is correct because one second is 1,000,000 microseconds, and 1,000,000 divided by ${hopTimeMicros} gives ${hops} hops in that time.`;
+      }
+
+      match = prompt.match(/send\s+(\d+)\s+bits\s+in\s+one\s+slot.*send\s+(\d+)\s+bits/i);
+      if (match) {
+        const bitsPerSlot = Number(match[1]);
+        const totalBits = Number(match[2]);
+        const slots = bitsPerSlot > 0 ? totalBits / bitsPerSlot : null;
+        return `"${answerValue}" is correct because ${totalBits} divided by ${bitsPerSlot} gives ${slots}, so that many slots are needed.`;
+      }
+
+      match = prompt.match(/bandwidth of the spread spectrum signal is\s+(\d+)\s*mhz.*signal bandwidth is\s+(\d+)\s*mhz/i);
+      if (match) {
+        const spreadBandwidth = Number(match[1]);
+        const signalBandwidth = Number(match[2]);
+        const carriers = signalBandwidth > 0 ? spreadBandwidth / signalBandwidth : null;
+        return `"${answerValue}" is correct because ${spreadBandwidth} MHz divided by ${signalBandwidth} MHz gives ${carriers} carrier frequencies.`;
+      }
+
+      match = prompt.match(/link budget equal to\s+(\d+)\s*dB.*receiver sensitivity equal to\s+(-?\d+)\s*dBm/i);
+      if (match) {
+        const linkBudget = Number(match[1]);
+        const receiverSensitivity = Number(match[2]);
+        const transmitPower = linkBudget + receiverSensitivity;
+        return `"${answerValue}" is correct because transmit power plus receiver sensitivity must equal the link budget, so ${linkBudget} + (${receiverSensitivity}) gives ${transmitPower} dBm.`;
+      }
+
+      match = prompt.match(/subcarrier band size has been increased from\s+(\d+)\s*kHz to\s+(\d+)\s*kHz.*physical resource block/i);
+      if (match) {
+        const newSpacing = Number(match[2]);
+        const prbBandwidth = newSpacing * 12;
+        return `"${answerValue}" is correct because one physical resource block contains 12 subcarriers, so 12 multiplied by ${newSpacing} kHz gives ${prbBandwidth} kHz.`;
+      }
+
+      match = prompt.match(/bandwidth equal to\s+(\d+)\s*kHz.*FDMA.*each user requires a bandwidth equal to\s+(\d+)\s*kHz.*guard band.*equal to\s+(\d+)\s*kHz/i);
+      if (match) {
+        const totalBandwidth = Number(match[1]);
+        const userBandwidth = Number(match[2]);
+        const guardBandwidth = Number(match[3]);
+        const usableBandwidth = totalBandwidth - (2 * guardBandwidth);
+        const users = userBandwidth > 0 ? Math.floor(usableBandwidth / userBandwidth) : null;
+        return `"${answerValue}" is correct because the two guard bands consume ${2 * guardBandwidth} kHz, leaving ${usableBandwidth} kHz for users, and ${usableBandwidth} divided by ${userBandwidth} gives ${users} FDMA users.`;
+      }
+
+      match = prompt.match(/bandwidth equal to\s+(\d+)\s*kHz.*4G cellular operation.*guard band.*equal to\s+(\d+)\s*kHz/i);
+      if (match) {
+        const totalBandwidth = Number(match[1]);
+        const guardBandwidth = Number(match[2]);
+        const usableBandwidth = totalBandwidth - (2 * guardBandwidth);
+        const subcarriers = usableBandwidth / 15;
+        return `"${answerValue}" is correct because 4G uses 15 kHz subcarriers in the lecture, so after removing ${2 * guardBandwidth} kHz of guard bands, ${usableBandwidth} kHz remains, and ${usableBandwidth} divided by 15 gives ${subcarriers} subcarriers.`;
+      }
+
+      match = prompt.match(/implement TDMA.*support\s+(\d+)\s+users.*each user requires a bandwidth equal to\s+(\d+)\s*kHz.*guard band.*equal to\s+(\d+)\s*kHz/i);
+      if (match) {
+        const userBandwidth = Number(match[2]);
+        const guardBandwidth = Number(match[3]);
+        const requiredBandwidth = userBandwidth + (2 * guardBandwidth);
+        return `"${answerValue}" is correct because TDMA reuses the same frequency channel across time slots, so you only need one ${userBandwidth} kHz channel plus two ${guardBandwidth} kHz guard bands, for a total of ${requiredBandwidth} kHz.`;
+      }
+
+      match = prompt.match(/length of the packet is\s+(\d+)\s+bits.*chipping sequence\s+([01]+)/i);
+      if (match) {
+        const packetBits = Number(match[1]);
+        const chipsPerBit = String(match[2]).length;
+        const transmittedBits = packetBits * chipsPerBit;
+        return `"${answerValue}" is correct because each data bit is expanded into ${chipsPerBit} chips, so ${packetBits} bits become ${transmittedBits} transmitted bits.`;
+      }
+
+      match = prompt.match(/transmitted\s+(\d+)\s+bits.*chipping sequence\s+([01]+)/i);
+      if (match) {
+        const transmittedBits = Number(match[1]);
+        const chipsPerBit = String(match[2]).length;
+        const payloadBits = chipsPerBit > 0 ? transmittedBits / chipsPerBit : null;
+        return `"${answerValue}" is correct because dividing ${transmittedBits} transmitted bits by ${chipsPerBit} chips per bit gives ${payloadBits} original data bits.`;
+      }
+
+      if (/transmitted signal .* chipping sequence/i.test(prompt)) {
+        return `"${answerValue}" is correct because it is the binary sequence produced when the rule in the prompt is applied to the stated bit and chipping sequence.`;
+      }
+
+      match = prompt.match(/number of carrier frequencies is equal to\s+(\d+).*PRN generator/i);
+      if (match) {
+        const carrierCount = Number(match[1]);
+        const bits = carrierCount > 0 ? Math.ceil(Math.log2(carrierCount)) : null;
+        return `"${answerValue}" is correct because the hopping controller needs enough output bits to index every carrier, and ceil(log2(${carrierCount})) gives ${bits}.`;
+      }
+
+      if (/reserved for advertising/i.test(prompt)) {
+        return `"${answerValue}" is correct because Bluetooth sets aside that number of channels for advertising and uses the rest for data traffic.`;
+      }
+
+      return '';
+    }
+
+    function buildExplanation(item) {
+      const prompt = String(item.prompt || '').trim();
+      const answerInfo = extractAnswerNote(item.answer);
+      const correctTexts = getCorrectTexts(item);
+      const subject = formatQuotedList(correctTexts.length > 0 ? correctTexts : [answerInfo.main || 'the correct option']);
+      const verb = (correctTexts.length > 1 || item.kind === 'multi') ? 'are' : 'is';
+      const note = trimSentence(answerInfo.note);
+      const calculation = buildCalculationExplanation(item, correctTexts);
+
+      if (note) {
+        return `${subject} ${verb} correct because ${note}.`;
+      }
+
+      if (calculation) {
+        return calculation;
+      }
+
+      const noteBackedExplanation = buildNoteBackedExplanation(item, answerInfo, subject, correctTexts);
+      if (noteBackedExplanation) {
+        return noteBackedExplanation;
+      }
+
+      if (/all of the above/i.test(answerInfo.main)) {
+        return `"All of the above" is correct because each listed option matches the concept breakdown used in this topic, so none of the choices has to be excluded.`;
+      }
+
+      if (/none of/i.test(answerInfo.main)) {
+        return `"${answerInfo.main}" is correct because the lecture's definition of this topic does not line up with any of the listed choices.`;
+      }
+
+      if (/true|false/i.test(answerInfo.main) && Array.isArray(item.options) && item.options.length === 2) {
+        return `${subject} ${verb} correct because the statement ${/false/i.test(answerInfo.main) ? 'conflicts with' : 'matches'} the way this concept is defined in the course material.`;
+      }
+
+      if (/match|pair/i.test(prompt)) {
+        return `${subject} ${verb} correct because those pairings keep each term aligned with its actual definition, role, or category.`;
+      }
+
+      if (/arrange|order|sequence/i.test(prompt)) {
+        return `${subject} ${verb} correct because that ordering preserves the layer or process sequence used in the lecture.`;
+      }
+
+      if (/which frequency|which band|operate on/i.test(prompt)) {
+        return `${subject} ${verb} correct because ${correctTexts.length > 1 ? 'those are the frequency bands' : 'that is the frequency band'} associated with the technology in this topic.`;
+      }
+
+      if (/role|purpose|primary role|what does .* do/i.test(prompt.toLowerCase())) {
+        return `${subject} ${verb} correct because ${correctTexts.length > 1 ? 'those options match the role split' : 'it matches the role'} used by the protocol or architecture, while the other choices describe different functions.`;
+      }
+
+      if (item.kind === 'multi') {
+        return `${subject} are correct because they belong to the concept group being tested, while the remaining options fall into a different role, layer, or behavior.`;
+      }
+
+      return `${subject} is correct because it matches the protocol behavior, architectural role, or technical property being tested here.`;
+    }
+
+    function buildExplanationHtml(item) {
+      return `<strong>Explanation:</strong><p>${formatText(buildExplanation(item))}</p>`;
+    }
+
     function buildQuestions() {
       return shuffle(QUIZ_DATA.questions).map((question) => {
         const item = clone(question);
@@ -5395,6 +5927,7 @@
 
     function revealAnswer(card, item) {
       const answer = card.querySelector('.answer');
+      answer.innerHTML = buildExplanationHtml(item);
       answer.hidden = false;
       markCompleted(item);
       updateStats();
@@ -5647,10 +6180,9 @@
           }
         }
 
-        card.querySelector('.answer').hidden = false;
-        if (item.kind === 'reveal') {
-          markCompleted(item);
-        }
+        const answer = card.querySelector('.answer');
+        answer.innerHTML = buildExplanationHtml(item);
+        answer.hidden = false;
       });
 
       updateStats();
