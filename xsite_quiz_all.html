@@ -72,12 +72,12 @@
   </header>
   <main id="quiz"></main>
   <footer>
-    Based on the professor-provided CSV quiz set for revision practice.
+    Based on the xsite quiz set for revision practice.
   </footer>
   <script>
     const QUIZ_DATA = {
   "lectureNumber": "All",
-  "title": "All Professor CSV Questions",
+  "title": "All XSITE Questions",
   "questions": [
     {
       "id": "1-1",
@@ -5524,7 +5524,7 @@
       const answer = document.createElement('div');
       answer.className = 'answer';
       answer.hidden = true;
-      answer.innerHTML = `<strong>Professor answer:</strong><pre>${escapeHtmlClient(item.answer)}</pre>`;
+      answer.innerHTML = `<strong>XSITE answer:</strong><pre>${escapeHtmlClient(item.answer)}</pre>`;
       card.appendChild(answer);
 
       return card;
