@@ -1,0 +1,5575 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSC2106 – XSITE Quiz: All XSITE Questions</title>
+  <style>
+    :root { --maxw: 980px; --accent: #0f766e; --muted: #6b7280; --border: #e5e7eb; --surface: #ffffff; --bg: #f7f7f8; --soft: #f3f4f6; --good: #16a34a; --good-bg: #f0fdf4; --bad: #dc2626; --bad-bg: #fef2f2; --pick: #2563eb; --pick-bg: #eff6ff; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif; line-height: 1.45; margin: 0; background: var(--bg); color: #111827; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 18px 16px; }
+    h1 { font-size: clamp(20px, 2.6vw, 28px); margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .helper { margin-top: 10px; color: #475569; font-size: 14px; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    button { cursor: pointer; border: 1px solid var(--border); background: var(--surface); padding: 8px 12px; border-radius: 10px; font-weight: 600; font: inherit; }
+    button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    button.secondary { background: #111827; color: white; border-color: #111827; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .stats { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+    .pill { background: #eef2ff; color: #3730a3; font-weight: 700; padding: 6px 10px; border-radius: 999px; }
+    main { max-width: var(--maxw); margin: 12px auto 60px; padding: 0 16px; }
+    .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin: 14px 0; box-shadow: 0 1px 0 rgba(0, 0, 0, .03); }
+    .qhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+    .qtitle { font-weight: 700; margin: 0; }
+    .badge { font-size: 12px; color: #374151; background: var(--soft); border: 1px solid var(--border); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+    .badge.multi { color: #1d4ed8; background: #dbeafe; border-color: #bfdbfe; }
+    .badge.reveal { color: #7c2d12; background: #ffedd5; border-color: #fed7aa; }
+    .prompt-blocks { display: grid; gap: 8px; margin-bottom: 10px; }
+    .prompt-group { margin: 0; padding-left: 18px; color: #374151; }
+    .prompt-group li { margin: 4px 0; }
+    .opts { display: grid; gap: 8px; margin-top: 8px; }
+    .opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); cursor: pointer; }
+    .opt:hover { border-color: #c7d2fe; }
+    .opt.selected { border-color: var(--pick); background: var(--pick-bg); }
+    .opt.correct { border-color: var(--good); background: var(--good-bg); }
+    .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+    .opt.disabled { pointer-events: none; opacity: .85; }
+    .letter { width: 28px; height: 28px; border-radius: 999px; border: 1px solid var(--border); display: grid; place-items: center; font-weight: 700; background: white; flex: 0 0 auto; }
+    .opt.selected .letter { border-color: var(--pick); color: var(--pick); }
+    .opt.correct .letter { border-color: var(--good); color: var(--good); }
+    .opt.wrong .letter { border-color: var(--bad); color: var(--bad); }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .answer { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px; color: #111827; }
+    .answer[hidden] { display: none; }
+    .answer strong { color: #065f46; }
+    .answer pre { margin: 8px 0 0; padding: 12px; border-radius: 10px; background: #0f172a; color: #f8fafc; overflow-x: auto; white-space: pre-wrap; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    footer { text-align: center; color: var(--muted); padding: 30px 12px; }
+    @media (max-width: 640px) {
+      .qhead { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>CSC2106 – XSITE Quiz: All XSITE Questions</h1>
+      <div class="sub">CSC2106 – Internet of Things: Protocols and Networks</div>
+      <div class="helper">XSITE questions are loaded into this combined quiz page. Rows with exact answer choices are auto-graded; rows that stay free-form or ambiguous in the CSV are shown as reveal-answer cards.</div>
+      <div class="stats">
+        <span class="pill" id="score">Score: 0 / 0</span>
+        <span class="pill" id="progress">Completed: 0 / 0</span>
+        <span class="pill" id="percent">0%</span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="resetBtn" type="button" title="Reset the quiz to try again">Reset quiz</button>
+        <button id="revealBtn" type="button" title="Reveal answers for all questions">Reveal all answers</button>
+        <button id="shuffleBtn" type="button" title="Shuffle questions and graded answer options">Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <main id="quiz"></main>
+  <footer>
+    Based on the professor-provided CSV quiz set for revision practice.
+  </footer>
+  <script>
+    const QUIZ_DATA = {
+  "lectureNumber": "All",
+  "title": "All Professor CSV Questions",
+  "questions": [
+    {
+      "id": "1-1",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "single",
+      "prompt": "The various factors (range, power, data rate, scalability, security and cost) have the same level of importance in any IoT solution.",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "False",
+      "shuffleOptions": true
+    },
+    {
+      "id": "1-2",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "single",
+      "prompt": "Which of the following supports the longest range?",
+      "detailBlocks": [
+        [
+          "WiFi",
+          "ZigBee",
+          "BLE",
+          "LoRa"
+        ]
+      ],
+      "options": [
+        "WiFi",
+        "ZigBee",
+        "BLE",
+        "LoRa"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "LoRa",
+      "shuffleOptions": true
+    },
+    {
+      "id": "1-3",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "reveal",
+      "prompt": "Match",
+      "detailBlocks": [
+        [
+          "Embedded Systems - _____",
+          "Pervasive/Ubiquitous Computing - _____",
+          "Cyber-Physical Systems - _____",
+          "Real-time Systems - _____"
+        ],
+        [
+          "1. Focus on anytime/anywhere computing",
+          "2. Focus on time constraints",
+          "3. Not necessarily connected",
+          "4. Focus on interaction between physical and cyber systems"
+        ]
+      ],
+      "options": [
+        "Embedded Systems - _____",
+        "Pervasive/Ubiquitous Computing - _____",
+        "Cyber-Physical Systems - _____",
+        "Real-time Systems - _____",
+        "1. Focus on anytime/anywhere computing",
+        "2. Focus on time constraints",
+        "3. Not necessarily connected",
+        "4. Focus on interaction between physical and cyber systems"
+      ],
+      "correct": [],
+      "answer": "Embedded Systems - 3. Not necessarily connected\nPervasive/Ubiquitous Computing - 1. Focus on anytime/anywhere computing\nCyber-Physical Systems - 4. Focus on interaction between physical and cyber systems\nReal-time Systems - 2. Focus on time constraints",
+      "shuffleOptions": false
+    },
+    {
+      "id": "1-4",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "single",
+      "prompt": "Devices in IoT support ... (select the best answer)",
+      "detailBlocks": [
+        [
+          "Actuating",
+          "All of them",
+          "Sensing",
+          "Data collection"
+        ]
+      ],
+      "options": [
+        "Actuating",
+        "All of them",
+        "Sensing",
+        "Data collection"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "All of them.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "1-5",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "single",
+      "prompt": "IoT refers to ... (select the best answer)",
+      "detailBlocks": [
+        [
+          "Interconnections of devices in a network",
+          "Exchange of data between devices in a network",
+          "An ecosystem of devices, accessible through internet",
+          "All of them."
+        ]
+      ],
+      "options": [
+        "Interconnections of devices in a network",
+        "Exchange of data between devices in a network",
+        "An ecosystem of devices, accessible through internet",
+        "All of them."
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "All of them.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "1-6",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "single",
+      "prompt": "Which of the following is NOT a component in an IoT device.",
+      "detailBlocks": [
+        [
+          "Controller",
+          "Power Supply",
+          "Communication",
+          "Actuator",
+          "Sensor"
+        ]
+      ],
+      "options": [
+        "Controller",
+        "Power Supply",
+        "Communication",
+        "Actuator",
+        "Sensor"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Power Supply",
+      "shuffleOptions": true
+    },
+    {
+      "id": "1-7",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "multi",
+      "prompt": "Which of the following technology uses 2.4Ghz frequency?",
+      "detailBlocks": [
+        [
+          "SigFox",
+          "Bluetooth/BLE",
+          "ZigBee",
+          "WiFi",
+          "Wireless HART",
+          "LoRa",
+          "2G/3G",
+          "Z-Wave",
+          "Weightless",
+          "NB-IoT"
+        ]
+      ],
+      "options": [
+        "SigFox",
+        "Bluetooth/BLE",
+        "ZigBee",
+        "WiFi",
+        "Wireless HART",
+        "LoRa",
+        "2G/3G",
+        "Z-Wave",
+        "Weightless",
+        "NB-IoT"
+      ],
+      "correct": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "answer": "Wifi\nZigBee\nWireless HART\nBluetooth/BLE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "1-8",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "reveal",
+      "prompt": "Arrange the various layers for the IoT Reference Model, assuming the following sequence:\n7. Collaboration & Processes\n6. Application\n...",
+      "detailBlocks": [
+        [
+          "Physical Devices & Controller",
+          "Connectivity",
+          "Edge Computing",
+          "Data Abstraction",
+          "Data Accumulation"
+        ]
+      ],
+      "options": [
+        "Physical Devices & Controller",
+        "Connectivity",
+        "Edge Computing",
+        "Data Abstraction",
+        "Data Accumulation"
+      ],
+      "correct": [],
+      "answer": "5. Data Abstraction\n4. Data Accumulation\n3. Edge Computing\n2. Connectivity\n1. Physical Devices & Controller",
+      "shuffleOptions": false
+    },
+    {
+      "id": "1-9",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "single",
+      "prompt": "Which of the following allows a bunch of heterogeneous systems to communicate and interact with each other?",
+      "detailBlocks": [
+        [
+          "Middleware",
+          "Operating System",
+          "Application",
+          "Hardware"
+        ]
+      ],
+      "options": [
+        "Middleware",
+        "Operating System",
+        "Application",
+        "Hardware"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Middleware",
+      "shuffleOptions": true
+    },
+    {
+      "id": "1-10",
+      "lectureNumber": 1,
+      "lectureTitle": "Introduction to IoT",
+      "kind": "single",
+      "prompt": "Which choice represents the ultimate aim for IoT.",
+      "detailBlocks": [
+        [
+          "To reduce network bandwidth",
+          "To transform raw data into insights",
+          "To connect as many 'things' together",
+          "To collect as much data as possible"
+        ]
+      ],
+      "options": [
+        "To reduce network bandwidth",
+        "To transform raw data into insights",
+        "To connect as many 'things' together",
+        "To collect as much data as possible"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "To transform raw data into insights",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-1",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "What type of architecture does RESTful APIs follow?",
+      "detailBlocks": [
+        [
+          "Peer-to-peer architecture",
+          "Monolithic architecture",
+          "Microservices architecture",
+          "Publisher-Subscriber architecture",
+          "Client-server architecture"
+        ]
+      ],
+      "options": [
+        "Peer-to-peer architecture",
+        "Monolithic architecture",
+        "Microservices architecture",
+        "Publisher-Subscriber architecture",
+        "Client-server architecture"
+      ],
+      "correct": [
+        4
+      ],
+      "answer": "Client-server architecture",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-2",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "In RESTful APIs, what is used to uniquely identify a resource?",
+      "detailBlocks": [
+        [
+          "Query parameters",
+          "URI (Uniform Resource Identifier)",
+          "API key",
+          "Session ID"
+        ]
+      ],
+      "options": [
+        "Query parameters",
+        "URI (Uniform Resource Identifier)",
+        "API key",
+        "Session ID"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "URI (Uniform Resource Identifier)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-3",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "What does REST stand for?",
+      "detailBlocks": [
+        [
+          "Remote Server Transaction",
+          "Relative State Transmission",
+          "Representational State Transfer",
+          "Real-time State Transfer"
+        ]
+      ],
+      "options": [
+        "Remote Server Transaction",
+        "Relative State Transmission",
+        "Representational State Transfer",
+        "Real-time State Transfer"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Representational State Transfer",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-4",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "What is a resource in the context of RESTful web services?",
+      "detailBlocks": [
+        [
+          "A function that performs a specific action",
+          "A container for storing data in a web application",
+          "A set of procedures for accessing a database",
+          "An entity that can be accessed and manipulated through a URI"
+        ]
+      ],
+      "options": [
+        "A function that performs a specific action",
+        "A container for storing data in a web application",
+        "A set of procedures for accessing a database",
+        "An entity that can be accessed and manipulated through a URI"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "An entity that can be accessed and manipulated through a URI",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-5",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "Which of the following HTTP methods is used to retrieve a resource in RESTful architecture?",
+      "detailBlocks": [
+        [
+          "GET",
+          "POST",
+          "DELETE",
+          "PUT"
+        ]
+      ],
+      "options": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "GET",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-6",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "What is the primary role of a RESTful API's Uniform Interface constraint?",
+      "detailBlocks": [
+        [
+          "To standardize the way clients interact with the server",
+          "To ensure that the API is stateful",
+          "To define specific operations like GET and POST",
+          "To separate client and server implementations"
+        ]
+      ],
+      "options": [
+        "To standardize the way clients interact with the server",
+        "To ensure that the API is stateful",
+        "To define specific operations like GET and POST",
+        "To separate client and server implementations"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "To standardize the way clients interact with the server",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-7",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "In RESTful APIs, what does a status code in the 5xx range signify?",
+      "detailBlocks": [
+        [
+          "Redirection",
+          "Server error",
+          "Client error",
+          "Successful operation"
+        ]
+      ],
+      "options": [
+        "Redirection",
+        "Server error",
+        "Client error",
+        "Successful operation"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Server error",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-8",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "reveal",
+      "prompt": "What mechanism does RESTful APIs use to indicate the current state of the resource?",
+      "detailBlocks": [
+        [
+          "Response body",
+          "HTTP headers",
+          "API tokens",
+          "HTTP status codes"
+        ]
+      ],
+      "options": [
+        "Response body",
+        "HTTP headers",
+        "API tokens",
+        "HTTP status codes"
+      ],
+      "correct": [],
+      "answer": "Response body (HTTP status codes)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "2-9",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "In RESTful APIs, what is the purpose of a payload in a POST request?",
+      "detailBlocks": [
+        [
+          "To provide additional headers",
+          "To contain the data being sent by the client",
+          "To deliver the client's request to the server",
+          "To carry control information"
+        ]
+      ],
+      "options": [
+        "To provide additional headers",
+        "To contain the data being sent by the client",
+        "To deliver the client's request to the server",
+        "To carry control information"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "To contain the data being sent by the client",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-10",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "What does idempotence mean in the context of RESTful APIs?",
+      "detailBlocks": [
+        [
+          "The API encrypts data for security",
+          "The API can handle asynchronous requests",
+          "The API produces different results with each request",
+          "The API produces the same result no matter how many times the same request is made"
+        ]
+      ],
+      "options": [
+        "The API encrypts data for security",
+        "The API can handle asynchronous requests",
+        "The API produces different results with each request",
+        "The API produces the same result no matter how many times the same request is made"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "The API produces the same result no matter how many times the same request is made",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-11",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "Which HTTP status code indicates a successful GET request in a RESTful API?",
+      "detailBlocks": [
+        [
+          "400 Bad Request",
+          "500 Internal Server Error",
+          "200 OK",
+          "201 Created"
+        ]
+      ],
+      "options": [
+        "400 Bad Request",
+        "500 Internal Server Error",
+        "200 OK",
+        "201 Created"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "200 OK",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-12",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "What is the HTTP method used to create a new resource in RESTful architecture?",
+      "detailBlocks": [
+        [
+          "PUT",
+          "POST",
+          "DELETE",
+          "GET"
+        ]
+      ],
+      "options": [
+        "PUT",
+        "POST",
+        "DELETE",
+        "GET"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "POST",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-13",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "Which of the following is NOT a constraint of RESTful architecture?",
+      "detailBlocks": [
+        [
+          "Cacheability",
+          "Client-server architecture",
+          "Cookie-based authentication",
+          "Statelessness"
+        ]
+      ],
+      "options": [
+        "Cacheability",
+        "Client-server architecture",
+        "Cookie-based authentication",
+        "Statelessness"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Cookie-based authentication",
+      "shuffleOptions": true
+    },
+    {
+      "id": "2-14",
+      "lectureNumber": 2,
+      "lectureTitle": "HTTP & REST",
+      "kind": "single",
+      "prompt": "Which HTTP method should be used to update an existing resource in RESTful web services?",
+      "detailBlocks": [
+        [
+          "PUT",
+          "GET",
+          "DELETE",
+          "POST"
+        ]
+      ],
+      "options": [
+        "PUT",
+        "GET",
+        "DELETE",
+        "POST"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "PUT",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-1",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "Which of the following is not a characteristic of MQTT?",
+      "detailBlocks": [
+        [
+          "Request/response messaging model",
+          "Quality of Service (QoS)",
+          "Publish/subscribe messaging model",
+          "Low overhead"
+        ]
+      ],
+      "options": [
+        "Request/response messaging model",
+        "Quality of Service (QoS)",
+        "Publish/subscribe messaging model",
+        "Low overhead"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Request/response messaging model",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-2",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "What transport layer protocol does CoAP use?",
+      "detailBlocks": [
+        [
+          "REST",
+          "ICMP",
+          "UDP",
+          "TCP"
+        ]
+      ],
+      "options": [
+        "REST",
+        "ICMP",
+        "UDP",
+        "TCP"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "UDP",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-3",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "The core of the protocol is specified in ______?",
+      "detailBlocks": [
+        [
+          "RFC 7524",
+          "RFC 7254",
+          "RFC 7452",
+          "RFC 7252"
+        ]
+      ],
+      "options": [
+        "RFC 7524",
+        "RFC 7254",
+        "RFC 7452",
+        "RFC 7252"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "RFC 7252",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-4",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "What is the maximum number of clients that can subscribe to a single topic in MQTT?",
+      "detailBlocks": [
+        [
+          "1",
+          "100",
+          "Unlimited",
+          "10"
+        ]
+      ],
+      "options": [
+        "1",
+        "100",
+        "Unlimited",
+        "10"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Unlimited",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-5",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "To receive a retained message?",
+      "detailBlocks": [
+        [
+          "You must subscribe with the retained message set.",
+          "You must subscribe to a topic that has been published with the retained message set.",
+          "You must subscribe with a QOS of 1 or 2",
+          "You must keep the message."
+        ]
+      ],
+      "options": [
+        "You must subscribe with the retained message set.",
+        "You must subscribe to a topic that has been published with the retained message set.",
+        "You must subscribe with a QOS of 1 or 2",
+        "You must keep the message."
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "You must subscribe to a topic that has been published with the retained message set.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-6",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "What does CoAP stand for?",
+      "detailBlocks": [
+        [
+          "Constrained Application Protocol",
+          "Compact Application Protocol",
+          "Common Application Protocol",
+          "Control Application Protocol"
+        ]
+      ],
+      "options": [
+        "Constrained Application Protocol",
+        "Compact Application Protocol",
+        "Common Application Protocol",
+        "Control Application Protocol"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Constrained Application Protocol",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-7",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "MQTT transmits data to and from a broker in which format. (Choose the best option)",
+      "detailBlocks": [
+        [
+          "Text based data",
+          "XML",
+          "JSON",
+          "Binary data"
+        ]
+      ],
+      "options": [
+        "Text based data",
+        "XML",
+        "JSON",
+        "Binary data"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Binary data",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-8",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "Which of the following QoS levels in MQTT ensures message delivery at least once?",
+      "detailBlocks": [
+        [
+          "QoS 2",
+          "QoS 1",
+          "None of them.",
+          "QoS 0"
+        ]
+      ],
+      "options": [
+        "QoS 2",
+        "QoS 1",
+        "None of them.",
+        "QoS 0"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "QoS 1",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-9",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "MQTT uses the publish/subscribe model. How does the publisher know who is subscribing?",
+      "detailBlocks": [
+        [
+          "The publisher gets notified when they subscribe.",
+          "The publisher doesn't know",
+          "The subscriber informs the publisher",
+          "Publisher uses the \"Eye of Sauron\""
+        ]
+      ],
+      "options": [
+        "The publisher gets notified when they subscribe.",
+        "The publisher doesn't know",
+        "The subscriber informs the publisher",
+        "Publisher uses the \"Eye of Sauron\""
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "The publisher doesn't know",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-10",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "Which of the following is not a client type in MQTT?",
+      "detailBlocks": [
+        [
+          "Broker",
+          "Producer",
+          "Publisher",
+          "Subscriber"
+        ]
+      ],
+      "options": [
+        "Broker",
+        "Producer",
+        "Publisher",
+        "Subscriber"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Producer",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-11",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "MQTT is _______ oriented.",
+      "detailBlocks": [
+        [
+          "Network",
+          "Device",
+          "Message",
+          "Data"
+        ]
+      ],
+      "options": [
+        "Network",
+        "Device",
+        "Message",
+        "Data"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Message",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-12",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "CoAP supports which of the following methods similar to HTTP?",
+      "detailBlocks": [
+        [
+          "GET, POST, PUT, DELETE",
+          "CONNECT, TRACE, PATCH",
+          "None of them",
+          "OPTIONS, HEAD"
+        ]
+      ],
+      "options": [
+        "GET, POST, PUT, DELETE",
+        "CONNECT, TRACE, PATCH",
+        "None of them",
+        "OPTIONS, HEAD"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "GET, POST, PUT, DELETE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-13",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "CoAP is a specialised _________ protocol.",
+      "detailBlocks": [
+        [
+          "Web transfer",
+          "Application",
+          "Power",
+          "Resource"
+        ]
+      ],
+      "options": [
+        "Web transfer",
+        "Application",
+        "Power",
+        "Resource"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Application",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-14",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "CoAP is designed for which kind of networks?",
+      "detailBlocks": [
+        [
+          "Resource-constrained networks",
+          "Wide Area Networks (WAN)",
+          "Datacenter Networks",
+          "Local Area Networks (LAN)"
+        ]
+      ],
+      "options": [
+        "Resource-constrained networks",
+        "Wide Area Networks (WAN)",
+        "Datacenter Networks",
+        "Local Area Networks (LAN)"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Resource-constrained networks",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-15",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "Select the TRUE statement(s) for CoAP protocol?",
+      "detailBlocks": [
+        [
+          "Uses PUT message requests to create subscription.",
+          "Uses FETCH message requests to retrieve subscription.",
+          "Uses GET message requests to retrieve subscription.",
+          "Uses PUSH message requests to create subscription."
+        ]
+      ],
+      "options": [
+        "Uses PUT message requests to create subscription.",
+        "Uses FETCH message requests to retrieve subscription.",
+        "Uses GET message requests to retrieve subscription.",
+        "Uses PUSH message requests to create subscription."
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Uses GET message requests to retrieve subscription.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-16",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "What is a topic in MQTT?",
+      "detailBlocks": [
+        [
+          "A unique identifier for a message",
+          "A string used to filter messages in a publish/subscribe model",
+          "A client identifier",
+          "A message payload"
+        ]
+      ],
+      "options": [
+        "A unique identifier for a message",
+        "A string used to filter messages in a publish/subscribe model",
+        "A client identifier",
+        "A message payload"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "A string used to filter messages in a publish/subscribe model",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-17",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "CoAP messages can be of which types?",
+      "detailBlocks": [
+        [
+          "Request and Response",
+          "Confirmable and Non-Confirmable",
+          "Synchronous and Asynchronous",
+          "Persistent and Transient"
+        ]
+      ],
+      "options": [
+        "Request and Response",
+        "Confirmable and Non-Confirmable",
+        "Synchronous and Asynchronous",
+        "Persistent and Transient"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Confirmable and Non-Confirmable",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-18",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "What is the default port number for MQTT?",
+      "detailBlocks": [
+        [
+          "1833",
+          "80",
+          "8080",
+          "8883"
+        ]
+      ],
+      "options": [
+        "1833",
+        "80",
+        "8080",
+        "8883"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "1833",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-19",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "What does MQTT stand for?",
+      "detailBlocks": [
+        [
+          "Message Quorum Transport Technology",
+          "Message Querying Telecommunication Transmission",
+          "Message Queuing Transaction Transport",
+          "Message Queuing Telemetry Transport"
+        ]
+      ],
+      "options": [
+        "Message Quorum Transport Technology",
+        "Message Querying Telecommunication Transmission",
+        "Message Queuing Transaction Transport",
+        "Message Queuing Telemetry Transport"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Message Queuing Telemetry Transport",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-20",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "What type of protocol is MQTT?",
+      "detailBlocks": [
+        [
+          "Transport protocol",
+          "Presentation protocol",
+          "Application protocol",
+          "Network protocol"
+        ]
+      ],
+      "options": [
+        "Transport protocol",
+        "Presentation protocol",
+        "Application protocol",
+        "Network protocol"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Application protocol",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-21",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "multi",
+      "prompt": "CoAP Protocol is comprised of which sub-layers?",
+      "detailBlocks": [
+        [
+          "Message",
+          "UDP",
+          "Request & Response",
+          "Observation"
+        ]
+      ],
+      "options": [
+        "Message",
+        "UDP",
+        "Request & Response",
+        "Observation"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "answer": "Message and Request & Response (Note: The CoAP protocol layer consists of the Message layer and the Request/Response layer)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-22",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "CoAP provides which of the following requirements?",
+      "detailBlocks": [
+        [
+          "Multicast support and simplicity",
+          "Lower overhead and multicast support",
+          "Multicast support, lower overhead and simplicity",
+          "Simplicity and low overhead"
+        ]
+      ],
+      "options": [
+        "Multicast support and simplicity",
+        "Lower overhead and multicast support",
+        "Multicast support, lower overhead and simplicity",
+        "Simplicity and low overhead"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Multicast support, lower overhead and simplicity",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-23",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "The Last Will Message is used to:",
+      "detailBlocks": [
+        [
+          "Notify clients of a failure in the publisher",
+          "Gain inheritance",
+          "Guarantee that the message was delivered",
+          "Notify a publisher of a network failure"
+        ]
+      ],
+      "options": [
+        "Notify clients of a failure in the publisher",
+        "Gain inheritance",
+        "Guarantee that the message was delivered",
+        "Notify a publisher of a network failure"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Notify clients of a failure in the publisher",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-24",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "CoAP is specialized in?",
+      "detailBlocks": [
+        [
+          "Wired applications",
+          "Wireless applications",
+          "Device applications",
+          "Internet applications"
+        ]
+      ],
+      "options": [
+        "Wired applications",
+        "Wireless applications",
+        "Device applications",
+        "Internet applications"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Internet applications",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-25",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "Which protocol is CoAP closely modeled after?",
+      "detailBlocks": [
+        [
+          "HTTP",
+          "FTP",
+          "AMQP",
+          "MQTT"
+        ]
+      ],
+      "options": [
+        "HTTP",
+        "FTP",
+        "AMQP",
+        "MQTT"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "HTTP",
+      "shuffleOptions": true
+    },
+    {
+      "id": "3-26",
+      "lectureNumber": 3,
+      "lectureTitle": "CoAP & MQTT",
+      "kind": "single",
+      "prompt": "Which layer is CoAP?",
+      "detailBlocks": [
+        [
+          "Application",
+          "Transport",
+          "Control",
+          "Service"
+        ]
+      ],
+      "options": [
+        "Application",
+        "Transport",
+        "Control",
+        "Service"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Application",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-1",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "multi",
+      "prompt": "Which of the following is not a proactive mesh routing algorithm?",
+      "detailBlocks": [
+        [
+          "Destination-Sequenced Distance Vector",
+          "Dynamic Source Routing",
+          "Temporally-Ordered Routing Algorithm",
+          "Better Approach To Mobile Adhoc Networking",
+          "Ad hoc On-Demand Distance Vector",
+          "Optimized Link State Routing",
+          "Wireless Routing Protocol"
+        ]
+      ],
+      "options": [
+        "Destination-Sequenced Distance Vector",
+        "Dynamic Source Routing",
+        "Temporally-Ordered Routing Algorithm",
+        "Better Approach To Mobile Adhoc Networking",
+        "Ad hoc On-Demand Distance Vector",
+        "Optimized Link State Routing",
+        "Wireless Routing Protocol"
+      ],
+      "correct": [
+        1,
+        2,
+        4
+      ],
+      "answer": "Dynamic Source Routing, Ad hoc On-Demand Distance Vector, and Temporally-Ordered Routing Algorithm",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-2",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "What is a typical method to prevent malicious nodes from joining a wireless mesh network?",
+      "detailBlocks": [
+        [
+          "Redundancy",
+          "Decreasing signal strength",
+          "Authentication",
+          "Ignoring new nodes"
+        ]
+      ],
+      "options": [
+        "Redundancy",
+        "Decreasing signal strength",
+        "Authentication",
+        "Ignoring new nodes"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Authentication",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-3",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "Which characteristic is not a feature of wireless mesh networking?",
+      "detailBlocks": [
+        [
+          "Efficient data routing",
+          "Self-healing",
+          "Centralized architecture",
+          "Scalability"
+        ]
+      ],
+      "options": [
+        "Efficient data routing",
+        "Self-healing",
+        "Centralized architecture",
+        "Scalability"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Centralized architecture",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-4",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "In the context of mesh networks, what does the term 'self-healing' refer to?",
+      "detailBlocks": [
+        [
+          "The process of adding new nodes to the network",
+          "The ability to manually repair physical damage",
+          "The network's ability to automatically reroute data if a node fails",
+          "Healing of hardware issues without human intervention"
+        ]
+      ],
+      "options": [
+        "The process of adding new nodes to the network",
+        "The ability to manually repair physical damage",
+        "The network's ability to automatically reroute data if a node fails",
+        "Healing of hardware issues without human intervention"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "The network's ability to automatically reroute data if a node fails",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-5",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "What is a disadvantage of simple flooding in mesh networks?",
+      "detailBlocks": [
+        [
+          "It is too simple to implement",
+          "Maximum use of battery power",
+          "It generates a large number of redundant messages",
+          "Lack of data security"
+        ]
+      ],
+      "options": [
+        "It is too simple to implement",
+        "Maximum use of battery power",
+        "It generates a large number of redundant messages",
+        "Lack of data security"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "It generates a large number of redundant messages",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-6",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "Which is not a challenge mentioned for wireless mesh networks?",
+      "detailBlocks": [
+        [
+          "Timing and synchronization",
+          "Interference and reliability",
+          "Unlimited bandwidth",
+          "Bandwidth allocation"
+        ]
+      ],
+      "options": [
+        "Timing and synchronization",
+        "Interference and reliability",
+        "Unlimited bandwidth",
+        "Bandwidth allocation"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Unlimited bandwidth",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-7",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "In a distributed mesh network, how are routes between nodes established?",
+      "detailBlocks": [
+        [
+          "Using a single, static route",
+          "Nodes communicate to determine adjacency and routes",
+          "Through a central authority",
+          "All communication goes through a master node"
+        ]
+      ],
+      "options": [
+        "Using a single, static route",
+        "Nodes communicate to determine adjacency and routes",
+        "Through a central authority",
+        "All communication goes through a master node"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Nodes communicate to determine adjacency and routes",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-8",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "What is the primary feature of a wireless mesh network?",
+      "detailBlocks": [
+        [
+          "Single-hop communication",
+          "Decentralized architecture",
+          "Limited to indoor use only",
+          "Centralized architecture"
+        ]
+      ],
+      "options": [
+        "Single-hop communication",
+        "Decentralized architecture",
+        "Limited to indoor use only",
+        "Centralized architecture"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Decentralized architecture",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-9",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "Optimized Link State Routing Protocol uses triggered updates of their routing table whenever there is a topology change.",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "FALSE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-10",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "Dynamic Source Routing have multiple routes per destination",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "TRUE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-11",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "The Optimized Link State Routing (OLSR) protocol uses ______ to optimize transmission.",
+      "detailBlocks": [
+        [
+          "Single point relays",
+          "Dual point relays",
+          "Multipoint relays",
+          "No relays"
+        ]
+      ],
+      "options": [
+        "Single point relays",
+        "Dual point relays",
+        "Multipoint relays",
+        "No relays"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Multipoint relays",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-12",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "What does Adaptive Flooding adjust based on?",
+      "detailBlocks": [
+        [
+          "Number of connected nodes",
+          "The time of day",
+          "Network conditions and resource availability",
+          "Static configurations"
+        ]
+      ],
+      "options": [
+        "Number of connected nodes",
+        "The time of day",
+        "Network conditions and resource availability",
+        "Static configurations"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Network conditions and resource availability",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-13",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "single",
+      "prompt": "Which flooding algorithm divides the network into subnets for routing?",
+      "detailBlocks": [
+        [
+          "Simple Flooding",
+          "Reduced Flooding",
+          "Selective Flooding",
+          "Adaptive Flooding"
+        ]
+      ],
+      "options": [
+        "Simple Flooding",
+        "Reduced Flooding",
+        "Selective Flooding",
+        "Adaptive Flooding"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Reduced Flooding",
+      "shuffleOptions": true
+    },
+    {
+      "id": "4-14",
+      "lectureNumber": 4,
+      "lectureTitle": "Wireless Mesh",
+      "kind": "reveal",
+      "prompt": "Which of the following is not a reactive mesh routing algorithm?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "Wireless Routing Protocol, Optimized Link State Routing, and Destination-Sequenced Distance Vector",
+      "shuffleOptions": false
+    },
+    {
+      "id": "5-1",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "What is the main drawback of using LoRa for IoT applications?",
+      "detailBlocks": [
+        [
+          "Long range",
+          "Limited data rate",
+          "Short range",
+          "High power consumption"
+        ]
+      ],
+      "options": [
+        "Long range",
+        "Limited data rate",
+        "Short range",
+        "High power consumption"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Limited data rate",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-2",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "LoRa modulation a variation of ....",
+      "detailBlocks": [
+        [
+          "Chirp Spectrum Sector",
+          "Chord Spread Spectrum",
+          "Chord Space Spectrum",
+          "Chirp Spread Spectrum"
+        ]
+      ],
+      "options": [
+        "Chirp Spectrum Sector",
+        "Chord Spread Spectrum",
+        "Chord Space Spectrum",
+        "Chirp Spread Spectrum"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Chirp Spread Spectrum",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-3",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "What does LoRa stand for?",
+      "detailBlocks": [
+        [
+          "Long Radio",
+          "Long Resonance",
+          "Low Range",
+          "Long Range"
+        ]
+      ],
+      "options": [
+        "Long Radio",
+        "Long Resonance",
+        "Low Range",
+        "Long Range"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Long Range",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-4",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "multi",
+      "prompt": "What is the main advantages of using LoRa for IoT applications?",
+      "detailBlocks": [
+        [
+          "Long range",
+          "Low power consumption",
+          "Low data rate",
+          "High data rate"
+        ]
+      ],
+      "options": [
+        "Long range",
+        "Low power consumption",
+        "Low data rate",
+        "High data rate"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "answer": "Long range, Low power consumption",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-5",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "What does LoRaWAN stand for?",
+      "detailBlocks": [
+        [
+          "Long Range Wide Area Network",
+          "Low Range Wide Area Network",
+          "Logical Routing WAN",
+          "Low Radiation Wireless Access Network"
+        ]
+      ],
+      "options": [
+        "Long Range Wide Area Network",
+        "Low Range Wide Area Network",
+        "Logical Routing WAN",
+        "Low Radiation Wireless Access Network"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Long Range Wide Area Network",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-6",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "LoRa's spreading factor affects which of the following?",
+      "detailBlocks": [
+        [
+          "Data rate and range",
+          "Modulation technique",
+          "Operating frequency",
+          "Power consumption only"
+        ]
+      ],
+      "options": [
+        "Data rate and range",
+        "Modulation technique",
+        "Operating frequency",
+        "Power consumption only"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Data rate and range",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-7",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "Link Budget ...",
+      "detailBlocks": [
+        [
+          "refers to the amount of loss that a data link (transmitter to receiver) should have.",
+          "refers to the amount of loss that a data link (transmitter to receiver) can tolerate in order to operate properly.",
+          "refers to a connection between two entities.",
+          "refers to the difference between the minimum expected power received at the receiver's end, and the receiver's sensitivity."
+        ]
+      ],
+      "options": [
+        "refers to the amount of loss that a data link (transmitter to receiver) should have.",
+        "refers to the amount of loss that a data link (transmitter to receiver) can tolerate in order to operate properly.",
+        "refers to a connection between two entities.",
+        "refers to the difference between the minimum expected power received at the receiver's end, and the receiver's sensitivity."
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "refers to the amount of loss that a data link (transmitter to receiver) can tolerate in order to operate properly.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-8",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "What type of modulation is used in LoRa?",
+      "detailBlocks": [
+        [
+          "Amplitude Modulation (AM)",
+          "Chirp Spread Spectrum (CSS)",
+          "Phase-Shift Keying (PSK)",
+          "Frequency Shift Keying (FSK)"
+        ]
+      ],
+      "options": [
+        "Amplitude Modulation (AM)",
+        "Chirp Spread Spectrum (CSS)",
+        "Phase-Shift Keying (PSK)",
+        "Frequency Shift Keying (FSK)"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Chirp Spread Spectrum (CSS)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-9",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "LoRaWAN's network server is responsible for:",
+      "detailBlocks": [
+        [
+          "Directly interacting with end-user applications",
+          "Processing and forwarding data to application servers",
+          "Managing the radio frequency spectrum",
+          "Controlling the power output of end devices"
+        ]
+      ],
+      "options": [
+        "Directly interacting with end-user applications",
+        "Processing and forwarding data to application servers",
+        "Managing the radio frequency spectrum",
+        "Controlling the power output of end devices"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Processing and forwarding data to application servers",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-10",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "LoRa modulation technique sits at which OSI layer?",
+      "detailBlocks": [
+        [
+          "Physical",
+          "Transport",
+          "Session",
+          "Network",
+          "Presentation",
+          "Application",
+          "Datalink"
+        ]
+      ],
+      "options": [
+        "Physical",
+        "Transport",
+        "Session",
+        "Network",
+        "Presentation",
+        "Application",
+        "Datalink"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Physical",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-11",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "In LoRa, what does increasing the spreading factor (SF) do to the signal's range and data rate?",
+      "detailBlocks": [
+        [
+          "Increases range and decreases data rate",
+          "Decreases range and increases data rate",
+          "Increases range and data rate",
+          "Decreases both range and data rate"
+        ]
+      ],
+      "options": [
+        "Increases range and decreases data rate",
+        "Decreases range and increases data rate",
+        "Increases range and data rate",
+        "Decreases both range and data rate"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Increases range and decreases data rate",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-12",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "LoRaWAN modulation technique sits at which OSI layer?",
+      "detailBlocks": [
+        [
+          "Physical",
+          "Presentation",
+          "Session",
+          "Datalink",
+          "Application",
+          "Network",
+          "Transport"
+        ]
+      ],
+      "options": [
+        "Physical",
+        "Presentation",
+        "Session",
+        "Datalink",
+        "Application",
+        "Network",
+        "Transport"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Datalink",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-13",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "In LoRa, which class does the following end device fall under: Battery powered actuators. Energy efficient with latency controlled downlink. Slotted communication synchronized with a beacon.",
+      "detailBlocks": [
+        [
+          "A",
+          "D",
+          "C",
+          "B"
+        ]
+      ],
+      "options": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "B",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-14",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "LoRa is primarily used for?",
+      "detailBlocks": [
+        [
+          "High-speed data transmission",
+          "Short-range communication",
+          "Long-range, low-power communication",
+          "Audio and video transmission"
+        ]
+      ],
+      "options": [
+        "High-speed data transmission",
+        "Short-range communication",
+        "Long-range, low-power communication",
+        "Audio and video transmission"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Long-range, low-power communication",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-15",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "Which Class of LoRaWAN is best suited for applications requiring minimal latency?",
+      "detailBlocks": [
+        [
+          "Class B",
+          "Class D",
+          "Class C",
+          "Class A"
+        ]
+      ],
+      "options": [
+        "Class B",
+        "Class D",
+        "Class C",
+        "Class A"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Class C",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-16",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "What is the main function of the Device EUI in LoRaWAN?",
+      "detailBlocks": [
+        [
+          "To specify the data rate",
+          "To encrypt data",
+          "To define the device's operating frequency",
+          "To identify the device uniquely on the network"
+        ]
+      ],
+      "options": [
+        "To specify the data rate",
+        "To encrypt data",
+        "To define the device's operating frequency",
+        "To identify the device uniquely on the network"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "To identify the device uniquely on the network",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-17",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "Which Sub-GHz ISM frequency does LoRa operate in Singapore?",
+      "detailBlocks": [
+        [
+          "466 Mhz",
+          "2.4 Ghz",
+          "923 Mhz",
+          "868 Mhz"
+        ]
+      ],
+      "options": [
+        "466 Mhz",
+        "2.4 Ghz",
+        "923 Mhz",
+        "868 Mhz"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "923 Mhz",
+      "shuffleOptions": true
+    },
+    {
+      "id": "5-18",
+      "lectureNumber": 5,
+      "lectureTitle": "LoRa & LoRaWAN",
+      "kind": "single",
+      "prompt": "Which class of LoRaWAN is designed for bidirectional end-devices with scheduled receive slots?",
+      "detailBlocks": [
+        [
+          "Class B",
+          "Class D",
+          "Class C",
+          "Class A"
+        ]
+      ],
+      "options": [
+        "Class B",
+        "Class D",
+        "Class C",
+        "Class A"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Class B",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-1",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which if the following is TRUE about Fog Computing?",
+      "detailBlocks": [
+        [
+          "Fog provides low latency",
+          "Fog computing is a separate architecture that can replace cloud computing.",
+          "Cloud is a centralized system, while the fog is a distributed decentralized infrastructure",
+          "Fog computing are located nearer to the Cloud computing"
+        ]
+      ],
+      "options": [
+        "Fog provides low latency",
+        "Fog computing is a separate architecture that can replace cloud computing.",
+        "Cloud is a centralized system, while the fog is a distributed decentralized infrastructure",
+        "Fog computing are located nearer to the Cloud computing"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Cloud is a centralized system, while the fog is a distributed decentralized infrastructure",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-2",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which of the following is NOT an advantage of Edge Computing?",
+      "detailBlocks": [
+        [
+          "Reduces Network Bandwidth Requirements",
+          "Faster response time",
+          "Low investment cost",
+          "Significantly reduced data storage requirements"
+        ]
+      ],
+      "options": [
+        "Reduces Network Bandwidth Requirements",
+        "Faster response time",
+        "Low investment cost",
+        "Significantly reduced data storage requirements"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Low investment cost",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-3",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "reveal",
+      "prompt": "Match the Edge computing platforms to how they perform inferencing on the device.",
+      "detailBlocks": [
+        [
+          "GPU-centric (e.g., NVidia Jetson)",
+          "CPU-centric (e.g., Raspberry Pi)"
+        ]
+      ],
+      "options": [
+        "GPU-centric (e.g., NVidia Jetson)",
+        "CPU-centric (e.g., Raspberry Pi)"
+      ],
+      "correct": [],
+      "answer": "GPU-centric: NVidia Jetson, CPU-centric: Raspberry Pi",
+      "shuffleOptions": false
+    },
+    {
+      "id": "6-4",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which of the following is a limitation of AIoT?",
+      "detailBlocks": [
+        [
+          "It is limited by the processing power of IoT devices",
+          "It can be expensive to implement",
+          "It is only suitable for large-scale applications",
+          "It requires a high degree of technical expertise to implement"
+        ]
+      ],
+      "options": [
+        "It is limited by the processing power of IoT devices",
+        "It can be expensive to implement",
+        "It is only suitable for large-scale applications",
+        "It requires a high degree of technical expertise to implement"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "It is limited by the processing power of IoT devices",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-5",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "What is Cloud Computing?",
+      "detailBlocks": [
+        [
+          "It is a way to protect data from unauthorized access.",
+          "It is a way to access software and services over the internet.",
+          "It is a way to store data on your local computer.",
+          "It is a way to physically connect multiple computers together."
+        ]
+      ],
+      "options": [
+        "It is a way to protect data from unauthorized access.",
+        "It is a way to access software and services over the internet.",
+        "It is a way to store data on your local computer.",
+        "It is a way to physically connect multiple computers together."
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "It is a way to access software and services over the internet.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-6",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which if the following is NOT a Cloud Service Model?",
+      "detailBlocks": [
+        [
+          "Platform as a Service",
+          "Infrastructure as a Service",
+          "Virtualization as a Service",
+          "Software as a Service"
+        ]
+      ],
+      "options": [
+        "Platform as a Service",
+        "Infrastructure as a Service",
+        "Virtualization as a Service",
+        "Software as a Service"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Virtualization as a Service",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-7",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "reveal",
+      "prompt": "Match the following services to the components that are NOT managed by the Cloud operator (e.g. Microsoft)?",
+      "detailBlocks": [
+        [
+          "IaaS: Networking, Storage, Servers, Virtualization",
+          "SaaS: Data and Applications",
+          "PaaS: OS, Middleware, Runtime, Data and Applications",
+          "On Premises: Nil (everything managed by user)"
+        ]
+      ],
+      "options": [
+        "IaaS: Networking, Storage, Servers, Virtualization",
+        "SaaS: Data and Applications",
+        "PaaS: OS, Middleware, Runtime, Data and Applications",
+        "On Premises: Nil (everything managed by user)"
+      ],
+      "correct": [],
+      "answer": "IaaS: OS, Middleware, Runtime, Data and Applications; SaaS: Data and Applications; PaaS: OS, Middleware, Runtime, Data and Applications; On Premises: All",
+      "shuffleOptions": false
+    },
+    {
+      "id": "6-8",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "What is IaaS?",
+      "detailBlocks": [
+        [
+          "Internet as a Service",
+          "Infrastructure as a Service",
+          "Intelligence as a Service",
+          "Interaction as a Service"
+        ]
+      ],
+      "options": [
+        "Internet as a Service",
+        "Infrastructure as a Service",
+        "Intelligence as a Service",
+        "Interaction as a Service"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Infrastructure as a Service",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-9",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which of the following is a good example of an AIoT application?",
+      "detailBlocks": [
+        [
+          "A smart home thermostat that learns your preferences over time",
+          "A wireless security camera that sends alerts to your smartphone",
+          "A wearable device that tracks your steps and calories burned",
+          "A fitness tracker that monitors your heart rate and sleep patterns"
+        ]
+      ],
+      "options": [
+        "A smart home thermostat that learns your preferences over time",
+        "A wireless security camera that sends alerts to your smartphone",
+        "A wearable device that tracks your steps and calories burned",
+        "A fitness tracker that monitors your heart rate and sleep patterns"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "A wireless security camera that sends alerts to your smartphone",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-10",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which of the following is not a benefit of AIoT? (pick the best answer)",
+      "detailBlocks": [
+        [
+          "Improved energy efficiency",
+          "Enhanced security",
+          "Increased productivity",
+          "Decreased complexity"
+        ]
+      ],
+      "options": [
+        "Improved energy efficiency",
+        "Enhanced security",
+        "Increased productivity",
+        "Decreased complexity"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Decreased complexity",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-11",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which of the following is not a potential use case for AIoT in industrial automation?",
+      "detailBlocks": [
+        [
+          "Predictive maintenance",
+          "Employee time tracking",
+          "Inventory management",
+          "Quality control"
+        ]
+      ],
+      "options": [
+        "Predictive maintenance",
+        "Employee time tracking",
+        "Inventory management",
+        "Quality control"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Employee time tracking",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-12",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "What is the name of the cloud service model that provides access to software applications over the internet?",
+      "detailBlocks": [
+        [
+          "Software as a Service (SaaS)",
+          "Platform as a Service (PaaS)",
+          "Infrastructure as a Service (IaaS)",
+          "Function as a Service (FaaS)"
+        ]
+      ],
+      "options": [
+        "Software as a Service (SaaS)",
+        "Platform as a Service (PaaS)",
+        "Infrastructure as a Service (IaaS)",
+        "Function as a Service (FaaS)"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Software as a Service (SaaS)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-13",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which if the following statement is FALSE?",
+      "detailBlocks": [
+        [
+          "Type 2 Hypervisor use host OS.",
+          "Type 1 Hypervisor are also known as Bare metal hypervisor.",
+          "Type 2 Hypervisor are also known as Bare metal hypervisor.",
+          "Type 1 Hypervisor do not use host OS."
+        ]
+      ],
+      "options": [
+        "Type 2 Hypervisor use host OS.",
+        "Type 1 Hypervisor are also known as Bare metal hypervisor.",
+        "Type 2 Hypervisor are also known as Bare metal hypervisor.",
+        "Type 1 Hypervisor do not use host OS."
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Type 2 Hypervisor are also known as Bare metal hypervisor.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-14",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "IIoT stands for Industrial IoT.",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "TRUE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-15",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Base on the lecture, which of the following is NOT an advantage of Cloud Computing?",
+      "detailBlocks": [
+        [
+          "Virtualization",
+          "Integration",
+          "Management",
+          "Resilient"
+        ]
+      ],
+      "options": [
+        "Virtualization",
+        "Integration",
+        "Management",
+        "Resilient"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Integration",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-16",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Which of the following is a benefit of cloud computing?",
+      "detailBlocks": [
+        [
+          "Limited data accessibility",
+          "Lower maintenance costs",
+          "Higher upfront costs",
+          "Limited scalability"
+        ]
+      ],
+      "options": [
+        "Limited data accessibility",
+        "Lower maintenance costs",
+        "Higher upfront costs",
+        "Limited scalability"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Lower maintenance costs",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-17",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "AIoT stands for?",
+      "detailBlocks": [
+        [
+          "Advanced IoT",
+          "Artificial Intelligence of Things",
+          "Artificial Internet of Things",
+          "Artificial Intelligence on IoT"
+        ]
+      ],
+      "options": [
+        "Advanced IoT",
+        "Artificial Intelligence of Things",
+        "Artificial Internet of Things",
+        "Artificial Intelligence on IoT"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Artificial Intelligence of Things",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-18",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "What is the purpose of AIoT?",
+      "detailBlocks": [
+        [
+          "To create a secure network for IoT devices",
+          "To improve the design of IoT devices",
+          "To replace IoT devices with AI-powered devices",
+          "To integrate artificial intelligence with the internet of things"
+        ]
+      ],
+      "options": [
+        "To create a secure network for IoT devices",
+        "To improve the design of IoT devices",
+        "To replace IoT devices with AI-powered devices",
+        "To integrate artificial intelligence with the internet of things"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "To integrate artificial intelligence with the internet of things",
+      "shuffleOptions": true
+    },
+    {
+      "id": "6-19",
+      "lectureNumber": 6,
+      "lectureTitle": "AIoT, Edge & Cloud Computing",
+      "kind": "single",
+      "prompt": "Based on the lecture, which of the following is not a typical deployment challenge for Edge computing devices.",
+      "detailBlocks": [
+        [
+          "Power",
+          "Sound proofing",
+          "Waterproofing",
+          "Thermal"
+        ]
+      ],
+      "options": [
+        "Power",
+        "Sound proofing",
+        "Waterproofing",
+        "Thermal"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Sound proofing",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-1",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "In BLE, what is the role of a 'Central' device?",
+      "detailBlocks": [
+        [
+          "It only receives data.",
+          "It broadcasts data to peripheral devices.",
+          "It connects to and controls peripheral devices.",
+          "It acts as an intermediary between two devices."
+        ]
+      ],
+      "options": [
+        "It only receives data.",
+        "It broadcasts data to peripheral devices.",
+        "It connects to and controls peripheral devices.",
+        "It acts as an intermediary between two devices."
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "It connects to and controls peripheral devices.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-2",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "In BLE terminology, what is a 'GATT'?",
+      "detailBlocks": [
+        [
+          "Generic Audio Transmission Technology",
+          "Generic Authentication Transfer Tool",
+          "Generic Access Transmission Technique",
+          "Generic Attribute Profile"
+        ]
+      ],
+      "options": [
+        "Generic Audio Transmission Technology",
+        "Generic Authentication Transfer Tool",
+        "Generic Access Transmission Technique",
+        "Generic Attribute Profile"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Generic Attribute Profile",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-3",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "What is the maximum data rate of latest BLE?",
+      "detailBlocks": [
+        [
+          "1 Mbps",
+          "2 Mbps",
+          "3 Mbps",
+          "4 Mbps"
+        ]
+      ],
+      "options": [
+        "1 Mbps",
+        "2 Mbps",
+        "3 Mbps",
+        "4 Mbps"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "2 Mbps",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-4",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "Which frequency band does BLE operate in?",
+      "detailBlocks": [
+        [
+          "2.4 GHz",
+          "868 MHz",
+          "433 MHz",
+          "5.0 GHz",
+          "915 MHz"
+        ]
+      ],
+      "options": [
+        "2.4 GHz",
+        "868 MHz",
+        "433 MHz",
+        "5.0 GHz",
+        "915 MHz"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "2.4 GHz",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-5",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "Which of the following Topology does Bluetooth 4.0 support?",
+      "detailBlocks": [
+        [
+          "Star",
+          "Scatter Net",
+          "Mesh",
+          "Ring"
+        ]
+      ],
+      "options": [
+        "Star",
+        "Scatter Net",
+        "Mesh",
+        "Ring"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Scatter Net",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-6",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "Which feature distinguishes BLE from Classic Bluetooth?",
+      "detailBlocks": [
+        [
+          "Longer range.",
+          "Better audio quality.",
+          "Higher data transfer rates.",
+          "Lower energy consumption."
+        ]
+      ],
+      "options": [
+        "Longer range.",
+        "Better audio quality.",
+        "Higher data transfer rates.",
+        "Lower energy consumption."
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Lower energy consumption.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-7",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "What is the range typically achievable with BLE technology?",
+      "detailBlocks": [
+        [
+          "Up to 50 meters",
+          "Up to 100 meters",
+          "Up to 150 meters",
+          "Up to 10 meters"
+        ]
+      ],
+      "options": [
+        "Up to 50 meters",
+        "Up to 100 meters",
+        "Up to 150 meters",
+        "Up to 10 meters"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Up to 100 meters",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-8",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "What does BLE stand for?",
+      "detailBlocks": [
+        [
+          "Bluetooth Low Energy",
+          "Bluetooth Long Engagement",
+          "Basic Link Encryption",
+          "Bluetooth Low Efficiency"
+        ]
+      ],
+      "options": [
+        "Bluetooth Low Energy",
+        "Bluetooth Long Engagement",
+        "Basic Link Encryption",
+        "Bluetooth Low Efficiency"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Bluetooth Low Energy",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-9",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "If the hopping time, assuming FHSS, is equal to 500μs, how many times would the signal hopped in one second?",
+      "detailBlocks": [
+        [
+          "1500",
+          "2500",
+          "1750",
+          "2000",
+          "2250"
+        ]
+      ],
+      "options": [
+        "1500",
+        "2500",
+        "1750",
+        "2000",
+        "2250"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "2000",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-10",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "Which version of Bluetooth introduced BLE?",
+      "detailBlocks": [
+        [
+          "Bluetooth 5.0",
+          "Bluetooth 4.0",
+          "Bluetooth 3.0",
+          "Bluetooth 2.0"
+        ]
+      ],
+      "options": [
+        "Bluetooth 5.0",
+        "Bluetooth 4.0",
+        "Bluetooth 3.0",
+        "Bluetooth 2.0"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Bluetooth 4.0",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-11",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "BLE is particularly designed for:",
+      "detailBlocks": [
+        [
+          "High-speed data transfer.",
+          "Long-distance communication.",
+          "Short-range, low-power communication.",
+          "Audio streaming."
+        ]
+      ],
+      "options": [
+        "High-speed data transfer.",
+        "Long-distance communication.",
+        "Short-range, low-power communication.",
+        "Audio streaming."
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Short-range, low-power communication.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-12",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "reveal",
+      "prompt": "If the bandwidth of the spread spectrum signal is 180MHz and the signal bandwidth is 15MHz. How many carrier frequencies are required for generating the spread spectrum signal?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "12",
+      "shuffleOptions": false
+    },
+    {
+      "id": "7-13",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "What is a characteristic of BLE 'Advertising' mode?",
+      "detailBlocks": [
+        [
+          "Long-range communication.",
+          "Device discovery and connection establishment.",
+          "Secure data encryption.",
+          "High data transfer rate."
+        ]
+      ],
+      "options": [
+        "Long-range communication.",
+        "Device discovery and connection establishment.",
+        "Secure data encryption.",
+        "High data transfer rate."
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Device discovery and connection establishment.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-14",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "What does 'Pairing' in BLE involve?",
+      "detailBlocks": [
+        [
+          "Connecting two devices for data transfer.",
+          "Exchanging security keys for secure communication.",
+          "Adjusting the power level for optimal connection.",
+          "Broadcasting data to multiple devices."
+        ]
+      ],
+      "options": [
+        "Connecting two devices for data transfer.",
+        "Exchanging security keys for secure communication.",
+        "Adjusting the power level for optimal connection.",
+        "Broadcasting data to multiple devices."
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Exchanging security keys for secure communication.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-15",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "reveal",
+      "prompt": "Assume Bob can send 300 bits in one slot while using Bluetooth. How many slots does it take to send 600 bits?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "2",
+      "shuffleOptions": false
+    },
+    {
+      "id": "7-16",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "multi",
+      "prompt": "Which of the following supports low energy radio operation.",
+      "detailBlocks": [
+        [
+          "WiFi",
+          "BLE",
+          "HaLow",
+          "Bluetooth"
+        ]
+      ],
+      "options": [
+        "WiFi",
+        "BLE",
+        "HaLow",
+        "Bluetooth"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "answer": "BLE, HaLow",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-17",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "Which of the following scheme is used by Bluetooth?",
+      "detailBlocks": [
+        [
+          "VWXYZ scheme",
+          "Frequency hopping FDD scheme",
+          "DSSS FDD scheme",
+          "Frequency hopping TDD scheme",
+          "ABCDEFG scheme",
+          "DSSS TDD scheme",
+          "Pyramid scheme"
+        ]
+      ],
+      "options": [
+        "VWXYZ scheme",
+        "Frequency hopping FDD scheme",
+        "DSSS FDD scheme",
+        "Frequency hopping TDD scheme",
+        "ABCDEFG scheme",
+        "DSSS TDD scheme",
+        "Pyramid scheme"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Frequency hopping TDD scheme",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-18",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "reveal",
+      "prompt": "Bluetooth is designed for short broadcast. There are forty 2-Mhz channels. How many of these channels are reserved for advertising? (enter numerical number)",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "3",
+      "shuffleOptions": false
+    },
+    {
+      "id": "7-19",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "reveal",
+      "prompt": "Assume Bob can send 300 bits in one slot while using Bluetooth. How many slots does it take to send 1200 bits?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "4",
+      "shuffleOptions": false
+    },
+    {
+      "id": "7-20",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "single",
+      "prompt": "BLE supports which kind of communication topology?",
+      "detailBlocks": [
+        [
+          "Mesh",
+          "Bus",
+          "Star",
+          "Point-to-Point"
+        ]
+      ],
+      "options": [
+        "Mesh",
+        "Bus",
+        "Star",
+        "Point-to-Point"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Point-to-Point",
+      "shuffleOptions": true
+    },
+    {
+      "id": "7-21",
+      "lectureNumber": 7,
+      "lectureTitle": "Bluetooth",
+      "kind": "reveal",
+      "prompt": "If the number of carrier frequencies is equal to 25, how many outputs bits must be generated by the PRN generator? (Assume FHSS)",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "5",
+      "shuffleOptions": false
+    },
+    {
+      "id": "8-1",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "Which standard does HaLow follow for wireless communication?",
+      "detailBlocks": [
+        [
+          "802.11ah",
+          "802.11n",
+          "802.11b",
+          "802.11ac"
+        ]
+      ],
+      "options": [
+        "802.11ah",
+        "802.11n",
+        "802.11b",
+        "802.11ac"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "802.11ah",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-2",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "Using which one of the following parameters will the modulation and coding scheme be decided?",
+      "detailBlocks": [
+        [
+          "Signal to Noise Ratio",
+          "None of the options are correct.",
+          "Data Transmission Rate",
+          "Wireless Communication technique"
+        ]
+      ],
+      "options": [
+        "Signal to Noise Ratio",
+        "None of the options are correct.",
+        "Data Transmission Rate",
+        "Wireless Communication technique"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Signal to Noise Ratio",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-3",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "All 802.11 devices are compatible with each other.",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "FALSE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-4",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "Which of the following packets help in solving the hidden node problem in 802.11 networks? (You can select more than one answer)",
+      "detailBlocks": [
+        [
+          "Acknowledgement Packets",
+          "Clear To Send Packet",
+          "Request To Send Packet",
+          "Clear to Share Packet",
+          "Request to Share Packet"
+        ]
+      ],
+      "options": [
+        "Acknowledgement Packets",
+        "Clear To Send Packet",
+        "Request To Send Packet",
+        "Clear to Share Packet",
+        "Request to Share Packet"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "answer": "Clear To Send Packet, Request To Send Packet",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-5",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "Which of the following are advantages of using Relays in HaLow? (select the correct answers)",
+      "detailBlocks": [
+        [
+          "Relays require the devices to transmit at a lower data rate thereby consuming low power.",
+          "Relays enable the devices to transmit at high data rate.",
+          "When a relay is present, the devices do not require to exchange data with the Root Access point.",
+          "Relays improve reliability of data transmission."
+        ]
+      ],
+      "options": [
+        "Relays require the devices to transmit at a lower data rate thereby consuming low power.",
+        "Relays enable the devices to transmit at high data rate.",
+        "When a relay is present, the devices do not require to exchange data with the Root Access point.",
+        "Relays improve reliability of data transmission."
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "answer": "Relays enable the devices to transmit at high data rate, Relays improve reliability of data transmission",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-6",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "How many overlapping WiFi channels are there for 2.4Ghz Band?",
+      "detailBlocks": [
+        [
+          "12",
+          "14",
+          "11",
+          "3"
+        ]
+      ],
+      "options": [
+        "12",
+        "14",
+        "11",
+        "3"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "3",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-7",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "Which of the following is included in the beacon to notify stations about the buffered frames?",
+      "detailBlocks": [
+        [
+          "Traffic Indication Map",
+          "Traffic Availability Map",
+          "Traffic Notification Map",
+          "Traffic Intimation Map"
+        ]
+      ],
+      "options": [
+        "Traffic Indication Map",
+        "Traffic Availability Map",
+        "Traffic Notification Map",
+        "Traffic Intimation Map"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Traffic Indication Map",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-8",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "Which of the following power management modes are available for stations in 802.11 networks? (You can choose more than one answer)",
+      "detailBlocks": [
+        [
+          "Power Save Mode",
+          "Doze Mode",
+          "Active Mode",
+          "Awake Mode"
+        ]
+      ],
+      "options": [
+        "Power Save Mode",
+        "Doze Mode",
+        "Active Mode",
+        "Awake Mode"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "answer": "Active Mode, Power Save Mode",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-9",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "reveal",
+      "prompt": "Which of the following frames are transmitted by a node when it is attempting to join a Basic Service Set using passive scanning? (You can select more than one)",
+      "detailBlocks": [
+        [
+          "Association Response Frame",
+          "Association Request Frame",
+          "Probe Response Frame",
+          "Probe Request Frame"
+        ]
+      ],
+      "options": [
+        "Association Response Frame",
+        "Association Request Frame",
+        "Probe Response Frame",
+        "Probe Request Frame"
+      ],
+      "correct": [],
+      "answer": "None of the provided options (Passive scanning involves listening for Beacons)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "8-10",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "Consider the following two statements and select the appropriate option below:\nStatement A: Centralized and Distributed Authentication Control are introduced in HaLow to overcome collisions between the devices in the network.\nStatement B: HaLow introduced mechanisms to limit the set of devices accessing the channel and to spread their access attempts over a long period of time.",
+      "detailBlocks": [
+        [
+          "Statement B is true, but Statement A is false.",
+          "Statement A is true, but Statement B is false.",
+          "Both Statements are false.",
+          "Statements A and B are true."
+        ]
+      ],
+      "options": [
+        "Statement B is true, but Statement A is false.",
+        "Statement A is true, but Statement B is false.",
+        "Both Statements are false.",
+        "Statements A and B are true."
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Statements A and B are true.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-11",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "Select the standards that are typically common across IEEE 802.",
+      "detailBlocks": [
+        [
+          "802.16 WiMAX",
+          "802.2 Logical Link Control",
+          "802.1 Bridging",
+          "802.17 Resilient Packet Ring",
+          "802.3 Ethernet"
+        ]
+      ],
+      "options": [
+        "802.16 WiMAX",
+        "802.2 Logical Link Control",
+        "802.1 Bridging",
+        "802.17 Resilient Packet Ring",
+        "802.3 Ethernet"
+      ],
+      "correct": [
+        1,
+        2,
+        4
+      ],
+      "answer": "802.2 Logical Link Control, 802.1 Bridging, 802.3 Ethernet",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-12",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "WiFi HaLow is also known as?",
+      "detailBlocks": [
+        [
+          "802.11f",
+          "802.11ac",
+          "802.11ah",
+          "802.11ax"
+        ]
+      ],
+      "options": [
+        "802.11f",
+        "802.11ac",
+        "802.11ah",
+        "802.11ax"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "802.11ah",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-13",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "What is the operating frequency of HaLow?",
+      "detailBlocks": [
+        [
+          "2.4 Ghz",
+          "Sub-1 Ghz",
+          "5 Ghz",
+          "900 Hz"
+        ]
+      ],
+      "options": [
+        "2.4 Ghz",
+        "Sub-1 Ghz",
+        "5 Ghz",
+        "900 Hz"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Sub-1 Ghz",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-14",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "Which of the frames are transmitted by the Access Point when a node is attempting to join a Basic Service Set using active scanning? (You can select more than one)",
+      "detailBlocks": [
+        [
+          "Association Request Frame",
+          "Probe Response Frame",
+          "Probe Request Frame",
+          "Association Response Frame"
+        ]
+      ],
+      "options": [
+        "Association Request Frame",
+        "Probe Response Frame",
+        "Probe Request Frame",
+        "Association Response Frame"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "answer": "Probe Response Frame, Association Response Frame",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-15",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "Which of the following frames use the Null Data Packet (NDP) MAC frame structure in 802.11ah? (You can select more than one)",
+      "detailBlocks": [
+        [
+          "Beacons",
+          "PS-Poll Frame",
+          "ACK",
+          "RTS",
+          "CTS"
+        ]
+      ],
+      "options": [
+        "Beacons",
+        "PS-Poll Frame",
+        "ACK",
+        "RTS",
+        "CTS"
+      ],
+      "correct": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "answer": "PS-Poll Frame, ACK, RTS, CTS",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-16",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "What is the typical range of HaLow compared to traditional Wi-Fi?",
+      "detailBlocks": [
+        [
+          "Same range",
+          "Unlimited range",
+          "Longer range",
+          "Shorter range"
+        ]
+      ],
+      "options": [
+        "Same range",
+        "Unlimited range",
+        "Longer range",
+        "Shorter range"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Longer range",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-17",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "Select the true statements for WiFi",
+      "detailBlocks": [
+        [
+          "Its frequency ranges from 2.4Ghz to 2.5Ghz",
+          "The 2.4Ghz Band has a 150Mhz bandwidth",
+          "Its frequency ranges from 5Ghz to 5.15Ghz",
+          "The 5Ghz Band has a 150Mhz bandwidth"
+        ]
+      ],
+      "options": [
+        "Its frequency ranges from 2.4Ghz to 2.5Ghz",
+        "The 2.4Ghz Band has a 150Mhz bandwidth",
+        "Its frequency ranges from 5Ghz to 5.15Ghz",
+        "The 5Ghz Band has a 150Mhz bandwidth"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "answer": "Its frequency ranges from 2.4Ghz to 2.5Ghz, The 5Ghz Band has a 150Mhz bandwidth",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-18",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "The \"Data Unit\" get larger as it goes _____ the OSI stack.",
+      "detailBlocks": [
+        [
+          "across",
+          "down",
+          "crisscross",
+          "up"
+        ]
+      ],
+      "options": [
+        "across",
+        "down",
+        "crisscross",
+        "up"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "down",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-19",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "multi",
+      "prompt": "What is the main advantages of HaLow over traditional Wi-Fi technologies?",
+      "detailBlocks": [
+        [
+          "Greater range",
+          "Faster speeds",
+          "Lower power consumption",
+          "Better security"
+        ]
+      ],
+      "options": [
+        "Greater range",
+        "Faster speeds",
+        "Lower power consumption",
+        "Better security"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "answer": "Greater range and Lower power consumption",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-20",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "Which if the following channel access technique is used in HaLow?",
+      "detailBlocks": [
+        [
+          "Carrier Sense Multiple Access with Collision Anticipation",
+          "Carrier Sense Multiple Access with Collision Prevention",
+          "Carrier Sense Multiple Access with Collision Detection",
+          "Carrier Sense Multiple Access with Collision Avoidance"
+        ]
+      ],
+      "options": [
+        "Carrier Sense Multiple Access with Collision Anticipation",
+        "Carrier Sense Multiple Access with Collision Prevention",
+        "Carrier Sense Multiple Access with Collision Detection",
+        "Carrier Sense Multiple Access with Collision Avoidance"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Carrier Sense Multiple Access with Collision Avoidance (CSMA/CA)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "8-21",
+      "lectureNumber": 8,
+      "lectureTitle": "Wi-Fi & Wi-Fi HaLow",
+      "kind": "single",
+      "prompt": "How does HaLow address the shortage of Duration/ID field that is required for Network Allocation Vector?",
+      "detailBlocks": [
+        [
+          "HaLow introduced the Restricted Access Window mechanism for the same.",
+          "HaLow uses the Association ID for determining the length of the frame.",
+          "HaLow does not need any such mechanism as the length of the data payload is fixed.",
+          "HaLow uses a mechanism called Response Indication Deferral."
+        ]
+      ],
+      "options": [
+        "HaLow introduced the Restricted Access Window mechanism for the same.",
+        "HaLow uses the Association ID for determining the length of the frame.",
+        "HaLow does not need any such mechanism as the length of the data payload is fixed.",
+        "HaLow uses a mechanism called Response Indication Deferral."
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "HaLow uses a mechanism called Response Indication Deferral.",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-1",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which factors determine the bit rate of a communication system?",
+      "detailBlocks": [
+        [
+          "The modulation scheme and the symbol rate",
+          "The carrier frequency and the signal bandwidth",
+          "The noise level and the power of the transmitted signal",
+          "The type of modulation and the size of the communication channel"
+        ]
+      ],
+      "options": [
+        "The modulation scheme and the symbol rate",
+        "The carrier frequency and the signal bandwidth",
+        "The noise level and the power of the transmitted signal",
+        "The type of modulation and the size of the communication channel"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "The modulation scheme and the symbol rate",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-2",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Assume that the subcarrier band size has been increased from 15kHz to 25kHz. Using this information, calculate how much would be the bandwidth of one physical resource block.",
+      "detailBlocks": [
+        [
+          "375kHz",
+          "300kHz",
+          "250kHz",
+          "500kHz"
+        ]
+      ],
+      "options": [
+        "375kHz",
+        "300kHz",
+        "250kHz",
+        "500kHz"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "300kHz (Note: 12 subcarriers × 25kHz = 300kHz)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-3",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Why is NIDD particularly suitable for NB-IoT?",
+      "detailBlocks": [
+        [
+          "It uses a broadcast communication model",
+          "It allows direct device-to-device communication",
+          "It supports high-bandwidth applications",
+          "It eliminates IP overhead, optimizing for small data packets"
+        ]
+      ],
+      "options": [
+        "It uses a broadcast communication model",
+        "It allows direct device-to-device communication",
+        "It supports high-bandwidth applications",
+        "It eliminates IP overhead, optimizing for small data packets"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "It eliminates IP overhead, optimizing for small data packets",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-4",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "reveal",
+      "prompt": "Assume that you are a network operator, and you are allocated a frequency spectrum of bandwidth equal to 1000kHz for carrying out cellular operation. You chose to implement FDMA as the multiple access scheme. How many users can you support if each user requires a bandwidth equal to 40kHz. Assume that the bandwidth of the guard band on each side of the spectrum must be equal to 50kHz.",
+      "detailBlocks": [
+        [
+          "25",
+          "22",
+          "24",
+          "23"
+        ]
+      ],
+      "options": [
+        "25",
+        "22",
+        "24",
+        "23"
+      ],
+      "correct": [],
+      "answer": "22 users (Note: Available bandwidth = 1000kHz - 100kHz (guard bands) = 900kHz; 900kHz ÷ 40kHz = 22.5, so 22 users)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "9-5",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which of the following codes, used in CDMA, are considered orthogonal codes?",
+      "detailBlocks": [
+        [
+          "<0,1,0,1> and <1,0,0,1>",
+          "<0,1,0,1> and <1,0,1,0>",
+          "All of the above",
+          "<0,0,1,1> and <1,0,1,0>"
+        ]
+      ],
+      "options": [
+        "<0,1,0,1> and <1,0,0,1>",
+        "<0,1,0,1> and <1,0,1,0>",
+        "All of the above",
+        "<0,0,1,1> and <1,0,1,0>"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "<0,1,0,1> and <1,0,1,0>",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-6",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "reveal",
+      "prompt": "Assume that you are a network operator, and you are allocated a frequency spectrum of bandwidth equal to 1000kHz for carrying out 4G cellular operation. How many subcarriers (maximum) can you support given the above bandwidth. Assume that the bandwidth of the guard band on each side of the spectrum must be equal to 50kHz.",
+      "detailBlocks": [
+        [
+          "40",
+          "60",
+          "50",
+          "70"
+        ]
+      ],
+      "options": [
+        "40",
+        "60",
+        "50",
+        "70"
+      ],
+      "correct": [],
+      "answer": "60 subcarriers (Note: Available bandwidth = 1000kHz - 100kHz = 900kHz; In 4G, each subcarrier is 15kHz; 900kHz ÷ 15kHz = 60 subcarriers)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "9-7",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which of the following IoT applications is best suited for NB-IoT?",
+      "detailBlocks": [
+        [
+          "High-speed asset tracking",
+          "Wearable fitness trackers",
+          "Smart metering in rural areas",
+          "Real-time video streaming"
+        ]
+      ],
+      "options": [
+        "High-speed asset tracking",
+        "Wearable fitness trackers",
+        "Smart metering in rural areas",
+        "Real-time video streaming"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Smart metering in rural areas",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-8",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "multi",
+      "prompt": "Which of the following is a key advantage of NB-IoT over traditional cellular networks?",
+      "detailBlocks": [
+        [
+          "High Reliability",
+          "Wide Coverage Area",
+          "Low Power Consumption",
+          "High Data Rates"
+        ]
+      ],
+      "options": [
+        "High Reliability",
+        "Wide Coverage Area",
+        "Low Power Consumption",
+        "High Data Rates"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "answer": "Low Power Consumption AND Wide Coverage Area (Note: Both are key advantages, but if selecting one, Low Power Consumption is often highlighted)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-9",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Assume that you are a network operator, and you chose to implement TDMA as the multiple access scheme. How much bandwidth is required to support 10 users if each user requires a bandwidth equal to 400kHz. Assume that the bandwidth of the guard band on each side of the spectrum must be equal to 50kHz.",
+      "detailBlocks": [
+        [
+          "4000kHz",
+          "500kHz",
+          "400kHz",
+          "4100kHz"
+        ]
+      ],
+      "options": [
+        "4000kHz",
+        "500kHz",
+        "400kHz",
+        "4100kHz"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "500kHz (Note: TDMA users share the same bandwidth, so total bandwidth = 400kHz + 100kHz guard bands = 500kHz)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-10",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which of the following is not a feature of NB-IoT?",
+      "detailBlocks": [
+        [
+          "Long Battery Life",
+          "Extended Idle Mode",
+          "High Receiver Sensitivity",
+          "Extended Coverage"
+        ]
+      ],
+      "options": [
+        "Long Battery Life",
+        "Extended Idle Mode",
+        "High Receiver Sensitivity",
+        "Extended Coverage"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Extended Idle Mode",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-11",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which network element is responsible for interfacing NIDD with IoT application servers in NB-IoT?",
+      "detailBlocks": [
+        [
+          "MME",
+          "S-GW",
+          "SCEF",
+          "EPC"
+        ]
+      ],
+      "options": [
+        "MME",
+        "S-GW",
+        "SCEF",
+        "EPC"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "SCEF",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-12",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "A network manager chose to use QPSK (Quadrature Phase Shift Keying) as the modulation scheme for the NB-IoT network. Given this scenario, select how many bits can an NB-IoT transmit at any given point of time.",
+      "detailBlocks": [
+        [
+          "Three bits",
+          "Only one bit",
+          "Two bits",
+          "All of the above",
+          "None of the above"
+        ]
+      ],
+      "options": [
+        "Three bits",
+        "Only one bit",
+        "Two bits",
+        "All of the above",
+        "None of the above"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "Two bits",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-13",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Consider the following two statements and select the appropriate option below:\nStatement A: Any mobile connected to a 4G network can move while retaining an active connection.\nStatement B: As NB-IoT devices rely on coverage provided by 4G, they can also move while maintaining an active connection.",
+      "detailBlocks": [
+        [
+          "Statements A and B are true. Statement B and Statement A are independent of each other.",
+          "Statements A and B are true. Statement B is the perfect explanation for Statement A.",
+          "Statement B is true, but Statement A is false.",
+          "Both Statements are false.",
+          "Statement A is true, but Statement B is false."
+        ]
+      ],
+      "options": [
+        "Statements A and B are true. Statement B and Statement A are independent of each other.",
+        "Statements A and B are true. Statement B is the perfect explanation for Statement A.",
+        "Statement B is true, but Statement A is false.",
+        "Both Statements are false.",
+        "Statement A is true, but Statement B is false."
+      ],
+      "correct": [
+        4
+      ],
+      "answer": "Statement A is true, but Statement B is false. (Note: NB-IoT devices are not designed for mobility like regular LTE devices)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-14",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which of the following is NOT a mode of operations for NB-IoT?",
+      "detailBlocks": [
+        [
+          "Guard band",
+          "Out-Band",
+          "Stand Alone",
+          "In-Band"
+        ]
+      ],
+      "options": [
+        "Guard band",
+        "Out-Band",
+        "Stand Alone",
+        "In-Band"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "Out-Band (Note: The three modes are In-Band, Guard Band, and Stand Alone)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-15",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which of the following organizations is responsible for the development of NB-IoT standards?",
+      "detailBlocks": [
+        [
+          "3GPP",
+          "Wi-Fi Alliance",
+          "IETF",
+          "IEEE"
+        ]
+      ],
+      "options": [
+        "3GPP",
+        "Wi-Fi Alliance",
+        "IETF",
+        "IEEE"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "3GPP",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-16",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Consider the following two statements and select the appropriate option below:\nStatement A: NB-IoT devices are not suitable for indoor placement due to insufficient coverage, making it challenging to support devices located inside buildings.\nStatement B: NB-IoT devices rely on coverage provided by LTE and 5G-NR cellular technologies.",
+      "detailBlocks": [
+        [
+          "Statements A and B are true. Statement B is the perfect explanation for Statement A.",
+          "Statement A is true, but Statement B is false.",
+          "Statements A and B are true. Statement B and Statement A are independent of each other.",
+          "Statement B is true, but Statement A is false.",
+          "Both Statements are false."
+        ]
+      ],
+      "options": [
+        "Statements A and B are true. Statement B is the perfect explanation for Statement A.",
+        "Statement A is true, but Statement B is false.",
+        "Statements A and B are true. Statement B and Statement A are independent of each other.",
+        "Statement B is true, but Statement A is false.",
+        "Both Statements are false."
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Statement B is true, but Statement A is false. (Note: NB-IoT has excellent indoor coverage due to high link budget)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-17",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "NB-IoT is introduced in which of the following standards?",
+      "detailBlocks": [
+        [
+          "LTE – Advanced",
+          "LTE – Advanced Pro",
+          "LTE – NB Advanced",
+          "LTE"
+        ]
+      ],
+      "options": [
+        "LTE – Advanced",
+        "LTE – Advanced Pro",
+        "LTE – NB Advanced",
+        "LTE"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "LTE – Advanced Pro (Note: NB-IoT was introduced in 3GPP Release 13, part of LTE-Advanced Pro)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-18",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Consider the following two statements and select the appropriate option below:\nStatement A: NB-IoT requires the device to connect to an operator network via licensed or unlicensed spectrum. The spectrum in which the devices are transmitting information does not matter if the eNodeB (i.e., the 4G cellular tower) is aware of the same.\nStatement B: Unlike normal LTE devices, NB-IoT devices need not listen to paging regularly. In fact, it is okay even if these devices do not listen to paging for a whole day as well.",
+      "detailBlocks": [
+        [
+          "Statement B is true, but Statement A is false.",
+          "Both Statements are false.",
+          "Statements A and B are true.",
+          "Statement A is true, but Statement B is false."
+        ]
+      ],
+      "options": [
+        "Statement B is true, but Statement A is false.",
+        "Both Statements are false.",
+        "Statements A and B are true.",
+        "Statement A is true, but Statement B is false."
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Statement B is true, but Statement A is false. (Note: NB-IoT uses licensed spectrum only, and devices can use extended DRX/PSM to sleep for long periods)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-19",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Which of the following features of NB-IoT reduces power consumption by allowing devices to \"sleep\" for extended periods?",
+      "detailBlocks": [
+        [
+          "VoLTE",
+          "NIDD",
+          "eDRX",
+          "PSM"
+        ]
+      ],
+      "options": [
+        "VoLTE",
+        "NIDD",
+        "eDRX",
+        "PSM"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "PSM (Power Saving Mode) (Note: eDRX also helps, but PSM allows for longer sleep periods)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "9-20",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "reveal",
+      "prompt": "Assume NB-IoT scenario and calculate the minimum transmit power for a link budget equal to 170dB and receiver sensitivity equal to -150dBm. Enter the numerical number only in dBm.",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "20 dBm (Note: Link Budget = Transmit Power + Receiver Sensitivity; 170dB = Tx Power + (-150dBm); Tx Power = 170 - 150 = 20 dBm)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "9-21",
+      "lectureNumber": 9,
+      "lectureTitle": "Cellular IoT",
+      "kind": "single",
+      "prompt": "Why is HTTP not always suitable for IoT devices?",
+      "detailBlocks": [
+        [
+          "It lacks support for small data transfers",
+          "It is not an IP-based protocol",
+          "It is incompatible with IoT hardware",
+          "It has high overhead and power consumption"
+        ]
+      ],
+      "options": [
+        "It lacks support for small data transfers",
+        "It is not an IP-based protocol",
+        "It is incompatible with IoT hardware",
+        "It has high overhead and power consumption"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "It has high overhead and power consumption",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-1",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "6LowPAN uses traditional IPv6 as its networking layer.",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "TRUE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-2",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "reveal",
+      "prompt": "Assume Bob is using DSSS to transmit his data to Alice. Bob decided to use the chipping sequence 101101 to transmit his bits. If the length of the packet is 100 bits, how many bit will Bob actually transmit?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "600 bits (100 bits × 6 chips per bit = 600 bits)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "10-3",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "Which of the following is true about Thread Network?",
+      "detailBlocks": [
+        [
+          "IPV6 ULA address is used for mesh establishment and link maintenance.",
+          "Every Thread device is assigned only one Mesh local address.",
+          "Thread enables full mesh connectivity between all the devices in the network.",
+          "A thread network can employ more 10 routers in the network.",
+          "None of the Above"
+        ]
+      ],
+      "options": [
+        "IPV6 ULA address is used for mesh establishment and link maintenance.",
+        "Every Thread device is assigned only one Mesh local address.",
+        "Thread enables full mesh connectivity between all the devices in the network.",
+        "A thread network can employ more 10 routers in the network.",
+        "None of the Above"
+      ],
+      "correct": [
+        4
+      ],
+      "answer": "None of the Above",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-4",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "6LowPAN is the same as IEEE802.15.4",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "FALSE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-5",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "multi",
+      "prompt": "Which of the following phases are required for a device to re-attach to a Thread Network? (You can select more than one)",
+      "detailBlocks": [
+        [
+          "Configuring",
+          "Commissioning",
+          "Attaching",
+          "Discovery"
+        ]
+      ],
+      "options": [
+        "Configuring",
+        "Commissioning",
+        "Attaching",
+        "Discovery"
+      ],
+      "correct": [
+        2,
+        3
+      ],
+      "answer": "Attaching, Discovery",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-6",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "multi",
+      "prompt": "Which of the following Full Thread Devices have routing capabilities? (You can select more than one)",
+      "detailBlocks": [
+        [
+          "Router Eligible End Device",
+          "Intermediate Routing Device",
+          "PAN coordinator",
+          "Router",
+          "Leader",
+          "Full End Device"
+        ]
+      ],
+      "options": [
+        "Router Eligible End Device",
+        "Intermediate Routing Device",
+        "PAN coordinator",
+        "Router",
+        "Leader",
+        "Full End Device"
+      ],
+      "correct": [
+        3,
+        4
+      ],
+      "answer": "Router, Leader",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-7",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "If the 16-bit address assigned to a device in a 6LowPAN network is 4EA1, what is the IPv6 link local address?",
+      "detailBlocks": [
+        [
+          "FE80::1111:4EA1",
+          "FE80::4EA1",
+          "PAN ID is unknown.",
+          "FE80:4EA1::0"
+        ]
+      ],
+      "options": [
+        "FE80::1111:4EA1",
+        "FE80::4EA1",
+        "PAN ID is unknown.",
+        "FE80:4EA1::0"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "FE80::4EA1",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-8",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "The full form of 6LoWPAN is ...",
+      "detailBlocks": [
+        [
+          "6 Low Power Wireless Personal Area Network",
+          "IPv6 over Low-Power Wireless Personal Area Networks",
+          "6 Low Power Wide Personal Area Network",
+          "IPv6 over Low-Power Wide Area Networks"
+        ]
+      ],
+      "options": [
+        "6 Low Power Wireless Personal Area Network",
+        "IPv6 over Low-Power Wireless Personal Area Networks",
+        "6 Low Power Wide Personal Area Network",
+        "IPv6 over Low-Power Wide Area Networks"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "IPv6 over Low-Power Wireless Personal Area Networks",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-9",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "If the EUI64 address of a device is 62::1, what would be its link local IPv6 address. Assume 6LowPAN protocol.",
+      "detailBlocks": [
+        [
+          "FE80:0:0:0:62::1",
+          "None of answer mentioned",
+          "FE80:0:0:0:22::1",
+          "FE80:0:0:0:66::1",
+          "FE80:0:0:0:60::1"
+        ]
+      ],
+      "options": [
+        "FE80:0:0:0:62::1",
+        "None of answer mentioned",
+        "FE80:0:0:0:22::1",
+        "FE80:0:0:0:66::1",
+        "FE80:0:0:0:60::1"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "FE80:0:0:0:62::1",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-10",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "What does IEEE 802.15.4 primarily focus on?",
+      "detailBlocks": [
+        [
+          "Low-rate wireless personal area networks",
+          "Long-range wireless communication",
+          "High-speed internet connectivity",
+          "High-bandwidth local area networking"
+        ]
+      ],
+      "options": [
+        "Low-rate wireless personal area networks",
+        "Long-range wireless communication",
+        "High-speed internet connectivity",
+        "High-bandwidth local area networking"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Low-rate wireless personal area networks",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-11",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "Which type of modulation is used in IEEE 802.15.4?",
+      "detailBlocks": [
+        [
+          "Direct Sequence Spread Spectrum (DSSS)",
+          "Phase-Shift Keying (PSK)",
+          "Orthogonal Frequency-Division Multiplexing (OFDM)",
+          "Frequency Shift Keying (FSK)"
+        ]
+      ],
+      "options": [
+        "Direct Sequence Spread Spectrum (DSSS)",
+        "Phase-Shift Keying (PSK)",
+        "Orthogonal Frequency-Division Multiplexing (OFDM)",
+        "Frequency Shift Keying (FSK)"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Direct Sequence Spread Spectrum (DSSS)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-12",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "If the 16-bit address assigned to a device in a 6LowPAN network is 4EA1, what is the IPv6 link local address? Assume the PAN ID is 5678.",
+      "detailBlocks": [
+        [
+          "FE80::5678:4EA1",
+          "FE80::4EA1",
+          "FE80:5678::4EA1",
+          "FE80:5678:4EA1::0"
+        ]
+      ],
+      "options": [
+        "FE80::5678:4EA1",
+        "FE80::4EA1",
+        "FE80:5678::4EA1",
+        "FE80:5678:4EA1::0"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "FE80::5678:4EA1",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-13",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "Which of the following frames are required to be transmitted using CSMA/CA?",
+      "detailBlocks": [
+        [
+          "Data Frames",
+          "Beacons",
+          "All the mentioned frames",
+          "Acknowledgements"
+        ]
+      ],
+      "options": [
+        "Data Frames",
+        "Beacons",
+        "All the mentioned frames",
+        "Acknowledgements"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "All the mentioned frames",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-14",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "multi",
+      "prompt": "IEEE 802.15.4 is a basis for which popular IoT communication protocol?",
+      "detailBlocks": [
+        [
+          "Bluetooth",
+          "LTE",
+          "Thread",
+          "ZigBee",
+          "WiFi"
+        ]
+      ],
+      "options": [
+        "Bluetooth",
+        "LTE",
+        "Thread",
+        "ZigBee",
+        "WiFi"
+      ],
+      "correct": [
+        2,
+        3
+      ],
+      "answer": "ZigBee (and Thread)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-15",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "reveal",
+      "prompt": "Assume that a user wants to transmit bit 0 using Direct Sequence Spread Spectrum. The user using \"XOR\" to generate the same. What is the transmitted signal (in binary) if the chipping sequence is 011011000101?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "100111001011 (XOR of bit 0 with chipping sequence inverts the sequence)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "10-16",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "multi",
+      "prompt": "Which of the following are used by IEEE 802.15.4?",
+      "detailBlocks": [
+        [
+          "Frequency Hopping Spread Spectrum",
+          "Direct Sequence Spread Spectrum",
+          "CSMA with Collision Avoidance",
+          "CSMA with Collision Detection"
+        ]
+      ],
+      "options": [
+        "Frequency Hopping Spread Spectrum",
+        "Direct Sequence Spread Spectrum",
+        "CSMA with Collision Avoidance",
+        "CSMA with Collision Detection"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "answer": "Direct Sequence Spread Spectrum, CSMA with Collision Avoidance",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-17",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "reveal",
+      "prompt": "What kind of network topology is supported by IEEE 802.15.4?",
+      "detailBlocks": [
+        [
+          "Point-to-Point",
+          "Bus",
+          "Mesh",
+          "Star"
+        ]
+      ],
+      "options": [
+        "Point-to-Point",
+        "Bus",
+        "Mesh",
+        "Star"
+      ],
+      "correct": [],
+      "answer": "Star (and peer-to-peer)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "10-18",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "6LowPAN technology sits on top of ...",
+      "detailBlocks": [
+        [
+          "IEEE 802.15.4",
+          "Anything within IEEE 802",
+          "IEEE 802.15.16",
+          "IEEE 802.15.11"
+        ]
+      ],
+      "options": [
+        "IEEE 802.15.4",
+        "Anything within IEEE 802",
+        "IEEE 802.15.16",
+        "IEEE 802.15.11"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "IEEE 802.15.4",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-19",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "Which of the following are not true about 6LowPAN?",
+      "detailBlocks": [
+        [
+          "6LoWPAN has the capability of optional mesh routing in the data link layer",
+          "6LoWPAN is based on IPv4 and IPv6 protocols for transmitting packets",
+          "None of the statements are false.",
+          "6LoWPAN is a networking layer protocol for Internet of Things"
+        ]
+      ],
+      "options": [
+        "6LoWPAN has the capability of optional mesh routing in the data link layer",
+        "6LoWPAN is based on IPv4 and IPv6 protocols for transmitting packets",
+        "None of the statements are false.",
+        "6LoWPAN is a networking layer protocol for Internet of Things"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "6LoWPAN is based on IPv4 and IPv6 protocols for transmitting packets (6LoWPAN is IPv6 only)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-20",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "multi",
+      "prompt": "Consider an IEEE 802.15.4 network using Beacon-enabled CSMA/CA. Given this, choose which of the following statements are false:",
+      "detailBlocks": [
+        [
+          "Contention Free Period is reserved for real-time services.",
+          "Contention Free Period uses slotted CSMA.",
+          "A part of the beacon interval is busy as coordinator requires it to send out MAC command packets.",
+          "Devices can sleep during the inactive interval of the beacon interval.",
+          "Contention Access Period uses slotted CSMA.",
+          "Contention Access Period is reserved for real-time services."
+        ]
+      ],
+      "options": [
+        "Contention Free Period is reserved for real-time services.",
+        "Contention Free Period uses slotted CSMA.",
+        "A part of the beacon interval is busy as coordinator requires it to send out MAC command packets.",
+        "Devices can sleep during the inactive interval of the beacon interval.",
+        "Contention Access Period uses slotted CSMA.",
+        "Contention Access Period is reserved for real-time services."
+      ],
+      "correct": [
+        1,
+        5
+      ],
+      "answer": "Contention Free Period uses slotted CSMA (False), Contention Access Period is reserved for real-time services (False)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-21",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "multi",
+      "prompt": "IEEE 802.15.4 defines the operation of which network layers?",
+      "detailBlocks": [
+        [
+          "Physical (PHY)",
+          "Network Layer",
+          "Application Layer",
+          "Data Link Layer",
+          "Transport Layer",
+          "Session Layer"
+        ]
+      ],
+      "options": [
+        "Physical (PHY)",
+        "Network Layer",
+        "Application Layer",
+        "Data Link Layer",
+        "Transport Layer",
+        "Session Layer"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "answer": "Physical (PHY), Data Link Layer",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-22",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "reveal",
+      "prompt": "Assume that a user wants to transmit bit 1 using Direct Sequence Spread Spectrum. The user using \"XOR\" to generate the same. What is the transmitted signal (in binary) if the chipping sequence is 101011010011?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "10100101099 (XOR of bit 1 with chipping sequence preserves the sequence)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "10-23",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "reveal",
+      "prompt": "Assume Bob is using DSSS to transmit his data to Alice. Bob decided to use the chipping sequence 10110100110 to transmit his bits. Bob transmitted 330 bits to Alice. Using this information, calculate how many actual bits represent Bob's data?",
+      "detailBlocks": [],
+      "options": [],
+      "correct": [],
+      "answer": "30 bits (330 bits ÷ 11 chips per bit = 30 bits)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "10-24",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "Which of the following is not a characteristic of Thread?",
+      "detailBlocks": [
+        [
+          "The range of the network is more than enough to cover a home.",
+          "All the options are characteristics of Thread.",
+          "Devices can easily join the network.",
+          "There is no single point of failure.",
+          "Thread can support large networks."
+        ]
+      ],
+      "options": [
+        "The range of the network is more than enough to cover a home.",
+        "All the options are characteristics of Thread.",
+        "Devices can easily join the network.",
+        "There is no single point of failure.",
+        "Thread can support large networks."
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "All the options are characteristics of Thread (This option itself is not a characteristic; it's a statement about the options)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "10-25",
+      "lectureNumber": 10,
+      "lectureTitle": "802.15.4 & Thread",
+      "kind": "single",
+      "prompt": "Which of the following is NOT true about Border Routers in a Thread Network?",
+      "detailBlocks": [
+        [
+          "Border Router provide services to devices within the Thread Network only.",
+          "Border Router can provide connectivity from Thread Network to 802.11 networks.",
+          "There cannot be more than 3 border routers in a Thread Network.",
+          "A REED can be configured as a Border Router in the Thread Network."
+        ]
+      ],
+      "options": [
+        "Border Router provide services to devices within the Thread Network only.",
+        "Border Router can provide connectivity from Thread Network to 802.11 networks.",
+        "There cannot be more than 3 border routers in a Thread Network.",
+        "A REED can be configured as a Border Router in the Thread Network."
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "There cannot be more than 3 border routers in a Thread Network",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-1",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "single",
+      "prompt": "Zigbee have a transport layer.",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "FALSE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-2",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "single",
+      "prompt": "Z-Wave is an implementation of a ZigBee protocol.",
+      "detailBlocks": [
+        [
+          "True",
+          "False"
+        ]
+      ],
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "answer": "FALSE",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-3",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "multi",
+      "prompt": "Which of the following is needed to be a \"ZigBee Compliant Product\"",
+      "detailBlocks": [
+        [
+          "IEEE 802.15.4",
+          "Application Profile",
+          "ZigBee Stack",
+          "IEEE 802.11"
+        ]
+      ],
+      "options": [
+        "IEEE 802.15.4",
+        "Application Profile",
+        "ZigBee Stack",
+        "IEEE 802.11"
+      ],
+      "correct": [
+        0,
+        1,
+        2
+      ],
+      "answer": "IEEE 802.15.4, ZigBee Stack, Application Profile (Note: All three are needed, but if selecting one, ZigBee Stack is the core software)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-4",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "single",
+      "prompt": "What is the role of Zigbee end devices in the Zigbee network?",
+      "detailBlocks": [
+        [
+          "Communicates with other nodes",
+          "Controls the network",
+          "Both",
+          "None"
+        ]
+      ],
+      "options": [
+        "Communicates with other nodes",
+        "Controls the network",
+        "Both",
+        "None"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Communicates with other nodes (Note: End devices communicate through parent nodes)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-5",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "single",
+      "prompt": "What is the role of Zigbee routers in the Zigbee network?",
+      "detailBlocks": [
+        [
+          "Acts as a relay between other nodes",
+          "Controls the network",
+          "Both",
+          "None"
+        ]
+      ],
+      "options": [
+        "Acts as a relay between other nodes",
+        "Controls the network",
+        "Both",
+        "None"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Acts as a relay between other nodes",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-6",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "single",
+      "prompt": "Which of the following is not a feature of Zigbee? (choose the best one)",
+      "detailBlocks": [
+        [
+          "High Security",
+          "Low Power Consumption",
+          "Real-time Communication",
+          "Large Bandwidth"
+        ]
+      ],
+      "options": [
+        "High Security",
+        "Low Power Consumption",
+        "Real-time Communication",
+        "Large Bandwidth"
+      ],
+      "correct": [
+        3
+      ],
+      "answer": "Large Bandwidth",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-7",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "reveal",
+      "prompt": "What is the role of Zigbee coordinator in the Zigbee network?",
+      "detailBlocks": [
+        [
+          "Controls the network",
+          "Communicates with other nodes",
+          "Both",
+          "None"
+        ]
+      ],
+      "options": [
+        "Controls the network",
+        "Communicates with other nodes",
+        "Both",
+        "None"
+      ],
+      "correct": [],
+      "answer": "Controls the network (and also communicates with other nodes, so \"Both\" is also correct)",
+      "shuffleOptions": false
+    },
+    {
+      "id": "11-8",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "single",
+      "prompt": "What is the purpose of Zigbee communication?",
+      "detailBlocks": [
+        [
+          "Healthcare",
+          "Industrial Control",
+          "All of the above",
+          "Home Automation"
+        ]
+      ],
+      "options": [
+        "Healthcare",
+        "Industrial Control",
+        "All of the above",
+        "Home Automation"
+      ],
+      "correct": [
+        2
+      ],
+      "answer": "All of the above",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-9",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "multi",
+      "prompt": "Which frequency does Z-Wave operate on?",
+      "detailBlocks": [
+        [
+          "915 Mhz",
+          "2.4 Ghz",
+          "5 Ghz",
+          "868 Mhz"
+        ]
+      ],
+      "options": [
+        "915 Mhz",
+        "2.4 Ghz",
+        "5 Ghz",
+        "868 Mhz"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "answer": "868 Mhz (Europe) and 915 Mhz (US) (Note: Z-Wave uses sub-GHz frequencies; both are correct depending on region)",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-10",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "single",
+      "prompt": "Which network topology is not supported by ZigBee?",
+      "detailBlocks": [
+        [
+          "Bus",
+          "Mesh",
+          "Star",
+          "Cluster Tree"
+        ]
+      ],
+      "options": [
+        "Bus",
+        "Mesh",
+        "Star",
+        "Cluster Tree"
+      ],
+      "correct": [
+        0
+      ],
+      "answer": "Bus",
+      "shuffleOptions": true
+    },
+    {
+      "id": "11-11",
+      "lectureNumber": 11,
+      "lectureTitle": "ZigBee & Z-Wave",
+      "kind": "multi",
+      "prompt": "Which if the following do not contribute in routing in a ZigBee network?",
+      "detailBlocks": [
+        [
+          "ZigBee End Device",
+          "ZigBee Router",
+          "ZigBee Coordinator",
+          "ZigBee Master"
+        ]
+      ],
+      "options": [
+        "ZigBee End Device",
+        "ZigBee Router",
+        "ZigBee Coordinator",
+        "ZigBee Master"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "answer": "ZigBee End Device, ZigBee Master",
+      "shuffleOptions": true
+    }
+  ]
+};
+
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const percentEl = document.getElementById('percent');
+    const resetBtn = document.getElementById('resetBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+
+    const state = { score: 0, completed: 0 };
+    let currentQuestions = [];
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function shuffle(list) {
+      const copy = [...list];
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+      }
+      return copy;
+    }
+
+    function escapeHtmlClient(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function formatText(text) {
+      return escapeHtmlClient(text).replace(/\n/g, '<br>');
+    }
+
+    function buildQuestions() {
+      return shuffle(QUIZ_DATA.questions).map((question) => {
+        const item = clone(question);
+        item.__answered = false;
+        item.__selected = [];
+
+        if (item.kind !== 'reveal' && item.shuffleOptions) {
+          const shuffledOptions = shuffle(
+            item.options.map((text, index) => ({
+              text,
+              isCorrect: item.correct.includes(index),
+            })),
+          );
+
+          item.options = shuffledOptions.map((option) => option.text);
+          item.correct = shuffledOptions
+            .map((option, index) => option.isCorrect ? index : -1)
+            .filter((index) => index >= 0);
+        }
+
+        return item;
+      });
+    }
+
+    function markCompleted(item) {
+      if (!item.__answered) {
+        item.__answered = true;
+        state.completed += 1;
+      }
+    }
+
+    function getGradableCount() {
+      return currentQuestions.filter((question) => question.kind !== 'reveal').length;
+    }
+
+    function updateStats() {
+      const gradableCount = getGradableCount();
+      scoreEl.textContent = `Score: ${state.score} / ${gradableCount}`;
+      progressEl.textContent = `Completed: ${state.completed} / ${currentQuestions.length}`;
+      const percent = gradableCount ? Math.round((state.score / gradableCount) * 100) : 0;
+      percentEl.textContent = `${percent}%`;
+    }
+
+    function createPromptBlocks(item) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'prompt-blocks';
+
+      item.detailBlocks.forEach((lines) => {
+        if (lines.length === 0) {
+          return;
+        }
+
+        if (lines.length === 1) {
+          const paragraph = document.createElement('p');
+          paragraph.style.margin = '0';
+          paragraph.style.color = '#374151';
+          paragraph.innerHTML = formatText(lines[0]);
+          wrapper.appendChild(paragraph);
+          return;
+        }
+
+        const list = document.createElement('ul');
+        list.className = 'prompt-group';
+        lines.forEach((line) => {
+          const itemEl = document.createElement('li');
+          itemEl.innerHTML = formatText(line);
+          list.appendChild(itemEl);
+        });
+        wrapper.appendChild(list);
+      });
+
+      return wrapper;
+    }
+
+    function revealAnswer(card, item) {
+      const answer = card.querySelector('.answer');
+      answer.hidden = false;
+      markCompleted(item);
+      updateStats();
+    }
+
+    function finalizeSingle(card, item, pickedIndex) {
+      if (item.__answered) {
+        return;
+      }
+
+      const optionNodes = card.querySelectorAll('.opt');
+      optionNodes.forEach((node) => node.classList.add('disabled'));
+      markCompleted(item);
+
+      if (item.correct.includes(pickedIndex)) {
+        optionNodes[pickedIndex].classList.add('correct');
+        state.score += 1;
+      } else {
+        optionNodes[pickedIndex].classList.add('wrong');
+        item.correct.forEach((index) => optionNodes[index].classList.add('correct'));
+      }
+
+      revealAnswer(card, item);
+    }
+
+    function toggleMulti(card, item, optionIndex) {
+      if (item.__answered) {
+        return;
+      }
+
+      const optionNodes = card.querySelectorAll('.opt');
+      const selected = new Set(item.__selected);
+      if (selected.has(optionIndex)) {
+        selected.delete(optionIndex);
+      } else {
+        selected.add(optionIndex);
+      }
+
+      item.__selected = [...selected].sort((left, right) => left - right);
+      optionNodes.forEach((node, index) => {
+        node.classList.toggle('selected', selected.has(index));
+      });
+
+      const submitBtn = card.querySelector('[data-role="submit-multi"]');
+      submitBtn.disabled = item.__selected.length === 0;
+    }
+
+    function finalizeMulti(card, item) {
+      if (item.__answered || item.__selected.length === 0) {
+        return;
+      }
+
+      const optionNodes = card.querySelectorAll('.opt');
+      const correct = new Set(item.correct);
+      const selected = new Set(item.__selected);
+
+      optionNodes.forEach((node, index) => {
+        node.classList.add('disabled');
+        if (correct.has(index)) {
+          node.classList.add('correct');
+        }
+        if (selected.has(index) && !correct.has(index)) {
+          node.classList.add('wrong');
+        }
+      });
+
+      const isExactMatch =
+        item.__selected.length === item.correct.length
+        && item.__selected.every((value, index) => value === item.correct[index]);
+
+      markCompleted(item);
+      if (isExactMatch) {
+        state.score += 1;
+      }
+
+      revealAnswer(card, item);
+    }
+
+    function renderQuestion(item, questionIndex) {
+      const card = document.createElement('section');
+      card.className = 'qcard';
+
+      const head = document.createElement('div');
+      head.className = 'qhead';
+
+      const title = document.createElement('p');
+      title.className = 'qtitle';
+      title.innerHTML = `${questionIndex + 1}. ${formatText(item.prompt)}`;
+
+      const badgeWrap = document.createElement('div');
+      badgeWrap.style.display = 'flex';
+      badgeWrap.style.gap = '6px';
+      badgeWrap.style.flexWrap = 'wrap';
+
+      const lectureBadge = document.createElement('span');
+      lectureBadge.className = 'badge';
+      lectureBadge.textContent = `Lecture ${item.lectureNumber}`;
+
+      const typeBadge = document.createElement('span');
+      typeBadge.className = 'badge';
+      if (item.kind === 'multi') {
+        typeBadge.classList.add('multi');
+        typeBadge.textContent = 'Multi-select';
+      } else if (item.kind === 'reveal') {
+        typeBadge.classList.add('reveal');
+        typeBadge.textContent = 'Reveal answer';
+      } else {
+        typeBadge.textContent = 'Single answer';
+      }
+
+      badgeWrap.appendChild(lectureBadge);
+      badgeWrap.appendChild(typeBadge);
+      head.appendChild(title);
+      head.appendChild(badgeWrap);
+      card.appendChild(head);
+
+      const lectureMeta = document.createElement('p');
+      lectureMeta.style.margin = '0 0 10px';
+      lectureMeta.style.color = '#6b7280';
+      lectureMeta.style.fontSize = '13px';
+      lectureMeta.textContent = item.lectureTitle;
+      card.appendChild(lectureMeta);
+
+      if (item.detailBlocks.length > 0) {
+        card.appendChild(createPromptBlocks(item));
+      }
+
+      if (item.kind !== 'reveal') {
+        const optionsEl = document.createElement('div');
+        optionsEl.className = 'opts';
+
+        item.options.forEach((option, optionIndex) => {
+          const row = document.createElement('div');
+          row.className = 'opt';
+          row.setAttribute('data-q', String(questionIndex));
+          row.setAttribute('data-o', String(optionIndex));
+
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = String.fromCharCode(65 + optionIndex);
+
+          const text = document.createElement('span');
+          text.innerHTML = formatText(option);
+
+          row.appendChild(letter);
+          row.appendChild(text);
+
+          if (item.kind === 'single') {
+            row.addEventListener('click', () => finalizeSingle(card, item, optionIndex));
+          } else {
+            row.addEventListener('click', () => toggleMulti(card, item, optionIndex));
+          }
+
+          optionsEl.appendChild(row);
+        });
+
+        card.appendChild(optionsEl);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+
+      if (item.kind === 'multi') {
+        const submitBtn = document.createElement('button');
+        submitBtn.type = 'button';
+        submitBtn.className = 'secondary';
+        submitBtn.textContent = 'Check answer';
+        submitBtn.disabled = true;
+        submitBtn.setAttribute('data-role', 'submit-multi');
+        submitBtn.addEventListener('click', () => finalizeMulti(card, item));
+        actions.appendChild(submitBtn);
+      }
+
+      if (item.kind === 'reveal') {
+        const revealBtn = document.createElement('button');
+        revealBtn.type = 'button';
+        revealBtn.className = 'secondary';
+        revealBtn.textContent = 'Reveal answer';
+        revealBtn.addEventListener('click', () => {
+          revealBtn.disabled = true;
+          revealAnswer(card, item);
+        });
+        actions.appendChild(revealBtn);
+      }
+
+      if (actions.childElementCount > 0) {
+        card.appendChild(actions);
+      }
+
+      const answer = document.createElement('div');
+      answer.className = 'answer';
+      answer.hidden = true;
+      answer.innerHTML = `<strong>Professor answer:</strong><pre>${escapeHtmlClient(item.answer)}</pre>`;
+      card.appendChild(answer);
+
+      return card;
+    }
+
+    function render() {
+      quizEl.innerHTML = '';
+      currentQuestions.forEach((item, questionIndex) => {
+        quizEl.appendChild(renderQuestion(item, questionIndex));
+      });
+      updateStats();
+    }
+
+    function resetQuiz() {
+      state.score = 0;
+      state.completed = 0;
+      currentQuestions.forEach((item) => {
+        item.__answered = false;
+        item.__selected = [];
+      });
+      render();
+    }
+
+    function revealAll() {
+      document.querySelectorAll('.qcard').forEach((card, index) => {
+        const item = currentQuestions[index];
+
+        if (item.kind === 'single') {
+          const optionNodes = card.querySelectorAll('.opt');
+          optionNodes.forEach((node, optionIndex) => {
+            node.classList.add('disabled');
+            if (item.correct.includes(optionIndex)) {
+              node.classList.add('correct');
+            }
+          });
+          markCompleted(item);
+        } else if (item.kind === 'multi') {
+          const optionNodes = card.querySelectorAll('.opt');
+          optionNodes.forEach((node, optionIndex) => {
+            node.classList.add('disabled');
+            node.classList.remove('selected', 'wrong');
+            if (item.correct.includes(optionIndex)) {
+              node.classList.add('correct');
+            }
+          });
+          const submitBtn = card.querySelector('[data-role="submit-multi"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+          }
+          markCompleted(item);
+        } else {
+          const button = card.querySelector('.actions button');
+          if (button) {
+            button.disabled = true;
+          }
+        }
+
+        card.querySelector('.answer').hidden = false;
+        if (item.kind === 'reveal') {
+          markCompleted(item);
+        }
+      });
+
+      updateStats();
+    }
+
+    function shuffleQuiz() {
+      state.score = 0;
+      state.completed = 0;
+      currentQuestions = buildQuestions();
+      render();
+    }
+
+    resetBtn.addEventListener('click', resetQuiz);
+    revealBtn.addEventListener('click', revealAll);
+    shuffleBtn.addEventListener('click', shuffleQuiz);
+
+    currentQuestions = buildQuestions();
+    render();
+  </script>
+</body>
+</html>
