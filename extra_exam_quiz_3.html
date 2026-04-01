@@ -67,121 +67,17 @@
   <script>
     const QUESTIONS = [
   {
-    "q": "In BPSK, which symbol represents bit 1 in this convention?",
+    "q": "Which platform pairing matches the edge-compute examples?",
     "options": [
-      "+1",
-      "-1",
-      "0",
-      "+j"
+      "Jetson for GPU-heavy inference, Raspberry Pi for SBC-centric use",
+      "Jetson for optical fiber routing, Raspberry Pi for LTE towers",
+      "Jetson for REST caching, Raspberry Pi for LoRa chirps",
+      "Jetson for cloud storage, Raspberry Pi for satellite links"
     ],
     "correct": [
       0
     ],
-    "why": "The lecture's BPSK mapping used +1 for bit 1 and -1 for bit 0, so one bit changes the phase sign."
-  },
-  {
-    "q": "How many bits does one QPSK symbol carry?",
-    "options": [
-      "Two bits",
-      "One bit",
-      "Four bits",
-      "Eight bits"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "QPSK maps two input bits to one symbol, so it doubles the bit content of simple binary phase signaling."
-  },
-  {
-    "q": "Why are multiple-access schemes needed in cellular systems?",
-    "options": [
-      "Many users must share the same wireless resources",
-      "Every packet needs two separate batteries to travel",
-      "IPv6 addresses require a second physical layer",
-      "Application protocols cannot use acknowledgement frames"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "Multiple-access techniques divide or coordinate shared spectrum so several users can communicate over the same wireless system."
-  },
-  {
-    "q": "Which access scheme separates users mainly by assigning different frequency portions?",
-    "options": [
-      "FDMA",
-      "TDMA",
-      "CDMA",
-      "CSMA"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "FDMA isolates users in different frequency bands, whereas the other schemes separate them by time, code, or contention."
-  },
-  {
-    "q": "Which access scheme separates users mainly by assigning time slots?",
-    "options": [
-      "TDMA",
-      "FDMA",
-      "CDMA",
-      "DSSS"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "TDMA lets several users share one channel over time by giving each user a time window for transmission."
-  },
-  {
-    "q": "Which access scheme distinguishes users through different codes on the same band?",
-    "options": [
-      "CDMA",
-      "FDMA",
-      "TDMA",
-      "RAW"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "CDMA separates users by code structure rather than by dedicating a band or a time slot to each one."
-  },
-  {
-    "q": "Which multiple-access approach uses groups of subcarriers for allocation?",
-    "options": [
-      "OFDMA",
-      "TDMA",
-      "ALOHA",
-      "Bluetooth FHSS"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "OFDMA divides a channel into many subcarriers and allocates subsets of them across users."
-  },
-  {
-    "q": "What important distinction was made between OFDMA and TDMA or FDMA or CDMA?",
-    "options": [
-      "OFDMA can send multiple symbols at one point in time",
-      "OFDMA removes all need for guard bands entirely",
-      "OFDMA uses no modulation on the physical layer",
-      "OFDMA forces every user to occupy all subcarriers"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "Because OFDMA distributes traffic over multiple subcarriers, it can carry several symbol streams in parallel rather than one per user at a time."
-  },
-  {
-    "q": "What kind of traffic pattern is NB-IoT primarily designed for?",
-    "options": [
-      "Small amounts of data from simple devices",
-      "Continuous ultra-high-definition video uplinks",
-      "Large software builds across fast-moving vehicles",
-      "Massive peer-to-peer file sharing between phones"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "NB-IoT targets simple endpoints that send or receive modest amounts of data instead of broadband media flows."
+    "why": "Jetson boards were used as GPU-oriented edge AI examples, while Raspberry Pi represented simpler single-board edge computing."
   },
   {
     "q": "Why is Non-IP Data Delivery attractive for NB-IoT?",
@@ -197,176 +93,294 @@
     "why": "When payloads are small, avoiding IP headers and the associated stack overhead makes communication more efficient."
   },
   {
-    "q": "Which network element interfaces NIDD with application servers?",
+    "q": "Which method is normally used to create a new resource in a RESTful workflow?",
     "options": [
-      "SCEF",
-      "AID",
-      "TIM",
-      "GATT"
+      "POST",
+      "HEAD",
+      "DELETE",
+      "TRACE"
     ],
     "correct": [
       0
     ],
-    "why": "The Service Capability Exposure Function exposes network capabilities to application-side services in the NIDD path."
+    "why": "POST commonly submits data to create a new server-side resource, so repeated identical POST requests can create multiple entries."
   },
   {
-    "q": "Which deployment mode is NOT one of the three NB-IoT operating modes discussed?",
+    "q": "Which mesh property refers to automatic rerouting after a node or path fails?",
     "options": [
-      "Out-band",
-      "In-band",
-      "Guard band",
-      "Stand alone"
+      "Self-healing",
+      "Circuit reservation",
+      "Frequency hopping",
+      "Payload segmentation"
     ],
     "correct": [
       0
     ],
-    "why": "The lecture named in-band, guard band, and stand-alone deployment; out-band was not part of that trio."
+    "why": "Self-healing means the network can recover from broken paths by finding alternatives instead of requiring manual rewiring."
   },
   {
-    "q": "Select all advantages that were highlighted for NB-IoT.",
+    "q": "Which description best fits Thread?",
     "options": [
-      "Low power consumption",
-      "Wide coverage",
-      "Good indoor reach",
-      "Multi-gigabit data rates"
-    ],
-    "correct": [
-      0,
-      1,
-      2
-    ],
-    "why": "NB-IoT emphasizes coverage and energy efficiency, especially indoors or in dense urban settings, not broadband-class throughput."
-  },
-  {
-    "q": "What makes NB-IoT a poor fit for highly mobile use cases?",
-    "options": [
-      "Frequent handoffs are not its main design target",
-      "Its radios can only operate at 2.4 GHz",
-      "It requires Bluetooth advertising before each uplink",
-      "It cannot send any downlink packets at all"
+      "A secure, low-power IPv6 mesh for home and commercial use",
+      "A browser protocol for cloud-only dashboards",
+      "A LoRa class for multicast firmware transfer",
+      "A wired bus replacing all wireless edge links"
     ],
     "correct": [
       0
     ],
-    "why": "NB-IoT was designed around simple, mostly static endpoints, so rapid mobility and repeated tower handoffs are not its strength."
+    "why": "Thread was described as an IPv6-based, secure, low-power wireless standard designed for connected environments such as homes and buildings."
   },
   {
-    "q": "What does Power Saving Mode do for an NB-IoT device?",
+    "q": "Which option was contrasted as a low-power, long-range choice with mile-scale reach?",
     "options": [
-      "It allows the device to sleep for long periods",
-      "It raises symbol rate so more bits fit per second",
-      "It turns every packet into a multicast frame",
-      "It binds the device permanently to one application server"
+      "LoRa",
+      "BLE",
+      "ZigBee",
+      "Wi-Fi"
     ],
     "correct": [
       0
     ],
-    "why": "PSM reduces how often the device must wake for network tracking, which extends battery life by keeping the radio asleep longer."
+    "why": "LoRa trades data rate for range and energy efficiency, making it suitable when messages are small but distance matters."
   },
   {
-    "q": "What does eDRX extend in NB-IoT operation?",
+    "q": "Why does BLE fit beacon-style sensing use cases well?",
     "options": [
-      "The interval between listening opportunities in idle mode",
-      "The width of each OFDMA subcarrier in the downlink",
-      "The frequency range of the licensed spectrum band",
-      "The number of devices that can join one piconet"
+      "It supports short broadcasts with low energy overhead",
+      "It requires large continuous payloads for efficiency",
+      "It depends on a licensed operator spectrum block",
+      "It assumes every node is mains powered all day"
     ],
     "correct": [
       0
     ],
-    "why": "Extended DRX lets the device listen less often, trading response immediacy for lower energy consumption."
+    "why": "BLE is well suited to short, periodic transmissions where the radio can stay quiet most of the time."
   },
   {
-    "q": "What does IEEE 802.15.4 primarily target?",
+    "q": "Which 2025 estimate pair was cited for connected IoT devices and generated data?",
     "options": [
-      "Low-rate wireless personal area networks",
-      "High-speed metropolitan optical backbones",
-      "Browser-based software distribution networks",
-      "Long-haul satellite television uplinks"
+      "41.6 billion devices and 79.4 zettabytes",
+      "4.16 billion devices and 79.4 terabytes",
+      "79.4 billion devices and 41.6 petabytes",
+      "416 billion devices and 7.94 zettabytes"
     ],
     "correct": [
       0
     ],
-    "why": "802.15.4 was designed for low-rate WPAN use cases where modest data rates and low power matter more than raw throughput."
+    "why": "The cited forecast emphasized both scale and data explosion: tens of billions of devices and tens of zettabytes of data."
   },
   {
-    "q": "How many 5 MHz channels were associated with the common 2.4 GHz 802.15.4 band?",
+    "q": "Which method is normally used to replace or fully update a known resource?",
     "options": [
-      "16",
-      "3",
-      "10",
-      "40"
+      "PUT",
+      "OPTIONS",
+      "TRACE",
+      "HEAD"
     ],
     "correct": [
       0
     ],
-    "why": "The common 2.4 GHz profile of 802.15.4 uses sixteen channels, which is one reason it appears in many low-power IoT stacks."
+    "why": "PUT targets a known resource URI and updates the full representation, which is why repeating the same PUT should converge to the same state."
   },
   {
-    "q": "What PHY data rate was highlighted for 802.15.4 in that common 2.4 GHz band?",
+    "q": "Which comparison was used to illustrate ZigBee's lower protocol complexity?",
     "options": [
-      "250 kbps",
-      "25 kbps",
-      "2 Mbps",
-      "20 Mbps"
+      "About 32 kB for ZigBee versus about 250 kB for Bluetooth",
+      "About 250 kB for ZigBee versus about 32 kB for Bluetooth",
+      "About 32 MB for ZigBee versus about 250 MB for Bluetooth",
+      "Both were described at roughly the same stack size"
     ],
     "correct": [
       0
     ],
-    "why": "The 2.4 GHz 802.15.4 PHY rate is 250 kbps, which fits the low-rate design goals of the standard."
+    "why": "The stack-size comparison highlighted that ZigBee can be much lighter, which aligns with its low-power, low-complexity design goals."
   },
   {
-    "q": "Which spread-spectrum method is used in 802.15.4?",
+    "q": "In a LoRaWAN system, which component acts as the network brain?",
     "options": [
-      "DSSS",
-      "OFDMA",
-      "Pure FSK only",
-      "Cable-based TDM"
+      "The centralized network server",
+      "A random end device near the gateway",
+      "The transport-layer checksum field",
+      "The battery-management circuit in the sensor"
     ],
     "correct": [
       0
     ],
-    "why": "802.15.4 uses direct-sequence spread spectrum rather than the OFDMA style used in cellular downlinks."
+    "why": "Gateways mainly forward traffic, while the network server coordinates control decisions across the whole LoRaWAN deployment."
   },
   {
-    "q": "Select all topologies highlighted for 802.15.4.",
+    "q": "What kind of traffic pattern is NB-IoT primarily designed for?",
     "options": [
-      "Star",
-      "Peer-to-peer",
-      "Ring",
-      "Fully optical mesh"
+      "Small amounts of data from simple devices",
+      "Continuous ultra-high-definition video uplinks",
+      "Large software builds across fast-moving vehicles",
+      "Massive peer-to-peer file sharing between phones"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "NB-IoT targets simple endpoints that send or receive modest amounts of data instead of broadband media flows."
+  },
+  {
+    "q": "Which access scheme distinguishes users through different codes on the same band?",
+    "options": [
+      "CDMA",
+      "FDMA",
+      "TDMA",
+      "RAW"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "CDMA separates users by code structure rather than by dedicating a band or a time slot to each one."
+  },
+  {
+    "q": "Why can many ZigBee devices achieve multi-year battery life in practice?",
+    "options": [
+      "Many applications stay off most of the time with low duty cycle",
+      "Every device sends continuous beacons to maintain coverage",
+      "All nodes must use the 5 GHz band to reduce congestion",
+      "Payloads are always compressed by cloud GPUs before radio use"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Very low duty cycle means the radio and logic remain inactive most of the time, which drastically lowers average energy use."
+  },
+  {
+    "q": "What turns many connected devices into an IoT system rather than a loose collection of gadgets?",
+    "options": [
+      "They form a network of networks with data processing",
+      "They all use the same battery chemistry in deployment",
+      "They all connect through one local serial cable",
+      "They all display data on the same mobile screen"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The key idea is coordinated connectivity plus information processing across many devices and networks, not merely physical proximity or one shared display."
+  },
+  {
+    "q": "What is the purpose of an ACK in CoAP?",
+    "options": [
+      "To confirm receipt of a confirmable message",
+      "To request a larger payload block size",
+      "To advertise a broker topic alias",
+      "To reserve a time slot at the MAC layer"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "An ACK lets the sender know that a confirmable message arrived, so retransmission is not needed for that exchange."
+  },
+  {
+    "q": "Which comparison between LoRa and LoRaWAN is correct?",
+    "options": [
+      "LoRa is PHY; LoRaWAN is MAC-oriented network behavior",
+      "LoRa is application; LoRaWAN is link encryption only",
+      "LoRa is transport; LoRaWAN is browser-based control",
+      "LoRa is brokered messaging; LoRaWAN is IPv6 routing"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "LoRa defines how the signal is modulated on the air, while LoRaWAN defines how devices use that radio in a managed wide-area system."
+  },
+  {
+    "q": "What is fog computing best viewed as?",
+    "options": [
+      "A distributed layer between edge devices and the cloud",
+      "A replacement for all cloud systems in every design",
+      "A radio protocol that competes with Wi-Fi HaLow",
+      "A file format for model checkpoints at the edge"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Fog brings compute closer to data sources but still sits between the far edge and the centralized cloud rather than replacing every cloud role."
+  },
+  {
+    "q": "Which device-role pair was emphasized for BLE?",
+    "options": [
+      "Central and peripheral",
+      "Router and coordinator",
+      "Publisher and broker",
+      "Gateway and network server"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE commonly frames interaction around central and peripheral roles instead of mesh-router or broker terminology."
+  },
+  {
+    "q": "What tells power-save stations that buffered packets are waiting at the access point?",
+    "options": [
+      "The Traffic Indication Map in the beacon",
+      "The ARP cache in the distribution system",
+      "The TCP urgent pointer in every response",
+      "The DNS answer section of the SSID record"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The TIM inside the beacon indicates whether the AP is holding traffic for sleeping stations, which lets them wake only when needed."
+  },
+  {
+    "q": "Select all frames that an access point can send to a station during active scanning and association.",
+    "options": [
+      "Probe Response",
+      "Association Response",
+      "Probe Request",
+      "Association Request"
     ],
     "correct": [
       0,
       1
     ],
-    "why": "The lecture emphasized star and peer-to-peer forms, not ring or optical topologies."
+    "why": "During active scanning the station sends the requests, while the access point answers with a probe response and later an association response."
   },
   {
-    "q": "What happens when a full-function device starts a PAN in 802.15.4?",
+    "q": "What does Adaptive Data Rate optimize in LoRaWAN?",
     "options": [
-      "It becomes the coordinator",
-      "It becomes the broker",
-      "It becomes the network server",
-      "It becomes a passive sniffer only"
+      "The tradeoff among rate, range, and energy use",
+      "The color of the dashboard widget per gateway",
+      "The number of REST verbs allowed in the payload",
+      "The need for all acknowledgements to become multicast"
     ],
     "correct": [
       0
     ],
-    "why": "The device that initiates the PAN assumes the coordinator role and manages association for that personal area network."
+    "why": "ADR uses link conditions to choose an efficient data rate, balancing capacity, reliability, and battery life."
   },
   {
-    "q": "What shorter address may the coordinator assign to a joining node?",
+    "q": "What is the practical benefit of a retained message in MQTT?",
     "options": [
-      "A 16-bit short address",
-      "A 4-bit page index",
-      "A 6-bit topic alias",
-      "A 128-bit TCP port pair"
+      "A new subscriber can receive the last stored state",
+      "The broker can skip all topic matching for that client",
+      "Every retained payload becomes permanently immutable",
+      "QoS 0 becomes identical to QoS 2 for that topic"
     ],
     "correct": [
       0
     ],
-    "why": "Joining nodes can use a shorter 16-bit address instead of relying only on the longer extended identifier."
+    "why": "Retain keeps the most recent value on a topic so a later subscriber can learn the current state immediately instead of waiting for the next publish."
+  },
+  {
+    "q": "Select all protocol-layer pairings that remain consistent with the IoT stack overview.",
+    "options": [
+      "HTTP belongs at the application layer",
+      "UDP belongs at the transport layer",
+      "IEEE 802.15.4 belongs at the data-link layer",
+      "LoRa belongs at the physical layer"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "why": "Each pairing matches the role of the protocol: HTTP handles application exchange, UDP transports messages, 802.15.4 organizes link access, and LoRa describes radio modulation."
   },
   {
     "q": "In beacon-enabled 802.15.4, which period is reserved for real-time services?",
@@ -382,69 +396,265 @@
     "why": "Real-time service is supported through guaranteed time slots inside the contention-free period rather than the contention access period."
   },
   {
-    "q": "Which part of a beacon-enabled superframe uses slotted CSMA?",
+    "q": "What does observation enable in CoAP after a client registers interest?",
     "options": [
-      "The CAP",
-      "The CFP",
-      "The inactive interval",
-      "The route-cache interval"
+      "The server can push updates when state changes",
+      "The client can bypass tokens and message IDs",
+      "The proxy can replace UDP with Ethernet frames",
+      "The broker can retain payloads for future clients"
     ],
     "correct": [
       0
     ],
-    "why": "The contention access period is the slotted contention phase, while the contention-free period is reserved for guaranteed slots."
+    "why": "Observation avoids repeated polling by letting the server send notifications when the observed resource changes."
   },
   {
-    "q": "What channel-access form is used when 802.15.4 operates without beacons?",
+    "q": "What is the router's primary role in a ZigBee network?",
     "options": [
-      "Unslotted CSMA",
-      "Guaranteed time slots only",
-      "RTS and CTS reservations only",
-      "Fixed CDMA spreading codes only"
+      "Relay and route traffic between nodes",
+      "Assign all cloud identities to applications",
+      "Limit communication to one local sensor only",
+      "Operate only as a battery charger for end devices"
     ],
     "correct": [
       0
     ],
-    "why": "Without beacons there is no slot structure, so the MAC uses unslotted CSMA behavior instead of slotted access."
+    "why": "Routers extend the network and help forward traffic, which is essential in mesh-style ZigBee deployments."
   },
   {
-    "q": "What maximum MAC frame size was highlighted for 802.15.4?",
+    "q": "Which MQTT QoS level is intended to provide exactly-once delivery?",
     "options": [
-      "127 bytes",
-      "512 bytes",
-      "1500 bytes",
-      "4096 bytes"
+      "QoS 2",
+      "QoS 0",
+      "QoS 1",
+      "QoS 255"
     ],
     "correct": [
       0
     ],
-    "why": "The small maximum frame size reinforces why upper-layer efficiency and compact headers matter so much on 802.15.4 links."
+    "why": "QoS 2 uses a more elaborate handshake so the receiver processes the message exactly once instead of tolerating duplicates."
   },
   {
-    "q": "6LoWPAN carries which network-layer family over low-power links?",
+    "q": "Which spectrum region is central to Wi-Fi HaLow deployments?",
     "options": [
-      "IPv6",
-      "IPv4 only",
-      "Ethernet MAC addresses only",
-      "Bluetooth GATT only"
+      "Sub-1 GHz",
+      "Only 6 GHz",
+      "Only 60 GHz",
+      "Only infrared"
     ],
     "correct": [
       0
     ],
-    "why": "6LoWPAN exists to adapt IPv6 for constrained, low-power wireless personal area networks rather than to tunnel IPv4."
+    "why": "HaLow shifts Wi-Fi-style operation into sub-1 GHz spectrum to improve reach and support many low-power devices."
   },
   {
-    "q": "Which description best fits Thread?",
+    "q": "Compared with classic Bluetooth, BLE is optimized mainly for what tradeoff?",
     "options": [
-      "A secure, low-power IPv6 mesh for home and commercial use",
-      "A browser protocol for cloud-only dashboards",
-      "A LoRa class for multicast firmware transfer",
-      "A wired bus replacing all wireless edge links"
+      "Lower energy use for shorter data exchanges",
+      "Higher fiber reach for backbone aggregation",
+      "Guaranteed higher range than all sub-GHz links",
+      "Continuous video streaming at multi-gigabit rates"
     ],
     "correct": [
       0
     ],
-    "why": "Thread was described as an IPv6-based, secure, low-power wireless standard designed for connected environments such as homes and buildings."
+    "why": "BLE reduces power draw and protocol overhead so short, intermittent exchanges become more practical for sensors and wearables."
+  },
+  {
+    "q": "Which option is NOT a direct advantage of moving latency-sensitive inference toward the edge?",
+    "options": [
+      "Guaranteed unlimited storage on the device",
+      "Lower end-to-end response time",
+      "Less raw data sent back to the cloud",
+      "Lower dependence on distant connectivity"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Edge placement can cut latency and bandwidth use, but it does not magically create unlimited local storage capacity."
+  },
+  {
+    "q": "Which access scheme separates users mainly by assigning different frequency portions?",
+    "options": [
+      "FDMA",
+      "TDMA",
+      "CDMA",
+      "CSMA"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "FDMA isolates users in different frequency bands, whereas the other schemes separate them by time, code, or contention."
+  },
+  {
+    "q": "Select all regional bands associated with Z-Wave.",
+    "options": [
+      "915 MHz in the U.S.",
+      "868 MHz in Europe",
+      "2.4 GHz globally",
+      "6 GHz indoor only"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "why": "Z-Wave was described as a sub-GHz system, specifically 915 MHz in the U.S. and 868 MHz in Europe."
+  },
+  {
+    "q": "How many BLE channels are reserved for advertising?",
+    "options": [
+      "3",
+      "37",
+      "40",
+      "79"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "BLE uses a small dedicated set of advertising channels so discovery and broadcast do not consume the whole channel set."
+  },
+  {
+    "q": "What makes a hybrid mesh hybrid rather than purely centralized or distributed?",
+    "options": [
+      "Topology can be guided centrally while route maintenance stays local",
+      "Every path is computed twice using identical algorithms",
+      "Nodes never discover neighbors on their own",
+      "Only flooding is allowed after the first packet"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Hybrid mesh keeps some central guidance for topology or roles while leaving ongoing path maintenance or repair to the nodes."
+  },
+  {
+    "q": "What does statelessness mean in a REST interaction?",
+    "options": [
+      "Each request carries the context needed to handle it",
+      "The server caches every response forever by default",
+      "The client cannot send repeated requests safely",
+      "The network keeps the same TCP payload in memory"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Statelessness means the server does not depend on hidden session context from earlier requests; the current request supplies what is needed."
+  },
+  {
+    "q": "What makes NB-IoT a poor fit for highly mobile use cases?",
+    "options": [
+      "Frequent handoffs are not its main design target",
+      "Its radios can only operate at 2.4 GHz",
+      "It requires Bluetooth advertising before each uplink",
+      "It cannot send any downlink packets at all"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "NB-IoT was designed around simple, mostly static endpoints, so rapid mobility and repeated tower handoffs are not its strength."
+  },
+  {
+    "q": "What PHY data rate was highlighted for 802.15.4 in that common 2.4 GHz band?",
+    "options": [
+      "250 kbps",
+      "25 kbps",
+      "2 Mbps",
+      "20 Mbps"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The 2.4 GHz 802.15.4 PHY rate is 250 kbps, which fits the low-rate design goals of the standard."
+  },
+  {
+    "q": "Which region was paired with 868 MHz and duty-cycle limits?",
+    "options": [
+      "Europe",
+      "United States",
+      "Japan only",
+      "South America only"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The lecture contrasted Europe at 868 MHz with duty-cycle limits against the U.S. case at 915 MHz with different regulatory constraints."
+  },
+  {
+    "q": "What data rate was associated with ZigBee in the 2.4 GHz band?",
+    "options": [
+      "250 kbps",
+      "40 kbps",
+      "20 kbps",
+      "2 Mbps"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The 2.4 GHz ZigBee profile uses 250 kbps, higher than its lower-frequency regional profiles."
+  },
+  {
+    "q": "Which HTTP method is both safe and idempotent when used for retrieval?",
+    "options": [
+      "GET",
+      "POST",
+      "PATCH",
+      "CONNECT"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "GET reads a resource representation without changing the resource, so repeating it should not change server state."
+  },
+  {
+    "q": "What scaling change greatly expands station support in 802.11ah compared with legacy Wi-Fi?",
+    "options": [
+      "The Association ID range grows from 2007 to 8191",
+      "The beacon interval is fixed to one microsecond",
+      "The SSID field is expanded to 8191 bytes",
+      "The ACK timer is removed from the MAC layer"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "By increasing the AID range, 802.11ah can support far more stations than the legacy association limit allowed."
+  },
+  {
+    "q": "In passive scanning, what does the station wait to hear before choosing an access point?",
+    "options": [
+      "Beacon frames",
+      "Probe Request frames",
+      "RTS frames",
+      "PS-Poll frames"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Passive scanning listens for periodic beacons instead of actively transmitting a probe request first."
+  },
+  {
+    "q": "Which set best matches the functional view of an IoT thing?",
+    "options": [
+      "Controller, sensors or actuators, and communication",
+      "Keyboard, monitor, browser, and spreadsheet macros",
+      "Database, compiler, debugger, and access switch",
+      "Hypervisor, virtual machine, cache, and GPU fan"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "An IoT thing needs a control element, a way to sense or affect its environment, and connectivity so its state can be communicated or coordinated."
+  },
+  {
+    "q": "Which deployment mode is NOT one of the three NB-IoT operating modes discussed?",
+    "options": [
+      "Out-band",
+      "In-band",
+      "Guard band",
+      "Stand alone"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "The lecture named in-band, guard band, and stand-alone deployment; out-band was not part of that trio."
   },
   {
     "q": "Select all characteristics that fit Thread as presented.",
@@ -463,187 +673,31 @@
     "why": "Thread emphasizes resilience, low power, flexible application support, and the ability to scale without depending on one fragile central element."
   },
   {
-    "q": "Select all Thread roles that have routing capability.",
+    "q": "What is the main tradeoff in a centralized mesh design?",
     "options": [
-      "Router",
-      "Leader",
-      "Full End Device",
-      "Router Eligible End Device"
+      "Less node burden but more dependence on central control",
+      "More local autonomy but no global route coordination",
+      "No need for role assignment but more routing churn",
+      "Guaranteed zero control traffic at all times"
+    ],
+    "correct": [
+      0
+    ],
+    "why": "Centralized mesh can simplify node behavior, but it creates dependence on the central authority that assigns roles or paths."
+  },
+  {
+    "q": "Select all topologies highlighted for 802.15.4.",
+    "options": [
+      "Star",
+      "Peer-to-peer",
+      "Ring",
+      "Fully optical mesh"
     ],
     "correct": [
       0,
       1
     ],
-    "why": "The lecture identified Router and Leader as routing-capable roles, while end devices and merely eligible devices do not perform routing by default."
-  },
-  {
-    "q": "When the chipping sequence gets longer in DSSS, what generally happens to the signal bandwidth?",
-    "options": [
-      "It increases",
-      "It drops to zero",
-      "It becomes irrelevant",
-      "It becomes equal to one chip rate"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "A longer spreading code expands the transmitted signal over a wider bandwidth because each information bit is represented by more chips."
-  },
-  {
-    "q": "Which statement is NOT incompatible with Thread's design goals?",
-    "options": [
-      "Self-healing IPv6 connectivity without one single point of failure",
-      "One fragile coordinator that every route must cross",
-      "Application support only when a broker rewrites all payloads",
-      "Large idle power draw as a requirement for all devices"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "Thread aims for resilient, low-power IPv6 networking, so a self-healing design without one mandatory central bottleneck fits its goals."
-  },
-  {
-    "q": "What is Matter in the context presented?",
-    "options": [
-      "An open smart-home interoperability standard",
-      "A proprietary radio used only by ZigBee routers",
-      "A cloud hypervisor for AI inference clusters",
-      "A subcarrier-allocation scheme for NB-IoT"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "Matter is intended to let smart-home products work across ecosystems through one common application-level standard."
-  },
-  {
-    "q": "Which organization was associated with Matter?",
-    "options": [
-      "Connectivity Standards Alliance",
-      "Wi-Fi Alliance",
-      "3GPP",
-      "Bluetooth SIG only"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "The Connectivity Standards Alliance was identified as the organization behind Matter."
-  },
-  {
-    "q": "Which overall profile best matches ZigBee?",
-    "options": [
-      "Ultra-low power and low data rate",
-      "High power and multimedia throughput",
-      "Only wired industrial fieldbus operation",
-      "Exclusive dependence on licensed cellular spectrum"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "ZigBee focuses on low data rate and very low power so devices can operate for long periods on modest energy budgets."
-  },
-  {
-    "q": "Why can many ZigBee devices achieve multi-year battery life in practice?",
-    "options": [
-      "Many applications stay off most of the time with low duty cycle",
-      "Every device sends continuous beacons to maintain coverage",
-      "All nodes must use the 5 GHz band to reduce congestion",
-      "Payloads are always compressed by cloud GPUs before radio use"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "Very low duty cycle means the radio and logic remain inactive most of the time, which drastically lowers average energy use."
-  },
-  {
-    "q": "How many ZigBee channels were associated with the 2.4 GHz band?",
-    "options": [
-      "16",
-      "10",
-      "1",
-      "40"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "At 2.4 GHz, ZigBee uses sixteen channels, which matches the common global operating band described in the lecture."
-  },
-  {
-    "q": "What data rate was associated with ZigBee in the 2.4 GHz band?",
-    "options": [
-      "250 kbps",
-      "40 kbps",
-      "20 kbps",
-      "2 Mbps"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "The 2.4 GHz ZigBee profile uses 250 kbps, higher than its lower-frequency regional profiles."
-  },
-  {
-    "q": "How many ZigBee channels were described for the 915 MHz band in the Americas?",
-    "options": [
-      "10",
-      "16",
-      "1",
-      "40"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "The 915 MHz regional profile in the Americas was described with ten channels."
-  },
-  {
-    "q": "What data rate was associated with ZigBee at 915 MHz?",
-    "options": [
-      "40 kbps",
-      "250 kbps",
-      "20 Mbps",
-      "2 kbps"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "The 915 MHz profile trades data rate for propagation characteristics and was listed at 40 kbps."
-  },
-  {
-    "q": "What was the European 868 MHz ZigBee profile described as?",
-    "options": [
-      "One channel at 20 kbps",
-      "Ten channels at 40 kbps",
-      "Sixteen channels at 250 kbps",
-      "Forty channels at 2 Mbps"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "The European 868 MHz profile was the narrowest of the listed ZigBee options: one channel and a 20 kbps rate."
-  },
-  {
-    "q": "What is the coordinator's primary role in a ZigBee network?",
-    "options": [
-      "Form and control the network",
-      "Sleep permanently and avoid routing",
-      "Act only as a passive encryption key store",
-      "Translate every packet into HTTP responses"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "The coordinator is responsible for network formation and overall control, which distinguishes it from relay-focused or endpoint roles."
-  },
-  {
-    "q": "What is the router's primary role in a ZigBee network?",
-    "options": [
-      "Relay and route traffic between nodes",
-      "Assign all cloud identities to applications",
-      "Limit communication to one local sensor only",
-      "Operate only as a battery charger for end devices"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "Routers extend the network and help forward traffic, which is essential in mesh-style ZigBee deployments."
+    "why": "The lecture emphasized star and peer-to-peer forms, not ring or optical topologies."
   },
   {
     "q": "What is the end device's primary role in a ZigBee network?",
@@ -659,72 +713,17 @@
     "why": "End devices are meant to be simpler, often lower-power participants that communicate through their parent rather than serving as routers."
   },
   {
-    "q": "Which topology is not supported by ZigBee?",
+    "q": "In a distributed mesh, routes are maintained mainly by what mechanism?",
     "options": [
-      "Bus",
-      "Mesh",
-      "Star",
-      "Cluster tree"
+      "Nodes exchange control information and select paths themselves",
+      "A central gateway writes every path into the radios",
+      "Each device sends only to one fixed parent forever",
+      "A cloud dashboard manually assigns each next hop"
     ],
     "correct": [
       0
     ],
-    "why": "ZigBee supports star, mesh, and cluster-tree style formations, so bus is the outlier in that list."
-  },
-  {
-    "q": "Select all regional bands associated with Z-Wave.",
-    "options": [
-      "915 MHz in the U.S.",
-      "868 MHz in Europe",
-      "2.4 GHz globally",
-      "6 GHz indoor only"
-    ],
-    "correct": [
-      0,
-      1
-    ],
-    "why": "Z-Wave was described as a sub-GHz system, specifically 915 MHz in the U.S. and 868 MHz in Europe."
-  },
-  {
-    "q": "What practical advantage does Z-Wave gain from sub-GHz operation?",
-    "options": [
-      "Less competition with crowded 2.4 GHz systems",
-      "Mandatory support for Wi-Fi style MIMO",
-      "A guaranteed 10 Gbps downlink in every room",
-      "Direct compatibility with ZigBee radios by default"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "By avoiding the busy 2.4 GHz band, Z-Wave reduces interference pressure from Wi-Fi and Bluetooth in many homes."
-  },
-  {
-    "q": "Select all components needed for a ZigBee-compliant product in the interoperability stack.",
-    "options": [
-      "IEEE 802.15.4",
-      "ZigBee stack",
-      "Application profile",
-      "IEEE 802.11"
-    ],
-    "correct": [
-      0,
-      1,
-      2
-    ],
-    "why": "A compliant ZigBee product depends on the 802.15.4 foundation, the ZigBee stack, and the right application profile; Wi-Fi is unrelated to that requirement."
-  },
-  {
-    "q": "Which comparison was used to illustrate ZigBee's lower protocol complexity?",
-    "options": [
-      "About 32 kB for ZigBee versus about 250 kB for Bluetooth",
-      "About 250 kB for ZigBee versus about 32 kB for Bluetooth",
-      "About 32 MB for ZigBee versus about 250 MB for Bluetooth",
-      "Both were described at roughly the same stack size"
-    ],
-    "correct": [
-      0
-    ],
-    "why": "The stack-size comparison highlighted that ZigBee can be much lighter, which aligns with its low-power, low-complexity design goals."
+    "why": "Distributed mesh relies on the nodes themselves to discover adjacencies, maintain routes, and react when topology changes."
   }
 ];
     const quizEl = document.getElementById("quiz");
